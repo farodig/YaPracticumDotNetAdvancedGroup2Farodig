@@ -1,5 +1,4 @@
-﻿using LearningWebApi.Models;
-using LearningWebApi.Requests;
+﻿using LearningWebApi.Requests;
 using LearningWebApi.Services.EventService;
 using Microsoft.AspNetCore.Mvc;
 

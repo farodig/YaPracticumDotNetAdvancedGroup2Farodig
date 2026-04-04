@@ -1,4 +1,4 @@
-﻿namespace LearningWebApi.Models
+﻿namespace LearningWebApi.Services.EventService
 {
     public class Event
     {

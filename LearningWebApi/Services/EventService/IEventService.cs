@@ -1,6 +1,4 @@
-﻿using LearningWebApi.Models;
-
-namespace LearningWebApi.Services.EventService
+﻿namespace LearningWebApi.Services.EventService
 {
     public interface IEventService
     {
