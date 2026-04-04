@@ -1,15 +1,18 @@
-﻿namespace LearningWebApi.Models
-{
-    public class Event
-    {
-        public Guid Id { get; set; }
+﻿using System.ComponentModel.DataAnnotations;
 
+namespace LearningWebApi.Requests
+{
+    public class CreateEventRequest
+    {
+        [Required]
         public string Title { get; set; } = string.Empty;
 
         public string? Description { get; set; }
 
+        [Required]
         public DateTime StartAt { get; set; }
 
+        [Required]
         public DateTime EndAt { get; set; }
     }
 }
