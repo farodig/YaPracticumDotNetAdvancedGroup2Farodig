@@ -12,9 +12,10 @@ namespace LearningWebApi.Services.EventService
             return _events.Values;
         }
 
-        public Event GetEvent(Guid id)
+        public Event? GetEvent(Guid id)
         {
-            return _events[id];
+            _events.TryGetValue(id, out Event? item);
+            return item;
         }
 
         public Event CreateEvent(string title, DateTime startAt, DateTime endAt, string? description = null)
@@ -31,9 +32,26 @@ namespace LearningWebApi.Services.EventService
             };
         }
 
-        public void CancelEvent(Guid id)
+        public bool TryUpdateEvent(Event item)
         {
+            if (!_events.TryGetValue(item.Id, out Event? oldValue))
+            {
+                return false;
+            }
+
+            _events.TryUpdate(item.Id, item, oldValue);
+            return true;
+        }
+
+        public bool TryDeleteEvent(Guid id)
+        {
+            if (!_events.ContainsKey(id))
+            {
+                return false;
+            }
+
             _events.TryRemove(id, out _);
+            return true;
         }
     }
 }
