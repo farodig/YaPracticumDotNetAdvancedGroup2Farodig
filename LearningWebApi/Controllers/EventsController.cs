@@ -28,7 +28,7 @@ namespace LearningWebApi.Controllers
         }
 
         /// <summary>
-        /// Получить событие по Id
+        /// Получить событие по идентификатору
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <response code="200">Событие успешно получено</response>
