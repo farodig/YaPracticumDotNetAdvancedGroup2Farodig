@@ -6,7 +6,7 @@ namespace LearningWebApi.Models.Requests
     /// <summary>
     /// Модель данных создания события
     /// </summary>
-    public class CreateEventRequest
+    public class CreateEventRequest : IValidatableObject, IDateRangeValidator
     {
         /// <summary>
         /// Заголовок события
@@ -23,16 +23,20 @@ namespace LearningWebApi.Models.Requests
         /// Время начала события
         /// </summary>
         [Required]
-        [DateLessThanPropertyValidation(nameof(EndAt))]
-        [DateGreaterThanNowValidation]
         public DateTime? StartAt { get; set; }
 
         /// <summary>
         /// Время окончания события
         /// </summary>
         [Required]
-        [DateGreaterThanPropertyValidation(nameof(StartAt))]
-        [DateGreaterThanNowValidation]
         public DateTime? EndAt { get; set; }
+
+        /// <summary>
+        /// Валидация
+        /// </summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return ((IDateRangeValidator)this).DateRangeValidate(validationContext);
+        }
     }
 }

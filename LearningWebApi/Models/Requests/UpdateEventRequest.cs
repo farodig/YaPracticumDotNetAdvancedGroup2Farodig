@@ -6,7 +6,7 @@ namespace LearningWebApi.Models.Requests
     /// <summary>
     /// Модель данных изменения события
     /// </summary>
-    public class UpdateEventRequest
+    public class UpdateEventRequest : IValidatableObject, IDateRangeValidator
     {
         // Id требование в route, поэтому отсутствует в модели, т. к. его нет смысла протаскивать повторно,
         // возможно даже есть смысл сделать общую модель для создания и обновления,
@@ -27,16 +27,20 @@ namespace LearningWebApi.Models.Requests
         /// Время начала события
         /// </summary>
         [Required]
-        [DateLessThanPropertyValidation(nameof(EndAt))]
-        [DateGreaterThanNowValidation]
         public DateTime? StartAt { get; set; }
 
         /// <summary>
         /// Время окончания события
         /// </summary>
         [Required]
-        [DateGreaterThanPropertyValidation(nameof(StartAt))]
-        [DateGreaterThanNowValidation]
         public DateTime? EndAt { get; set; }
+        
+        /// <summary>
+        /// Валидация
+        /// </summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return ((IDateRangeValidator)this).DateRangeValidate(validationContext);
+        }
     }
 }
