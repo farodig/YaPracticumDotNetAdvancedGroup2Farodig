@@ -39,7 +39,7 @@ namespace LearningWebApi.Controllers
         {
             if (_eventService.GetEvent(id) is not Event item)
             {
-                return NotFound(id);
+                return NotFound();
             }
 
             return Ok(item.ToEventRespose());
