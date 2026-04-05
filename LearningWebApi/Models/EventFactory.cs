@@ -14,8 +14,8 @@ namespace LearningWebApi.Models
             Id = id,
             Title = data.Title,
             Description = data.Description,
-            StartAt = data.StartAt,
-            EndAt = data.EndAt
+            StartAt = data.StartAt!.Value,
+            EndAt = data.EndAt!.Value
         };
 
         internal static EventResponse ToEventRespose(this Event data) => new()

@@ -13,8 +13,7 @@ namespace LearningWebApi.Models.Validation
         /// </summary>
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            var currentValue = (DateTime?)value
-                ?? throw new ArgumentNullException(nameof(value), $"Значение переданное в переменную не может быть приведено к {nameof(DateTime)}");
+            var currentValue = (DateTime?)value;
 
             if (currentValue <= DateTime.Now)
             {

@@ -57,8 +57,8 @@ namespace LearningWebApi.Controllers
         {
             var created = _eventService.CreateEvent(
                 data.Title,
-                data.StartAt,
-                data.EndAt,
+                data.StartAt!.Value,
+                data.EndAt!.Value,
                 data.Description)
                 .ToEventRespose();
 

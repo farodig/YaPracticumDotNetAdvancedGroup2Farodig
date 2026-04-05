@@ -25,7 +25,7 @@ namespace LearningWebApi.Models.Requests
         [Required]
         [DateLessThanPropertyValidation(nameof(EndAt))]
         [DateGreaterThanNowValidation]
-        public DateTime StartAt { get; set; }
+        public DateTime? StartAt { get; set; }
 
         /// <summary>
         /// Время окончания события
@@ -33,6 +33,6 @@ namespace LearningWebApi.Models.Requests
         [Required]
         [DateGreaterThanPropertyValidation(nameof(StartAt))]
         [DateGreaterThanNowValidation]
-        public DateTime EndAt { get; set; }
+        public DateTime? EndAt { get; set; }
     }
 }
