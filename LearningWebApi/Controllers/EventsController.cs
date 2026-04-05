@@ -62,7 +62,10 @@ namespace LearningWebApi.Controllers
                 data.Description)
                 .ToEventRespose();
 
-            return Created($"/{created.Id}", created);
+            return CreatedAtAction(
+                actionName: nameof(GetEvent),
+                routeValues: new { id = created.Id },
+                value: created);
         }
 
         /// <summary>
