@@ -1,18 +1,17 @@
-﻿namespace LearningWebApi.Services.EventService
+﻿using LearningWebApi.Models.Validation;
+using System.ComponentModel.DataAnnotations;
+
+namespace LearningWebApi.Models.Requests
 {
     /// <summary>
-    /// Событие
+    /// Модель данных создания события
     /// </summary>
-    public class Event
+    public class CreateEventRequest
     {
-        /// <summary>
-        /// Идентификатор события
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Заголовок события
         /// </summary>
+        [Required]
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
@@ -23,11 +22,17 @@
         /// <summary>
         /// Время начала события
         /// </summary>
+        [Required]
+        [DateLessThanPropertyValidation(nameof(EndAt))]
+        [DateGreaterThanNowValidation]
         public DateTime StartAt { get; set; }
 
         /// <summary>
         /// Время окончания события
         /// </summary>
+        [Required]
+        [DateGreaterThanPropertyValidation(nameof(StartAt))]
+        [DateGreaterThanNowValidation]
         public DateTime EndAt { get; set; }
     }
 }

@@ -1,10 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LearningWebApi.Validation
+namespace LearningWebApi.Models.Validation
 {
+    /// <summary>
+    /// Валидатор поля даты - дата и время должна быть больше текущей даты и времени
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class DateGreaterThanNowValidationAttribute : ValidationAttribute
     {
+        /// <summary>
+        /// Валидация параметра
+        /// </summary>
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             var currentValue = (DateTime?)value

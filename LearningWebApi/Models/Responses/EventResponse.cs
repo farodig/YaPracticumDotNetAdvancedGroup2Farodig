@@ -1,9 +1,9 @@
-﻿namespace LearningWebApi.Services.EventService
+﻿namespace LearningWebApi.Models.Responses
 {
     /// <summary>
     /// Событие
     /// </summary>
-    public class Event
+    public class EventResponse
     {
         /// <summary>
         /// Идентификатор события
