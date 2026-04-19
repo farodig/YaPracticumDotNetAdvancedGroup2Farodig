@@ -1,3 +1,4 @@
+using LearningWebApi.Middlewares;
 using LearningWebApi.Services.EventService;
 using System.Reflection;
 
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
