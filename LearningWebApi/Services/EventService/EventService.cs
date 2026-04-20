@@ -6,6 +6,8 @@ namespace LearningWebApi.Services.EventService
     {
         private ConcurrentDictionary<Guid, Event> _events = [];
 
+        public int Count => _events.Count;
+
         public IEnumerable<Event> GetEvents()
         {
             return _events.Values;
