@@ -18,12 +18,22 @@ namespace LearningWebApi.Controllers
         /// <summary>
         /// Получить список всех событий
         /// </summary>
-        /// <response code="200">Список событий успешно возвращён</response> 
+        /// <param name="title">Поиск событий по названию (опциональный, регистронезависимый, частичное совпадение)</param>
+        /// <param name="from">Поиск событий которые начинаются не раньше указанной даты (опциональный)</param>
+        /// <param name="to">Поиск событий которые заканчиваются не позже указанной даты (опциональный)</param>
+        /// <response code="200">Список событий успешно возвращён</response>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<EventResponse>), StatusCodes.Status200OK, "application/json")]
-        public IActionResult GetEvents()
+        public IActionResult GetEvents(
+            [FromQuery] string? title = null,
+            [FromQuery] DateTime? from = null,
+            [FromQuery] DateTime? to = null)
         {
-            return Ok(_eventService.GetEvents()
+            return Ok(_eventService
+                .GetEvents()
+                .FilterByTitle(title)
+                .FilterByFrom(from)
+                .FilterByTo(to)
                 .Select(EventFactory.ToEventRespose));
         }
 

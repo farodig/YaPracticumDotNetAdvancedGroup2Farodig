@@ -12,12 +12,29 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath, true);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSwagger",
+        policy =>
+        {
+            // Читаем из настроек или используем значения по умолчанию
+            var origins = (builder.Configuration["ASPNETCORE_URLS"] ??
+                       builder.Configuration["urls"] ?? string.Empty)
+                       .Split(';');
+
+            policy.WithOrigins(origins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("AllowSwagger");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
