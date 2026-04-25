@@ -1,21 +1,21 @@
-﻿using System.Collections.Concurrent;
+﻿using LearningWebApi.Repositories;
 
 namespace LearningWebApi.Services.EventService
 {
-    internal class EventService : IEventService
+    internal class EventService(IEventRepository repository) : IEventService
     {
-        private ConcurrentDictionary<Guid, Event> _events = [];
+        private IEventRepository _repository = repository;
 
-        public int Count => _events.Count;
+        public int Count => _repository.Count;
 
         public IEnumerable<Event> GetEvents()
         {
-            return _events.Values;
+            return _repository.Values;
         }
 
         public Event? GetEvent(Guid id)
         {
-            _events.TryGetValue(id, out Event? item);
+            _repository.TryGetValue(id, out Event? item);
             return item;
         }
 
@@ -23,7 +23,7 @@ namespace LearningWebApi.Services.EventService
         {
             var id = Guid.NewGuid();
             
-            return _events[id] = new Event()
+            return _repository[id] = new Event()
             {
                 Id = id,
                 Title = title,
@@ -35,23 +35,23 @@ namespace LearningWebApi.Services.EventService
 
         public bool TryUpdateEvent(Event item)
         {
-            if (!_events.TryGetValue(item.Id, out Event? oldValue))
+            if (!_repository.TryGetValue(item.Id, out Event? oldValue))
             {
                 return false;
             }
 
-            _events.TryUpdate(item.Id, item, oldValue);
+            _repository.TryUpdate(item.Id, item, oldValue);
             return true;
         }
 
         public bool TryDeleteEvent(Guid id)
         {
-            if (!_events.ContainsKey(id))
+            if (!_repository.ContainsKey(id))
             {
                 return false;
             }
 
-            _events.TryRemove(id, out _);
+            _repository.TryRemove(id, out _);
             return true;
         }
     }

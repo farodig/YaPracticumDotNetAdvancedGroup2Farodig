@@ -1,9 +1,11 @@
 using LearningWebApi.Middlewares;
+using LearningWebApi.Repositories;
 using LearningWebApi.Services.EventService;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IEventRepository, EventRepository>();
 builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSwaggerGen(options =>
 {
