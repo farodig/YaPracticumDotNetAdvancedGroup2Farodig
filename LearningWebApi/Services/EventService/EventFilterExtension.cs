@@ -23,7 +23,7 @@
         /// </summary>
         public static IEnumerable<Event> FilterByFrom(this IEnumerable<Event> data, DateTime? dateTime)
         {
-            if (dateTime.HasValue && dateTime != DateTime.MinValue)
+            if (dateTime.HasValue)
             {
                 data = data.Where(a => dateTime <= a.StartAt);
             }
@@ -36,7 +36,7 @@
         /// </summary>
         public static IEnumerable<Event> FilterByTo(this IEnumerable<Event> data, DateTime? dateTime)
         {
-            if (dateTime.HasValue && dateTime != DateTime.MinValue)
+            if (dateTime.HasValue)
             {
                 data = data.Where(a => a.EndAt <= dateTime);
             }
