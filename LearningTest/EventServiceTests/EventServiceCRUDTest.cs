@@ -1,7 +1,7 @@
 ﻿using LearningWebApi.Services.EventService;
-using static LearningTest.EventServiceFacade;
+using static LearningTest.Factories.EventServiceFactory;
 
-namespace LearningTest
+namespace LearningTest.EventServiceTests
 {
     public class EventServiceCRUDTest
     {

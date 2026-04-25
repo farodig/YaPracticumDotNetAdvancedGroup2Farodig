@@ -1,7 +1,7 @@
 ﻿using LearningWebApi.Models.Requests;
 using System.ComponentModel.DataAnnotations;
 
-namespace LearningTest
+namespace LearningTest.EventServiceTests
 {
     public class EventValidationTest
     {

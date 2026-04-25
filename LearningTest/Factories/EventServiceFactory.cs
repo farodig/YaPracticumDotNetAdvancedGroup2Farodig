@@ -1,12 +1,12 @@
 ﻿using LearningWebApi.Repositories;
 using LearningWebApi.Services.EventService;
 
-namespace LearningTest
+namespace LearningTest.Factories
 {
     /// <summary>
     /// Вспомогательный класс для инициализации репозитория
     /// </summary>
-    public static class EventServiceFacade
+    public static class EventServiceFactory
     {
         /// <summary>
         /// Создание сервиса событий с подготовленными данными для тестов
