@@ -21,5 +21,14 @@ namespace LearningTest.Factories
             Id = Guid.NewGuid(),
             EndAt = endAt,
         };
+
+        public static Event CreateEvent(string title, DateTime startAt, DateTime endAt, string? description = null) => new()
+        {
+            Id = Guid.NewGuid(),
+            Title = title,
+            StartAt = startAt,
+            EndAt = endAt,
+            Description = description,
+        };
     }
 }
