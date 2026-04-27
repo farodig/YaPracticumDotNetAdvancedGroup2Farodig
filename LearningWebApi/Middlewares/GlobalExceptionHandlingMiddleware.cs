@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace LearningWebApi.Middlewares
@@ -18,7 +19,7 @@ namespace LearningWebApi.Middlewares
             {
                 _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
 
-                var problemDetails = CreateProblemDetails(context, ex);
+                var problemDetails = CreateProblemDetails(context);
 
                 context.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/problem+json";
@@ -32,40 +33,19 @@ namespace LearningWebApi.Middlewares
             }
         }
 
-        private ProblemDetails CreateProblemDetails(HttpContext context, Exception ex)
+        private ProblemDetails CreateProblemDetails(HttpContext context)
         {
-            var problemDetails = new ProblemDetails
+            // Все отловленные ошибки здесь являются внутренними ошибками сервера
+            // дополнительную информацию всегда можно посмотреть в логах
+            var problemDetails = new ProblemDetails()
             {
-                Instance = context.Request.Path,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "Internal Server Error",
+                Detail = "Check log file for detail"
             };
 
-            switch (ex)
-            {
-                case ArgumentException argEx:
-                    problemDetails.Status = StatusCodes.Status400BadRequest;
-                    problemDetails.Title = "Invalid Argument";
-                    problemDetails.Detail = argEx.Message;
-                    break;
-
-                case KeyNotFoundException:
-                    problemDetails.Status = StatusCodes.Status404NotFound;
-                    problemDetails.Title = "Resource Not Found";
-                    problemDetails.Detail = ex.Message;
-                    break;
-
-                case InvalidOperationException invalidOpEx:
-                    problemDetails.Status = StatusCodes.Status400BadRequest;
-                    problemDetails.Title = "Invalid Operation";
-                    problemDetails.Detail = invalidOpEx.Message;
-                    break;
-
-                default:
-                    problemDetails.Status = StatusCodes.Status500InternalServerError;
-                    problemDetails.Title = "Internal Server Error";
-                    problemDetails.Detail = "An unexpected error occurred while processing your request";
-                    break;
-            }
-
+            problemDetails.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
             return problemDetails;
         }
     }
