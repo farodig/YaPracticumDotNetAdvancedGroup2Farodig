@@ -1,6 +1,7 @@
 using LearningWebApi.Middlewares;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.EventService;
+using NLog.Web;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +31,13 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+//builder.Logging.ClearProviders();
+//builder.Host.UseNLog();
+
 var app = builder.Build();
 
+//app.UseMiddleware<GlobalLoggerMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
