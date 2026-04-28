@@ -33,18 +33,20 @@ namespace LearningWebApi.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            return Ok(new PaginatedResult
-            {
-                Items = _eventService
+            var filteredEvents = _eventService
                 .GetEvents()
                 .FilterByTitle(title)
                 .FilterByFrom(from)
-                .FilterByTo(to)
+                .FilterByTo(to);
+
+            return Ok(new PaginatedResult
+            {
+                Items = filteredEvents
                 .Pagination(page, pageSize)
                 .Select(EventFactory.ToEventRespose)
                 .ToList(),
                 PageNumber = page,
-                TotalCount = _eventService.Count,
+                TotalCount = filteredEvents.Count(),
             });
         }
 

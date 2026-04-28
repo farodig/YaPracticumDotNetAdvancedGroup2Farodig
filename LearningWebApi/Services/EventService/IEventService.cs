@@ -3,7 +3,7 @@
     /// <summary>
     /// Сервис событий
     /// </summary>
-    public interface IEventService : IEventPagination
+    public interface IEventService
     {
         /// <summary>
         /// Получить все события

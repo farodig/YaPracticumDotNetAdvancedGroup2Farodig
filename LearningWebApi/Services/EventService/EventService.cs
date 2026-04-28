@@ -6,8 +6,6 @@ namespace LearningWebApi.Services.EventService
     {
         private IEventRepository _repository = repository;
 
-        public int Count => _repository.Count;
-
         public IEnumerable<Event> GetEvents()
         {
             return _repository.Values;
