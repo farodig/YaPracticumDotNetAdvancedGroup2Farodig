@@ -19,7 +19,7 @@ namespace LearningWebApi.Middlewares
             {
                 _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
 
-                var problemDetails = CreateProblemDetails(context);
+                var problemDetails = CreateProblemDetails(context, ex);
 
                 context.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/problem+json";
@@ -33,19 +33,41 @@ namespace LearningWebApi.Middlewares
             }
         }
 
-        private ProblemDetails CreateProblemDetails(HttpContext context)
+        private ProblemDetails CreateProblemDetails(HttpContext context, Exception ex)
         {
-            // Все отловленные ошибки здесь являются внутренними ошибками сервера
-            // дополнительную информацию всегда можно посмотреть в логах
-            var problemDetails = new ProblemDetails()
-            {
-                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
-                Status = StatusCodes.Status500InternalServerError,
-                Title = "Internal Server Error",
-                Detail = "Check log file for detail"
-            };
-
+            var problemDetails = new ProblemDetails();
             problemDetails.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
+
+            switch (ex)
+            {
+                case ArgumentException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
+                    problemDetails.Status = StatusCodes.Status400BadRequest;
+                    problemDetails.Title = "Invalid Argument";
+                    problemDetails.Detail = ex.Message;
+                    break;
+
+                case InvalidOperationException invalidOpEx:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
+                    problemDetails.Status = StatusCodes.Status400BadRequest;
+                    problemDetails.Title = "Invalid Operation";
+                    problemDetails.Detail = ex.Message;
+                    break;
+
+                case KeyNotFoundException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5";
+                    problemDetails.Status = StatusCodes.Status404NotFound;
+                    problemDetails.Title = "Resource Not Found";
+                    problemDetails.Detail = ex.Message;
+                    break;
+                default:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1";
+                    problemDetails.Status = StatusCodes.Status500InternalServerError;
+                    problemDetails.Title = "Internal Server Error";
+                    problemDetails.Detail = "Check log file for detail";
+                    break;
+            }
+
             return problemDetails;
         }
     }
