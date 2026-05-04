@@ -5,21 +5,32 @@ namespace LearningTest.EventServiceTests
 {
     public class EventServicePaginationTest
     {
+        private IEnumerable<Event> _randomData;
         private IEventService _eventService;
 
         public EventServicePaginationTest()
         {
             var rnd = new Random();
-            IEnumerable<Event> randomData = Enumerable.Range(1, 100)
+
+            DateTime GetRandomDate()
+            {
+                return DateTime.Now.AddDays(rnd.Next(1, 30))
+                    .AddHours(rnd.Next(1, 24))
+                    .AddMinutes(rnd.Next(1, 60))
+                    .AddSeconds(rnd.Next(1, 60));
+            }
+
+            _randomData = Enumerable.Range(1, 100)
                 .Select(i => new Event
                 {
                     Id = Guid.NewGuid(),
                     Title = $"Event {i}",
-                    StartAt = DateTime.Now.AddDays(rnd.Next(1, 30)),
-                    EndAt = DateTime.Now.AddDays(rnd.Next(31, 60)),
+                    StartAt = GetRandomDate(),
+                    EndAt = GetRandomDate(),
                     Description = $"Random description {i}"
-                });
-            _eventService = CreateEventService(randomData);
+                })
+                .ToList();
+            _eventService = CreateEventService(_randomData);
         }
 
         [Theory(DisplayName = "пагинация событий номер страницы")]
@@ -71,6 +82,21 @@ namespace LearningTest.EventServiceTests
                 _eventService.GetEvents()
                 .Pagination(page: 1, pageSize);
             });
+        }
+
+        [Theory(DisplayName = "пагинация - проверка состава элементов (ожидаемый диапазон)")]
+        [InlineData(1, 10)]
+        [InlineData(2, 5)]
+        public void PaginationOrderElementsTest(int pageNumber, int pageSize)
+        {
+            var expected = _randomData.OrderBy(c => c.StartAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            var actual = _eventService.GetEvents()
+                .Pagination(pageNumber, pageSize);
+
+            Assert.Equal(expected, actual);
         }
     }
 }
