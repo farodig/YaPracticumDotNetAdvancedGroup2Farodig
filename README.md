@@ -78,3 +78,60 @@ QueryString Параметры:
 | errors  | object  | (опциональный) Список ошибок валидации полей.              |
 | detail  | string  | (опциональный) Дополнительная информация об ошибке.        |
 | traceId | string  | Уникальный идентификатор запроса для трассировки и отладки.|
+
+### Пример запроса с валидацией полей
+#### Запрос
+POST /Events
+{
+  "startAt": "2026-04-28T22:09:03.184Z",
+  "endAt": "2026-04-28T22:09:03.184Z"
+}
+
+#### Ответ
+Status code 400
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "Title": [
+      "The Title field is required."
+    ]
+  },
+  "traceId": "00-bca2d7df98195599e7597495e7a01c51-d57de851fd420f39-00"
+}
+
+### Пример заспрос с ошибкой пагинации
+#### Запрос
+GET /Events?title=test&from=2026-04-28T22%3A13%3A16.974Z&to=2026-04-28T22%3A13%3A22.188Z&page=-1&pageSize=10
+
+#### Ответ
+Status code 400
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "Invalid Argument",
+  "status": 400,
+  "detail": "The parameter must be positive and above zero (Parameter 'page')",
+  "traceId": "00-7db3e64138c6ddbed0ff478a0dc1d7af-06ce5a83d86e765e-00"
+}
+
+
+### Пример успешный заспрос элементов пагинации
+#### Запрос
+GET /Events?title=test&from=2026-04-27T22%3A13%3A16.974Z&to=2026-04-28T22%3A13%3A22.188Z&page=1&pageSize=10
+
+#### Ответ
+Status code 200
+{
+  "items": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "title": "test",
+      "description": "test",
+      "startAt": "2026-04-28T22:32:36.093Z",
+      "endAt": "2026-04-28T22:32:37.093Z"
+    }, ...],
+  "pageNumber": 1,
+  "pageCount": 2,
+  "totalCount": 15
+}
