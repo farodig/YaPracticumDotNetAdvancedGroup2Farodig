@@ -12,7 +12,7 @@
         {
             if (!string.IsNullOrWhiteSpace(title))
             {
-                data = data.Where(a => a.Title.Contains(title, StringComparison.InvariantCultureIgnoreCase));
+                data = data.Where(a => a.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
             }
 
             return data;
