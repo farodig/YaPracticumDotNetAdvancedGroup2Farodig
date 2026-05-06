@@ -4,11 +4,12 @@
 
 1. Скачать актуальный [SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 2. Скачать [репозиторий](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig.git) себе на компьютер
-3. В git переключиться на ветку sprint-1
+3. В git переключиться на ветку sprint-2
 5. Зайти в консоль от администратора
-6. Зайти в подпапку скачанного репозитория LearningWebApi/ 
-7. выполнить команду dotnet run
-8. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
+6. В корневой папке проекта выполнить команду dotnet test
+7. Зайти в подпапку скачанного репозитория LearningWebApi/
+8. Выполнить команду dotnet run
+9. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
 
 ## API
 
@@ -19,6 +20,15 @@
 |POST  |/events     |[CreateEventRequest](#CreateEventRequest)|[EventResponse](#EventResponse)  |Создать событие                   |
 |PUT   |/events/{id}|[UpdateEventRequest](#UpdateEventRequest)|                                 |Изменить событие                  |
 |DELETE|/events/{id}|                                         |                                 |Удалить событие                   |
+
+## Детализация запросов
+### Метод GET /events
+QueryString Параметры:
+- title - Поиск событий по названию (опциональный, регистронезависимый, частичное совпадение)
+- from - Поиск событий которые начинаются не раньше указанной даты (опциональный)
+- to - Поиск событий которые заканчиваются не позже указанной даты (опциональный)
+- page - Страница, которую необходимо вернуть (опциональный, по умолчанию 1)
+- pageSize - Количество элементов на странице (опциональный, по умолчанию 10)
 
 
 ## Схемы запросов/ответов
@@ -49,3 +59,79 @@
 |description|string    |Описание события (необязательный)|                                      |
 |startAt    |DateTime  |Дата и время начала события      |"2027-04-05T00:51:58.951Z"            |
 |endAt      |DateTime  |Дата и время окончания события   |"2027-04-05T00:51:58.951Z"            |
+
+## Возможные варианты ответов от сервера
+|Код ответа |Тип    |Описание                 |
+|-----------|-------|-------------------------|
+|200        |Успех  |Событие успешно получено |
+|201        |Успех  |Событие успешно создано  |
+|400        |Неудача|Запрос содержит ошибки   |
+|404        |Неудача|Событие не найдено       |
+|500        |Неудача|Внутренняя ошибка сервера|
+
+## Формат ответа при ошибках
+| Поле    | Тип     | Описание                                                   |
+|---------|---------|------------------------------------------------------------|
+| type    | string  | URI ссылка на спецификацию типа ошибки (RFC 9110).         |
+| title   | string  | Краткое описание ошибки.                                   |
+| status  | integer | HTTP статус-код ошибки.                                    |
+| errors  | object  | (опциональный) Список ошибок валидации полей.              |
+| detail  | string  | (опциональный) Дополнительная информация об ошибке.        |
+| traceId | string  | Уникальный идентификатор запроса для трассировки и отладки.|
+
+### Пример запроса с валидацией полей
+#### Запрос
+POST /Events
+{
+  "startAt": "2026-04-28T22:09:03.184Z",
+  "endAt": "2026-04-28T22:09:03.184Z"
+}
+
+#### Ответ
+Status code 400
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "Title": [
+      "The Title field is required."
+    ]
+  },
+  "traceId": "00-bca2d7df98195599e7597495e7a01c51-d57de851fd420f39-00"
+}
+
+### Пример заспрос с ошибкой пагинации
+#### Запрос
+GET /Events?title=test&from=2026-04-28T22%3A13%3A16.974Z&to=2026-04-28T22%3A13%3A22.188Z&page=-1&pageSize=10
+
+#### Ответ
+Status code 400
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "Invalid Argument",
+  "status": 400,
+  "detail": "The parameter must be positive and above zero (Parameter 'page')",
+  "traceId": "00-7db3e64138c6ddbed0ff478a0dc1d7af-06ce5a83d86e765e-00"
+}
+
+
+### Пример успешный заспрос элементов пагинации
+#### Запрос
+GET /Events?title=test&from=2026-04-27T22%3A13%3A16.974Z&to=2026-04-28T22%3A13%3A22.188Z&page=1&pageSize=10
+
+#### Ответ
+Status code 200
+{
+  "items": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "title": "test",
+      "description": "test",
+      "startAt": "2026-04-28T22:32:36.093Z",
+      "endAt": "2026-04-28T22:32:37.093Z"
+    }, ...],
+  "pageNumber": 1,
+  "pageCount": 2,
+  "totalCount": 15
+}

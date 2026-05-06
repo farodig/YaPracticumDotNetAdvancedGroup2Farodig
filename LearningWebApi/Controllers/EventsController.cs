@@ -18,13 +18,36 @@ namespace LearningWebApi.Controllers
         /// <summary>
         /// Получить список всех событий
         /// </summary>
-        /// <response code="200">Список событий успешно возвращён</response> 
+        /// <param name="title">Поиск событий по названию (опциональный, регистронезависимый, частичное совпадение)</param>
+        /// <param name="from">Поиск событий которые начинаются не раньше указанной даты (опциональный)</param>
+        /// <param name="to">Поиск событий которые заканчиваются не позже указанной даты (опциональный)</param>
+        /// <param name="page">Страница, которую необходимо вернуть (опциональный, по умолчанию 1)</param>
+        /// <param name="pageSize">Количество элементов на странице (опциональный, по умолчанию 10)</param>
+        /// <response code="200">Список событий успешно возвращён</response>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<EventResponse>), StatusCodes.Status200OK, "application/json")]
-        public IActionResult GetEvents()
+        [ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK, "application/json")]
+        public IActionResult GetEvents(
+            [FromQuery] string? title = null,
+            [FromQuery] DateTime? from = null,
+            [FromQuery] DateTime? to = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            return Ok(_eventService.GetEvents()
-                .Select(EventFactory.ToEventRespose));
+            var filteredEvents = _eventService
+                .GetEvents()
+                .FilterByTitle(title)
+                .FilterByFrom(from)
+                .FilterByTo(to);
+
+            return Ok(new PaginatedResult
+            {
+                Items = filteredEvents
+                .Pagination(page, pageSize)
+                .Select(EventFactory.ToEventRespose)
+                .ToList(),
+                PageNumber = page,
+                TotalCount = filteredEvents.Count(),
+            });
         }
 
         /// <summary>
