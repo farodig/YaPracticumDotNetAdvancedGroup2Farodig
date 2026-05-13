@@ -1,4 +1,6 @@
-﻿namespace LearningWebApi.Services.EventService
+﻿using LearningWebApi.Entities;
+
+namespace LearningWebApi.Services.EventService
 {
     /// <summary>
     /// Расширение для постраничного вывода событий

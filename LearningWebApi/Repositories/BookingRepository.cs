@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Services.BookingService;
+﻿using LearningWebApi.Entities;
 using System.Collections.Concurrent;
 
 namespace LearningWebApi.Repositories

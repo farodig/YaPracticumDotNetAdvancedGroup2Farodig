@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Services.EventService;
+﻿using LearningWebApi.Entities;
 using System.Collections.Concurrent;
 
 namespace LearningWebApi.Repositories

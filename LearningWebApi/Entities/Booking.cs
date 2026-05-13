@@ -1,4 +1,4 @@
-﻿namespace LearningWebApi.Services.BookingService
+﻿namespace LearningWebApi.Entities
 {
     /// <summary>
     /// Бронирование

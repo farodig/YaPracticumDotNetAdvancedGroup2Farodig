@@ -1,4 +1,5 @@
-﻿using LearningWebApi.Models;
+﻿using LearningWebApi.Entities;
+using LearningWebApi.Entities.Factories;
 using LearningWebApi.Repositories;
 
 namespace LearningWebApi.Services.BookingService

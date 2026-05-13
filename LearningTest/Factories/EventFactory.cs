@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Services.EventService;
+﻿using LearningWebApi.Entities;
 
 namespace LearningTest.Factories
 {

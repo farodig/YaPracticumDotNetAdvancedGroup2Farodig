@@ -1,6 +1,4 @@
-﻿using LearningWebApi.Services.BookingService;
-
-namespace LearningWebApi.Models
+﻿namespace LearningWebApi.Entities.Factories
 {
     internal static class BookingFactory
     {

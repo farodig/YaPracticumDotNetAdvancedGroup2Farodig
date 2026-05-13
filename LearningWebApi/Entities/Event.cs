@@ -1,4 +1,4 @@
-﻿namespace LearningWebApi.Services.EventService
+﻿namespace LearningWebApi.Entities
 {
     /// <summary>
     /// Событие

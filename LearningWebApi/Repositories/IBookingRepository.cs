@@ -1,5 +1,4 @@
-﻿using LearningWebApi.Services.BookingService;
-using System.Diagnostics.CodeAnalysis;
+﻿using LearningWebApi.Entities;
 
 namespace LearningWebApi.Repositories
 {
