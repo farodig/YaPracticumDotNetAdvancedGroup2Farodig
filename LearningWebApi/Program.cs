@@ -1,5 +1,6 @@
 using LearningWebApi.Middlewares;
 using LearningWebApi.Repositories;
+using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
 using NLog.Web;
 using System.Reflection;
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IEventRepository, EventRepository>();
 builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+builder.Services.AddSingleton<IBookingService, BookingService>();
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

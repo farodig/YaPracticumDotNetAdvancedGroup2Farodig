@@ -4,7 +4,7 @@ namespace LearningWebApi.Models
 {
     internal static class BookingFactory
     {
-        internal static Booking CreateEvent(Guid eventId) => new()
+        internal static Booking CreateBooking(Guid eventId) => new()
         {
             Id = Guid.NewGuid(),
             Status = BookingStatus.Pending,
