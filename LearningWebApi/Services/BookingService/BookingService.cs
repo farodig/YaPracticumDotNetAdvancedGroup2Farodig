@@ -1,6 +1,7 @@
 ﻿using LearningWebApi.Entities;
 using LearningWebApi.Entities.Factories;
 using LearningWebApi.Repositories;
+using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
@@ -8,6 +9,7 @@ namespace LearningWebApi.Services.BookingService
     {
         private readonly IEventRepository _eventRepository = eventRepository;
         private readonly IBookingRepository _bookingRepository = bookingRepository;
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public async ValueTask<Booking?> CreateBookingAsync(Guid eventId)
         {
@@ -19,6 +21,7 @@ namespace LearningWebApi.Services.BookingService
 
             var booking = BookingFactory.CreateBooking(eventId);
             _bookingRepository.Add(booking.Id, booking);
+            _logger.Info($"Booking #{booking.Id} created width status '{booking.Status}'");
             return booking;
         }
 

@@ -1,11 +1,13 @@
 ﻿using LearningWebApi.Entities;
 using LearningWebApi.Repositories;
+using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
     internal class BookingProcessor(IBookingRepository bookingRepository) : BackgroundService
     {
         private readonly IBookingRepository _bookingRepository = bookingRepository;
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -39,6 +41,7 @@ namespace LearningWebApi.Services.BookingService
             await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
             data.Status = BookingStatus.Confirmed;
             data.ProcessedAt = DateTime.Now;
+            _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
         }
 
         private void SaveData(Booking data)
