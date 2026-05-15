@@ -1,5 +1,6 @@
 ﻿using LearningWebApi.Entities;
 using LearningWebApi.Repositories;
+using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
 
 namespace LearningTest.Factories
@@ -7,7 +8,7 @@ namespace LearningTest.Factories
     /// <summary>
     /// Вспомогательный класс для инициализации репозитория
     /// </summary>
-    public static class EventServiceFactory
+    public static class ServiceFactory
     {
         /// <summary>
         /// Создание сервиса событий с подготовленными данными для тестов
@@ -21,6 +22,16 @@ namespace LearningTest.Factories
                 eventRepository.Add(item.Id, item);
             }
             return new EventService(eventRepository);
+        }
+
+        /// <summary>
+        /// Создание сервиса бронирования
+        /// </summary>
+        public static IBookingService CreateBookingService()
+        {
+            var bookingRepository = new BookingRepository() as IBookingRepository;
+            var eventRepository = new EventRepository() as IEventRepository;
+            return new BookingService(eventRepository, bookingRepository);
         }
     }
 }

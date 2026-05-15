@@ -2,7 +2,7 @@
 
 namespace LearningTest.Factories
 {
-    internal static class EventFactory
+    internal static class EntityFactory
     {
         public static Event CreateEventTitle(string title) => new()
         {
