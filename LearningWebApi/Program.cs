@@ -11,6 +11,7 @@ builder.Services.AddSingleton<IEventRepository, EventRepository>();
 builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
 builder.Services.AddSingleton<IBookingService, BookingService>();
+builder.Services.AddHostedService<BookingProcessor>();
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
