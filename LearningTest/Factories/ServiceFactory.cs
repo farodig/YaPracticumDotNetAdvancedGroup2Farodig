@@ -24,14 +24,25 @@ namespace LearningTest.Factories
             return new EventService(eventRepository);
         }
 
-        /// <summary>
-        /// Создание сервиса бронирования
-        /// </summary>
-        public static IBookingService CreateBookingService()
+        public static IBookingService CreateBookingServiceWithEventRepository(IEventRepository? eventRepository = null)
         {
-            var bookingRepository = new BookingRepository() as IBookingRepository;
-            var eventRepository = new EventRepository() as IEventRepository;
-            return new BookingService(eventRepository, bookingRepository);
+            var _bookingRepository = new BookingRepository() as IBookingRepository;
+            var _eventRepository = eventRepository ?? new EventRepository() as IEventRepository;
+            return new BookingService(_eventRepository, _bookingRepository);
+        }
+
+        public static IBookingService CreateBookingServiceWithBookingRepository(IBookingRepository? bookingRepository = null)
+        {
+            var _bookingRepository = bookingRepository ?? new BookingRepository() as IBookingRepository;
+            var _eventRepository = new EventRepository() as IEventRepository;
+            return new BookingService(_eventRepository, _bookingRepository);
+        }
+
+        public static IBookingService CreateBookingService(IBookingRepository? bookingRepository = null, IEventRepository? eventRepository = null)
+        {
+            var _bookingRepository = bookingRepository ?? new BookingRepository() as IBookingRepository;
+            var _eventRepository = eventRepository ?? new EventRepository() as IEventRepository;
+            return new BookingService(_eventRepository, _bookingRepository);
         }
     }
 }
