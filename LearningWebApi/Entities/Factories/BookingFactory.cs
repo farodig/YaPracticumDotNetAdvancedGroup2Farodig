@@ -12,7 +12,7 @@ namespace LearningWebApi.Entities.Factories
             CreatedAt = DateTime.Now,
         };
 
-        internal static BookingResponse ToBookingRespose(this Booking data) => new()
+        internal static BookingResponse ToBookingResponse(this Booking data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,

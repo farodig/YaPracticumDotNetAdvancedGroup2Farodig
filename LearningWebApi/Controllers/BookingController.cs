@@ -34,7 +34,7 @@ namespace LearningWebApi.Controllers
             return AcceptedAtAction(
                 actionName: nameof(GetBooking),
                 routeValues: new { id = item.Id },
-                value: item.ToBookingRespose());
+                value: item.ToBookingResponse());
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace LearningWebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(item.ToBookingRespose());
+            return Ok(item.ToBookingResponse());
         }
     }
 }

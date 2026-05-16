@@ -21,7 +21,7 @@ namespace LearningWebApi.Services.BookingService
 
             var booking = BookingFactory.CreateBooking(eventId);
             _bookingRepository.Add(booking.Id, booking);
-            _logger.Info($"Booking #{booking.Id} created width status '{booking.Status}'");
+            _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
             return booking;
         }
 
