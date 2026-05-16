@@ -19,7 +19,7 @@ namespace LearningTest.BookingServiceTests
                 .Returns(true);
 
             var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
-            var booking = await bookingService.CreateBookingAsync(expectedEventId);
+            var booking = bookingService.CreateBooking(expectedEventId);
 
             Assert.NotNull(booking);
             Assert.Equal(expectedEventId, booking.EventId);
@@ -37,8 +37,8 @@ namespace LearningTest.BookingServiceTests
 
             var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
 
-            var booking1 = await bookingService.CreateBookingAsync(expectedEventId);
-            var booking2 = await bookingService.CreateBookingAsync(expectedEventId);
+            var booking1 = bookingService.CreateBooking(expectedEventId);
+            var booking2 = bookingService.CreateBooking(expectedEventId);
 
             Assert.NotNull(booking1);
             Assert.NotNull(booking2);
@@ -60,10 +60,10 @@ namespace LearningTest.BookingServiceTests
 
             var bookingService = CreateBookingServiceWithBookingRepository(mockBookingRepository.Object);
 
-            var actualBooking = await bookingService.GetBookingByIdAsync(expectedBooking.Id);
+            var actualBooking = bookingService.GetBookingById(expectedBooking.Id);
 
             Assert.NotNull(actualBooking);
-            Assert.Equal(expectedBooking.Id, expectedBooking.Id);
+            Assert.Equal(expectedBooking.Id, actualBooking.Id);
         }
 
         [Fact(DisplayName = "получение брони отражает изменение статуса (после Confirm/Reject)")]
@@ -80,18 +80,18 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingService(bookingRepository, mockEventRepository.Object);
             using (var bookingProcessor = new BookingProcessor(bookingRepository))
             {
-                var booking = await bookingService.CreateBookingAsync(expectedEventId);
+                var booking = bookingService.CreateBooking(expectedEventId);
                 Assert.NotNull(booking);
                 Assert.Equal(BookingStatus.Pending, booking.Status);
 
-                booking = await bookingService.GetBookingByIdAsync(booking.Id);
+                booking = bookingService.GetBookingById(booking.Id);
                 Assert.NotNull(booking);
                 Assert.Equal(BookingStatus.Pending, booking.Status);
 
                 await bookingProcessor.StartAsync(CancellationToken.None);
                 await Task.Delay(TimeSpan.FromSeconds(3));
 
-                booking = await bookingService.GetBookingByIdAsync(booking.Id);
+                booking = bookingService.GetBookingById(booking.Id);
                 Assert.NotNull(booking);
                 Assert.Equal(BookingStatus.Confirmed, booking.Status);
 
@@ -103,7 +103,7 @@ namespace LearningTest.BookingServiceTests
         public async Task CreateBookingForNotExistedEventTest()
         {
             var bookingService = CreateBookingService();
-            var booking = await bookingService.CreateBookingAsync(Guid.NewGuid());
+            var booking = bookingService.CreateBooking(Guid.NewGuid());
             Assert.Null(booking);
         }
 
@@ -120,7 +120,7 @@ namespace LearningTest.BookingServiceTests
             Assert.True(eventRepository.TryRemove(@event.Id, out _));
             Assert.False(eventRepository.ContainsKey(@event.Id));
 
-            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            var booking = bookingService.CreateBooking(@event.Id);
             Assert.Null(booking);
         }
 
@@ -128,7 +128,7 @@ namespace LearningTest.BookingServiceTests
         public async Task GetNotExitedBookingTest()
         {
             var bookingService = CreateBookingService();
-            var booking = await bookingService.GetBookingByIdAsync(Guid.NewGuid());
+            var booking = bookingService.GetBookingById(Guid.NewGuid());
             Assert.Null(booking);
         }
     }

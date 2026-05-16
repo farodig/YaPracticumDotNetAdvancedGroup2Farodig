@@ -11,7 +11,7 @@ namespace LearningWebApi.Services.BookingService
         private readonly IBookingRepository _bookingRepository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public async ValueTask<Booking?> CreateBookingAsync(Guid eventId)
+        public Booking? CreateBooking(Guid eventId)
         {
             if (!_eventRepository.ContainsKey(eventId))
             {
@@ -25,7 +25,7 @@ namespace LearningWebApi.Services.BookingService
             return booking;
         }
 
-        public async ValueTask<Booking?> GetBookingByIdAsync(Guid id)
+        public Booking? GetBookingById(Guid id)
         {
             _bookingRepository.TryGetValue(id, out Booking? item);
             return item;

@@ -10,11 +10,11 @@ namespace LearningWebApi.Services.BookingService
         /// <summary>
         /// создание брони для указанного события
         /// </summary>
-        public ValueTask<Booking?> CreateBookingAsync(Guid eventId);
+        public Booking? CreateBooking(Guid eventId);
 
         /// <summary>
         /// получение брони по идентификатору
         /// </summary>
-        public ValueTask<Booking?> GetBookingByIdAsync(Guid bookingId);
+        public Booking? GetBookingById(Guid bookingId);
     }
 }

@@ -46,8 +46,7 @@ namespace LearningWebApi.Services.BookingService
 
         private void SaveData(Booking data)
         {
-            //_bookingRepository[data.Id] = data;
-            // необязательное действие, т. к. данные хранятся в памяти и изменяя объект по ссылке он сразу же меняется в нашем фейковом репозитории
+            _bookingRepository[data.Id] = data;
         }
     }
 }
