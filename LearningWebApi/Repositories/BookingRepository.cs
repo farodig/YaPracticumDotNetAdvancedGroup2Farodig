@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace LearningWebApi.Repositories
 {
-    internal class EventRepository : ConcurrentDictionary<Guid, Event>, IEventRepository
+    internal class BookingRepository : ConcurrentDictionary<Guid, Booking>, IBookingRepository
     {
     }
 }

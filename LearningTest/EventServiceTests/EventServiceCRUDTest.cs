@@ -1,5 +1,5 @@
-﻿using LearningWebApi.Services.EventService;
-using static LearningTest.Factories.EventServiceFactory;
+﻿using LearningWebApi.Entities;
+using static LearningTest.Factories.ServiceFactory;
 
 namespace LearningTest.EventServiceTests
 {

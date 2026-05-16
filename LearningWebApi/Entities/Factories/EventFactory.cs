@@ -1,8 +1,7 @@
 ﻿using LearningWebApi.Models.Requests;
 using LearningWebApi.Models.Responses;
-using LearningWebApi.Services.EventService;
 
-namespace LearningWebApi.Models
+namespace LearningWebApi.Entities.Factories
 {
     /// <summary>
     /// Вспомогательная фабрика для конвертации dto из сервиса в rest и обратно

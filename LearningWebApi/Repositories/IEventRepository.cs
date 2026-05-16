@@ -1,5 +1,4 @@
-﻿using LearningWebApi.Services.EventService;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
+﻿using LearningWebApi.Entities;
 using System.Diagnostics.CodeAnalysis;
 
 namespace LearningWebApi.Repositories

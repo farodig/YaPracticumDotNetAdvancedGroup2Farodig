@@ -1,4 +1,5 @@
-﻿using LearningWebApi.Models;
+﻿using LearningWebApi.Entities;
+using LearningWebApi.Entities.Factories;
 using LearningWebApi.Models.Requests;
 using LearningWebApi.Models.Responses;
 using LearningWebApi.Services.EventService;

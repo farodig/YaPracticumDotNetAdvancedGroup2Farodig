@@ -13,13 +13,15 @@
 
 ## API
 
-|Метод |Адрес       |Запрос                                   |Ответ                            |Описание                          |
-|------|------------|-----------------------------------------|---------------------------------|----------------------------------|
-|GET   |/events     |                                         |[EventResponse](#EventResponse)[]|Получить список всех событий      |
-|GET   |/events/{id}|                                         |[EventResponse](#EventResponse)  |Получить событие по идентификатору|
-|POST  |/events     |[CreateEventRequest](#CreateEventRequest)|[EventResponse](#EventResponse)  |Создать событие                   |
-|PUT   |/events/{id}|[UpdateEventRequest](#UpdateEventRequest)|                                 |Изменить событие                  |
-|DELETE|/events/{id}|                                         |                                 |Удалить событие                   |
+|Метод |Адрес       |Запрос                                   |Ответ                              |Описание                          |
+|------|------------|-----------------------------------------|-----------------------------------|----------------------------------|
+|GET   |/events     |                                         |[PaginatedResult](#PaginatedResult)|Получить список всех событий      |
+|GET   |/events/{id}|                                         |[EventResponse](#EventResponse)    |Получить событие по идентификатору|
+|POST  |/events     |[CreateEventRequest](#CreateEventRequest)|[EventResponse](#EventResponse)    |Создать событие                   |
+|PUT   |/events/{id}|[UpdateEventRequest](#UpdateEventRequest)|                                   |Изменить событие                  |
+|DELETE|/events/{id}|                                         |                                   |Удалить событие                   |
+|POST  |/events/{id}/book|                                    |[BookingResponse](#BookingResponse)|Забронировать событие             |
+|Get   |/booking/{id}    |                                    |[BookingResponse](#BookingResponse)|Получить информацию о бронировании|
 
 ## Детализация запросов
 ### Метод GET /events
@@ -32,6 +34,15 @@ QueryString Параметры:
 
 
 ## Схемы запросов/ответов
+
+### PaginatedResult
+|Поле       |Тип данных     |Описание                               |Пример|
+|-----------|---------------|---------------------------------------|------|
+|Items      |EventResponse[]|Список обытий                          |[...] |
+|PageNumber |int            |Номер текущей страницы                 |1     |
+|PageCount  |int            |Количество событий на текущей странице |20    |
+|TotalCount |int            |Общее количество событий               |300   |
+
 
 ### EventResponse
 
@@ -59,6 +70,20 @@ QueryString Параметры:
 |description|string    |Описание события (необязательный)|                                      |
 |startAt    |DateTime  |Дата и время начала события      |"2027-04-05T00:51:58.951Z"            |
 |endAt      |DateTime  |Дата и время окончания события   |"2027-04-05T00:51:58.951Z"            |
+
+### BookingResponse
+|Поле       |Тип данных   |Описание                                      |Пример                                  |
+|-----------|-------------|----------------------------------------------|----------------------------------------|
+|id         |Guid         |Идентификатор брони                           |"3fa85f64-5717-4562-b3fc-2c963f66afa6"  |
+|EventId    |Guid         |Идентификатор события                         |"dea85f64-5717-4562-b3fc-2c963f66afb8"  |
+|Status     |enum         |Статус бронирования                           |0 - Pending, 1 - Confirmed, 3 - Rejected|
+|CreatedAt  |DateTime     |Дата и время начала бронирования              |"2027-04-05T00:51:58.951Z"              |
+|ProcessedAt|DateTime     |Дата и время окончания события(необязательный)|"2027-04-05T00:51:58.951Z"              |
+
+### BookingStatus - Статусы бронирования
+Pending - Бронь создана, ожидаение обработки
+Confirmed - Бронь подтверждена
+Rejected - Бронь отклонена
 
 ## Возможные варианты ответов от сервера
 |Код ответа |Тип    |Описание                 |
@@ -134,4 +159,47 @@ Status code 200
   "pageNumber": 1,
   "pageCount": 2,
   "totalCount": 15
+}
+
+## Логика фоновой обработки
+1. бронирование создаётся и помещается в очередь запросом POST /events/{id}/book в состоянии Pending
+2. сервис периодически опрашивает хранилище на наличие бронирований в статусе Pending;
+3. для каждой необработанной брони бронь переводится в статус Confirmed и заполняется поле ProcessedAt
+4. обновлённая бронь сохраняется в хранилище.
+5. проверить состояние бронирования можно запросом GET /booking/{id}
+
+### Пример запроса бронирования события
+POST /events/0e50af9a-a09a-473a-95df-f2c187d5c2cb/book
+
+#### Ответ
+Status code 202
+{
+  "id": "52c5779f-d4a6-4600-aef4-1670bae62207",
+  "eventId": "0e50af9a-a09a-473a-95df-f2c187d5c2cb",
+  "status": 0,
+  "createdAt": "2026-05-15T23:06:43.594218+03:00",
+  "processedAt": null
+}
+
+### Пример запроса проверки бронирования
+GET /booking/52c5779f-d4a6-4600-aef4-1670bae62207
+
+#### Ответ ожидания обработки
+Status code 200
+{
+  "id": "52c5779f-d4a6-4600-aef4-1670bae62207",
+  "eventId": "0e50af9a-a09a-473a-95df-f2c187d5c2cb",
+  "status": 0,
+  "createdAt": "2026-05-15T23:06:43.594218+03:00",
+  "processedAt": null
+}
+
+#### Ответ подтверждённого бронирования
+Status code 200
+{
+  "id": "52c5779f-d4a6-4600-aef4-1670bae62207",
+  "eventId": "0e50af9a-a09a-473a-95df-f2c187d5c2cb",
+  "status": 1,
+  "createdAt": "2026-05-15T23:06:43.594218+03:00",
+  "processedAt": "2026-05-15T23:06:46.3624755+03:00"
 }
