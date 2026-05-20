@@ -32,6 +32,13 @@ namespace LearningWebApi.Models.Requests
         public DateTime? EndAt { get; set; }
 
         /// <summary>
+        /// Общее количество мест на событии
+        /// </summary>
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Количество мест должно быть больше нуля")]
+        public int TotalSeats { get; set; }
+
+        /// <summary>
         /// Валидация
         /// </summary>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

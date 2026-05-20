@@ -14,7 +14,9 @@ namespace LearningWebApi.Entities.Factories
             Title = data.Title,
             Description = data.Description,
             StartAt = data.StartAt!.Value,
-            EndAt = data.EndAt!.Value
+            EndAt = data.EndAt!.Value,
+            TotalSeats = data.TotalSeats,
+            AvailableSeats = data.AvailableSeats,
         };
 
         internal static EventResponse ToEventRespose(this Event data) => new()
@@ -23,7 +25,9 @@ namespace LearningWebApi.Entities.Factories
             Title = data.Title,
             Description = data.Description,
             StartAt = data.StartAt,
-            EndAt = data.EndAt
+            EndAt = data.EndAt,
+            TotalSeats = data.TotalSeats,
+            AvailableSeats = data.AvailableSeats ?? data.TotalSeats, // TODO костыль обновления и слабо описанного тз
         };
     }
 }

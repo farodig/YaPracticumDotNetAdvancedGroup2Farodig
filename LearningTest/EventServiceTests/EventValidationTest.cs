@@ -6,16 +6,19 @@ namespace LearningTest.EventServiceTests
     public class EventValidationTest
     {
         [Theory(DisplayName = "создание события с некорректными данными")]
-        [InlineData("", -1, 1, nameof(CreateEventRequest.Title))]
-        [InlineData("incorrectStart", -1, 1, nameof(CreateEventRequest.StartAt))]
-        [InlineData("incorrectBothDate", 1, -1, nameof(CreateEventRequest.EndAt))]
-        public void CreateEventFailTest(string title, int diffStart, int diffEnd, string memberName)
+        [InlineData("", -1, 1, 10, nameof(CreateEventRequest.Title))]
+        [InlineData("incorrectStart", -1, 1, 10, nameof(CreateEventRequest.StartAt))]
+        [InlineData("incorrectBothDate", 1, -1, 10, nameof(CreateEventRequest.EndAt))]
+        [InlineData("totalSeatsZero", -1, 1, 0, nameof(CreateEventRequest.TotalSeats))]
+        [InlineData("totalSeatsNegative", -1, 1, -1, nameof(CreateEventRequest.TotalSeats))]
+        public void CreateEventFailTest(string title, int diffStart, int diffEnd, int totalSeats, string memberName)
         {
             var request = new CreateEventRequest
             {
                 Title = title,
                 StartAt = DateTime.Now.AddHours(diffStart),
                 EndAt = DateTime.Now.AddHours(diffEnd),
+                TotalSeats = totalSeats,
             };
             var validationContext = new ValidationContext(request);
             var validationResults = new List<ValidationResult>();

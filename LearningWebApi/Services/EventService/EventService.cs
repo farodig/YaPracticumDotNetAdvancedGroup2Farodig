@@ -18,10 +18,10 @@ namespace LearningWebApi.Services.EventService
             return item;
         }
 
-        public Event CreateEvent(string title, DateTime startAt, DateTime endAt, string? description = null)
+        public Event CreateEvent(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null)
         {
             var id = Guid.NewGuid();
-            
+
             return _repository[id] = new Event()
             {
                 Id = id,
@@ -29,6 +29,8 @@ namespace LearningWebApi.Services.EventService
                 Description = description,
                 StartAt = startAt,
                 EndAt = endAt,
+                TotalSeats = totalSeats,
+                AvailableSeats = totalSeats,
             };
         }
 
@@ -38,6 +40,12 @@ namespace LearningWebApi.Services.EventService
             {
                 return false;
             }
+
+            // Очевидный костыль если при обновлении не передали значение значит не меняем,
+            // в ТЗ отсутствует информация об обнолении но чётко уазано что AvailableSeats опциональный,
+            // а так же в ТЗ на этапе 2 опустились до названий объектов,
+            // которые по очевидным причинам у меня отличаются поэтому задание можно не однозначно понять
+            item.AvailableSeats ??= oldValue.AvailableSeats;
 
             _repository.TryUpdate(item.Id, item, oldValue);
             return true;

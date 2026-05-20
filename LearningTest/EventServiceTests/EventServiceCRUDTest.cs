@@ -14,14 +14,22 @@ namespace LearningTest.EventServiceTests
                 StartAt = DateTime.Now,
                 EndAt = DateTime.Now,
                 Description = "ToCreateDescription",
+                TotalSeats = 10,
+                AvailableSeats = 10,
             };
             var actual = CreateEventService()
-                .CreateEvent(expected.Title, expected.StartAt, expected.EndAt, expected.Description);
+                .CreateEvent(expected.Title,
+                expected.StartAt,
+                expected.EndAt,
+                expected.TotalSeats,
+                expected.Description);
 
             Assert.Equal(expected.Title, actual.Title);
             Assert.Equal(expected.StartAt, actual.StartAt);
             Assert.Equal(expected.EndAt, actual.EndAt);
             Assert.Equal(expected.Description, actual.Description);
+            Assert.Equal(expected.TotalSeats, actual.TotalSeats);
+            Assert.Equal(expected.AvailableSeats, actual.AvailableSeats);
         }
 
         [Fact(DisplayName = "получение всех событий")]
@@ -90,6 +98,8 @@ namespace LearningTest.EventServiceTests
                 StartAt = DateTime.Now,
                 EndAt = DateTime.Now,
                 Description = "BeforeUpdateDescription",
+                TotalSeats = 10,
+                AvailableSeats = 5,
             };
             var updated = new Event
             {
@@ -98,6 +108,8 @@ namespace LearningTest.EventServiceTests
                 StartAt = DateTime.Now,
                 EndAt = DateTime.Now,
                 Description = "AfterUpdateDescription",
+                TotalSeats = 11,
+                AvailableSeats = 6,
             };
             Assert.True(CreateEventService(toUpdate)
                 .TryUpdateEvent(updated));

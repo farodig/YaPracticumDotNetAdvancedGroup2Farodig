@@ -25,7 +25,8 @@ namespace LearningWebApi.Services.EventService
         /// <param name="startAt">Время начала события</param>
         /// <param name="endAt">Время окончания события</param>
         /// <param name="description">Описание события</param>
-        Event CreateEvent(string title, DateTime startAt, DateTime endAt, string? description = null);
+        /// <param name="totalSeats">Общее количество мест на событии</param>
+        Event CreateEvent(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null);
 
         /// <summary>
         /// Обновить существующее событие

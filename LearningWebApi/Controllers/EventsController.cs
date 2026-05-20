@@ -83,6 +83,7 @@ namespace LearningWebApi.Controllers
                 data.Title,
                 data.StartAt!.Value,
                 data.EndAt!.Value,
+                data.TotalSeats,
                 data.Description)
                 .ToEventRespose();
 
