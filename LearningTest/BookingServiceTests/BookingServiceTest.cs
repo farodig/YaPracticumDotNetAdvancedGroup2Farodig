@@ -93,27 +93,29 @@ namespace LearningTest.BookingServiceTests
                 .Setup(repo => repo.TryGetValue(@event.Id, out @event))
                 .Returns(true);
 
+            mockEventRepository
+                .Setup(repo => repo.ContainsKey(@event.Id))
+                .Returns(true);
+
             var bookingRepository = new BookingRepository();
             var bookingService = CreateBookingService(bookingRepository, mockEventRepository.Object);
-            using (var bookingProcessor = new BookingProcessor(bookingRepository))
-            {
-                var booking = bookingService.CreateBooking(@event.Id);
-                Assert.NotNull(booking);
-                Assert.Equal(BookingStatus.Pending, booking.Status);
+            using var bookingProcessor = new BookingProcessor(bookingRepository, mockEventRepository.Object);
+            var booking = bookingService.CreateBooking(@event.Id);
+            Assert.NotNull(booking);
+            Assert.Equal(BookingStatus.Pending, booking.Status);
 
-                booking = bookingService.GetBookingById(booking.Id);
-                Assert.NotNull(booking);
-                Assert.Equal(BookingStatus.Pending, booking.Status);
+            booking = bookingService.GetBookingById(booking.Id);
+            Assert.NotNull(booking);
+            Assert.Equal(BookingStatus.Pending, booking.Status);
 
-                await bookingProcessor.StartAsync(CancellationToken.None);
-                await Task.Delay(TimeSpan.FromSeconds(3));
+            await bookingProcessor.StartAsync(CancellationToken.None);
+            await Task.Delay(TimeSpan.FromSeconds(3));
 
-                booking = bookingService.GetBookingById(booking.Id);
-                Assert.NotNull(booking);
-                Assert.Equal(BookingStatus.Confirmed, booking.Status);
+            booking = bookingService.GetBookingById(booking.Id);
+            Assert.NotNull(booking);
+            Assert.Equal(BookingStatus.Confirmed, booking.Status);
 
-                await bookingProcessor.StopAsync(CancellationToken.None);
-            }
+            await bookingProcessor.StopAsync(CancellationToken.None);
         }
 
         [Fact(DisplayName = "создание брони для несуществующего события")]
