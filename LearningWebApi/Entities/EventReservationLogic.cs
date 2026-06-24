@@ -16,7 +16,7 @@
                     return false;
                 }
 
-                AvailableSeats += count;
+                AvailableSeats -= count;
                 return true;
             }
         }

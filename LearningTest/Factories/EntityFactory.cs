@@ -10,6 +10,12 @@ namespace LearningTest.Factories
             Title = title,
         };
 
+        public static Event CreateEventAvailableSeats(int AvailableSeats) => new()
+        {
+            Id = Guid.NewGuid(),
+            AvailableSeats = AvailableSeats,
+        };
+
         public static Event CreateEventStartAt(DateTime startAt) => new()
         {
             Id = Guid.NewGuid(),

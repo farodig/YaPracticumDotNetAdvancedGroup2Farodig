@@ -56,6 +56,7 @@ namespace LearningWebApi.Middlewares
                     break;
 
                 case KeyNotFoundException:
+                case NotFoundException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5";
                     problemDetails.Status = StatusCodes.Status404NotFound;
                     problemDetails.Title = "Resource Not Found";

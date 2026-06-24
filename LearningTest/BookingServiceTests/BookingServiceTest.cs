@@ -1,4 +1,5 @@
 ﻿using LearningWebApi.Entities;
+using LearningWebApi.Exceptions;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using Moq;
@@ -14,11 +15,7 @@ namespace LearningTest.BookingServiceTests
         {
             var mockEventRepository = new Mock<IEventRepository>();
 
-            var @event = new Event()
-            {
-                Id = Guid.NewGuid(),
-                AvailableSeats = 1,
-            };
+            var @event = CreateEventAvailableSeats(1);
 
             mockEventRepository
                 .Setup(repo => repo.TryGetValue(@event.Id, out @event))
@@ -27,33 +24,21 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
             var booking = bookingService.CreateBooking(@event.Id);
 
-            Assert.NotNull(booking);
             Assert.Equal(@event.Id, booking.EventId);
             Assert.Equal(BookingStatus.Pending, booking.Status);
         }
 
-        [Fact(DisplayName = "создание нескольких броней для одного события — все создаются с уникальными Id")]
-        public async Task CreateBookingTheSameEventTest()
+        [Fact(DisplayName = "Создание нескольких броней (до лимита) — все успешны, у каждой уникальный Id")]
+        public async Task CreateFewBookingsTest()
         {
-            var mockEventRepository = new Mock<IEventRepository>();
+            var eventRepository = new EventRepository() as IEventRepository;
 
-            var @event = new Event()
-            {
-                Id = Guid.NewGuid(),
-                AvailableSeats = 1,
-            };
+            var @event = CreateEventAvailableSeats(2);
+            eventRepository.Add(@event.Id, @event);
 
-            mockEventRepository
-                .Setup(repo => repo.TryGetValue(@event.Id, out @event))
-                .Returns(true);
-
-            var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
-
+            var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
             var booking1 = bookingService.CreateBooking(@event.Id);
             var booking2 = bookingService.CreateBooking(@event.Id);
-
-            Assert.NotNull(booking1);
-            Assert.NotNull(booking2);
 
             Assert.Equal(@event.Id, booking1.EventId);
             Assert.Equal(@event.Id, booking2.EventId);
@@ -83,11 +68,7 @@ namespace LearningTest.BookingServiceTests
         {
             // Создаём мок-объект события
             var mockEventRepository = new Mock<IEventRepository>();
-            var @event = new Event()
-            {
-                Id = Guid.NewGuid(),
-                AvailableSeats = 1,
-            };
+            var @event = CreateEventAvailableSeats(1);
 
             mockEventRepository
                 .Setup(repo => repo.TryGetValue(@event.Id, out @event))
@@ -101,7 +82,6 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingService(bookingRepository, mockEventRepository.Object);
             using var bookingProcessor = new BookingProcessor(bookingRepository, mockEventRepository.Object);
             var booking = bookingService.CreateBooking(@event.Id);
-            Assert.NotNull(booking);
             Assert.Equal(BookingStatus.Pending, booking.Status);
 
             booking = bookingService.GetBookingById(booking.Id);
@@ -118,12 +98,11 @@ namespace LearningTest.BookingServiceTests
             await bookingProcessor.StopAsync(CancellationToken.None);
         }
 
-        [Fact(DisplayName = "создание брони для несуществующего события")]
-        public async Task CreateBookingForNotExistedEventTest()
+        [Fact(DisplayName = "Бронирование для несуществующего события → NotFoundException")]
+        public async Task CreateBookingNotFoundExceptionTest()
         {
             var bookingService = CreateBookingService();
-            var booking = bookingService.CreateBooking(Guid.NewGuid());
-            Assert.Null(booking);
+            Assert.Throws<EventNotFoundException>(() => bookingService.CreateBooking(Guid.NewGuid()));
         }
 
         [Fact(DisplayName = "создание брони для удалённого события")]
@@ -139,8 +118,7 @@ namespace LearningTest.BookingServiceTests
             Assert.True(eventRepository.TryRemove(@event.Id, out _));
             Assert.False(eventRepository.ContainsKey(@event.Id));
 
-            var booking = bookingService.CreateBooking(@event.Id);
-            Assert.Null(booking);
+            Assert.Throws<EventNotFoundException>(() => bookingService.CreateBooking(@event.Id));
         }
 
         [Fact(DisplayName = "получение брони по несуществующему Id")]
@@ -150,5 +128,34 @@ namespace LearningTest.BookingServiceTests
             var booking = bookingService.GetBookingById(Guid.NewGuid());
             Assert.Null(booking);
         }
+
+        [Fact(DisplayName = "Создание брони уменьшает AvailableSeats на 1")]
+        public async Task CreateBookingDecreaseAvailableSeatsByOneTest()
+        {
+            var eventRepository = new EventRepository() as IEventRepository;
+
+            var expectedAvailableSeats = 2;
+            var @event = CreateEventAvailableSeats(expectedAvailableSeats + 1);
+            eventRepository.Add(@event.Id, @event);
+
+            CreateBookingServiceWithEventRepository(eventRepository)
+                .CreateBooking(@event.Id);
+
+            Assert.Equal(expectedAvailableSeats, @event.AvailableSeats);
+        }
+
+        [Fact(DisplayName = "Бронирование при отсутствии|исчерпании мест → NoAvailableSeatsException")]
+        public async Task CreateBookingNoAvailableSeatsExceptionTest()
+        {
+            var eventRepository = new EventRepository() as IEventRepository;
+
+            var @event = CreateEventAvailableSeats(0);
+            eventRepository.Add(@event.Id, @event);
+
+            var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
+
+            Assert.Throws<NoAvailableSeatsException>(() => bookingService.CreateBooking(@event.Id));
+        }
     }
+
 }

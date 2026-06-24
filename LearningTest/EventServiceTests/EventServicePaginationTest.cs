@@ -6,8 +6,8 @@ namespace LearningTest.EventServiceTests
 {
     public class EventServicePaginationTest
     {
-        private IEnumerable<Event> _randomData;
-        private IEventService _eventService;
+        private readonly IEnumerable<Event> _randomData;
+        private readonly IEventService _eventService;
 
         public EventServicePaginationTest()
         {
@@ -21,7 +21,7 @@ namespace LearningTest.EventServiceTests
                     .AddSeconds(rnd.Next(1, 60));
             }
 
-            _randomData = Enumerable.Range(1, 100)
+            _randomData = [.. Enumerable.Range(1, 100)
                 .Select(i => new Event
                 {
                     Id = Guid.NewGuid(),
@@ -29,8 +29,7 @@ namespace LearningTest.EventServiceTests
                     StartAt = GetRandomDate(),
                     EndAt = GetRandomDate(),
                     Description = $"Random description {i}"
-                })
-                .ToList();
+                })];
             _eventService = CreateEventService(_randomData);
         }
 

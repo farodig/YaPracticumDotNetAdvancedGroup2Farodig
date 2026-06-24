@@ -13,12 +13,12 @@ namespace LearningWebApi.Services.BookingService
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly Lock _bookingLock = new();
 
-        public Booking? CreateBooking(Guid eventId)
+        public Booking CreateBooking(Guid eventId)
         {
             lock (_bookingLock)
             {
                 // Получить событие из хранилища
-                if (!_eventRepository.TryGetValue(eventId, out Event? @event) || @event is null) return null;
+                if (!_eventRepository.TryGetValue(eventId, out Event? @event) || @event is null) throw new EventNotFoundException();
 
                 // Проверить на наличие свободных незарегистрированных мест
                 if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
