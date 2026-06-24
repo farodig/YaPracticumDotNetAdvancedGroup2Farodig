@@ -13,16 +13,22 @@ namespace LearningTest.BookingServiceTests
         public async Task CreateBookingTest()
         {
             var mockEventRepository = new Mock<IEventRepository>();
-            var expectedEventId = Guid.NewGuid();
+
+            var @event = new Event()
+            {
+                Id = Guid.NewGuid(),
+                AvailableSeats = 1,
+            };
+
             mockEventRepository
-                .Setup(repo => repo.ContainsKey(expectedEventId))
+                .Setup(repo => repo.TryGetValue(@event.Id, out @event))
                 .Returns(true);
 
             var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
-            var booking = bookingService.CreateBooking(expectedEventId);
+            var booking = bookingService.CreateBooking(@event.Id);
 
             Assert.NotNull(booking);
-            Assert.Equal(expectedEventId, booking.EventId);
+            Assert.Equal(@event.Id, booking.EventId);
             Assert.Equal(BookingStatus.Pending, booking.Status);
         }
 
@@ -30,21 +36,27 @@ namespace LearningTest.BookingServiceTests
         public async Task CreateBookingTheSameEventTest()
         {
             var mockEventRepository = new Mock<IEventRepository>();
-            var expectedEventId = Guid.NewGuid();
+
+            var @event = new Event()
+            {
+                Id = Guid.NewGuid(),
+                AvailableSeats = 1,
+            };
+
             mockEventRepository
-                .Setup(repo => repo.ContainsKey(expectedEventId))
+                .Setup(repo => repo.TryGetValue(@event.Id, out @event))
                 .Returns(true);
 
             var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
 
-            var booking1 = bookingService.CreateBooking(expectedEventId);
-            var booking2 = bookingService.CreateBooking(expectedEventId);
+            var booking1 = bookingService.CreateBooking(@event.Id);
+            var booking2 = bookingService.CreateBooking(@event.Id);
 
             Assert.NotNull(booking1);
             Assert.NotNull(booking2);
 
-            Assert.Equal(expectedEventId, booking1.EventId);
-            Assert.Equal(expectedEventId, booking2.EventId);
+            Assert.Equal(@event.Id, booking1.EventId);
+            Assert.Equal(@event.Id, booking2.EventId);
 
             Assert.NotEqual(booking1.Id, booking2.Id);
         }
@@ -71,16 +83,21 @@ namespace LearningTest.BookingServiceTests
         {
             // Создаём мок-объект события
             var mockEventRepository = new Mock<IEventRepository>();
-            var expectedEventId = Guid.NewGuid();
+            var @event = new Event()
+            {
+                Id = Guid.NewGuid(),
+                AvailableSeats = 1,
+            };
+
             mockEventRepository
-                .Setup(repo => repo.ContainsKey(expectedEventId))
+                .Setup(repo => repo.TryGetValue(@event.Id, out @event))
                 .Returns(true);
 
             var bookingRepository = new BookingRepository();
             var bookingService = CreateBookingService(bookingRepository, mockEventRepository.Object);
             using (var bookingProcessor = new BookingProcessor(bookingRepository))
             {
-                var booking = bookingService.CreateBooking(expectedEventId);
+                var booking = bookingService.CreateBooking(@event.Id);
                 Assert.NotNull(booking);
                 Assert.Equal(BookingStatus.Pending, booking.Status);
 

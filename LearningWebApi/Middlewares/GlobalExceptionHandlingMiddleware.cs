@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LearningWebApi.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -33,7 +34,7 @@ namespace LearningWebApi.Middlewares
             }
         }
 
-        private ProblemDetails CreateProblemDetails(HttpContext context, Exception ex)
+        private static ProblemDetails CreateProblemDetails(HttpContext context, Exception ex)
         {
             var problemDetails = new ProblemDetails();
             problemDetails.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
@@ -47,7 +48,7 @@ namespace LearningWebApi.Middlewares
                     problemDetails.Detail = ex.Message;
                     break;
 
-                case InvalidOperationException invalidOpEx:
+                case InvalidOperationException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
                     problemDetails.Status = StatusCodes.Status400BadRequest;
                     problemDetails.Title = "Invalid Operation";
@@ -60,6 +61,14 @@ namespace LearningWebApi.Middlewares
                     problemDetails.Title = "Resource Not Found";
                     problemDetails.Detail = ex.Message;
                     break;
+
+                case NoAvailableSeatsException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.10";
+                    problemDetails.Status = StatusCodes.Status409Conflict;
+                    problemDetails.Title = "Booking conflict";
+                    problemDetails.Detail = ex.Message;
+                    break;
+
                 default:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1";
                     problemDetails.Status = StatusCodes.Status500InternalServerError;

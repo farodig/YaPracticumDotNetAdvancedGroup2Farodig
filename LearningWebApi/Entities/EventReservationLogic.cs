@@ -2,7 +2,7 @@
 {
     public partial class Event
     {
-        private readonly object availableSeatsLocker = new();
+        private readonly Lock availableSeatsLocker = new();
 
         /// <summary>
         /// Резервируем места на событие
@@ -27,6 +27,7 @@
         public void ReleaseSeats(int count = 1)
         {
             // TODO; на будущее, при отклонении брони
+            throw new NotImplementedException("Освобождение мест");
         }
     }
 }

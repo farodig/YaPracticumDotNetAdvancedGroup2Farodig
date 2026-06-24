@@ -24,6 +24,7 @@ namespace LearningWebApi.Controllers
         /// <response code="404">Событие не найдено</response>
         [HttpPost("/events/{id}/book")]
         [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status202Accepted, "application/json")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
             if (_bookingService.CreateBooking(id) is not Booking item)

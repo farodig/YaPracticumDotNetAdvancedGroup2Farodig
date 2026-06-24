@@ -5,7 +5,7 @@ namespace LearningWebApi.Services.EventService
 {
     internal class EventService(IEventRepository repository) : IEventService
     {
-        private IEventRepository _repository = repository;
+        private readonly IEventRepository _repository = repository;
 
         public IEnumerable<Event> GetEvents()
         {
