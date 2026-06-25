@@ -1,10 +1,14 @@
 ﻿using LearningWebApi.Entities;
-using LearningWebApi.Repositories;
 
 namespace LearningTest.Factories
 {
     internal static class EntityFactory
     {
+        public static Event CreateEvent() => new()
+        {
+            Id = Guid.NewGuid(),
+        };
+
         public static Event CreateEventTitle(string title) => new()
         {
             Id = Guid.NewGuid(),
@@ -16,13 +20,6 @@ namespace LearningTest.Factories
             Id = Guid.NewGuid(),
             AvailableSeats = AvailableSeats,
         };
-
-        public static Event CreateEventAvailableSeats(this IEventRepository repository, int AvailableSeats = 1)
-        {
-            var @event = CreateEventAvailableSeats(AvailableSeats);
-            repository[@event.Id] = @event;
-            return @event;
-        }
 
         public static Event CreateEventStartAt(DateTime startAt) => new()
         {
@@ -43,6 +40,11 @@ namespace LearningTest.Factories
             StartAt = startAt,
             EndAt = endAt,
             Description = description,
+        };
+
+        public static Booking CreateBooking() => new()
+        {
+            Id = Guid.NewGuid(),
         };
     }
 }

@@ -2,6 +2,7 @@
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
+using static LearningTest.Factories.RepositoryFactory;
 
 namespace LearningTest.Factories
 {
@@ -16,33 +17,32 @@ namespace LearningTest.Factories
         /// </summary>
         public static IEventService CreateEventService(params IEnumerable<Event> events)
         {
-            var eventRepository = new EventRepository() as IEventRepository;
-            foreach (var item in events)
-            {
-                eventRepository.Add(item.Id, item);
-            }
+            var eventRepository = CreateEventRepository(events);
             return new EventService(eventRepository);
         }
 
-        public static IBookingService CreateBookingServiceWithEventRepository(IEventRepository? eventRepository = null)
+        public static IBookingService CreateBookingService()
         {
-            var _bookingRepository = new BookingRepository() as IBookingRepository;
-            var _eventRepository = eventRepository ?? new EventRepository() as IEventRepository;
-            return new BookingService(_eventRepository, _bookingRepository);
+            var bookingRepository = CreateBookingRepository();
+            var eventRepository = CreateEventRepository();
+            return new BookingService(eventRepository, bookingRepository);
         }
 
-        public static IBookingService CreateBookingServiceWithBookingRepository(IBookingRepository? bookingRepository = null)
+        public static IBookingService CreateBookingService(IEventRepository eventRepository)
         {
-            var _bookingRepository = bookingRepository ?? new BookingRepository() as IBookingRepository;
-            var _eventRepository = new EventRepository() as IEventRepository;
-            return new BookingService(_eventRepository, _bookingRepository);
+            var bookingRepository = CreateBookingRepository();
+            return new BookingService(eventRepository, bookingRepository);
         }
 
-        public static IBookingService CreateBookingService(IBookingRepository? bookingRepository = null, IEventRepository? eventRepository = null)
+        public static IBookingService CreateBookingService(IBookingRepository bookingRepository)
         {
-            var _bookingRepository = bookingRepository ?? new BookingRepository() as IBookingRepository;
-            var _eventRepository = eventRepository ?? new EventRepository() as IEventRepository;
-            return new BookingService(_eventRepository, _bookingRepository);
+            var eventRepository = CreateEventRepository();
+            return new BookingService(eventRepository, bookingRepository);
+        }
+
+        public static IBookingService CreateBookingService(IBookingRepository bookingRepository, IEventRepository eventRepository)
+        {
+            return new BookingService(eventRepository, bookingRepository);
         }
     }
 }
