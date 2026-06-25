@@ -14,8 +14,7 @@ namespace LearningTest.BookingServiceTests
         public async Task CreateBookingTest()
         {
             var mockEventRepository = new Mock<IEventRepository>();
-
-            var @event = CreateEventAvailableSeats(1);
+            var @event = CreateEventAvailableSeats();
 
             mockEventRepository
                 .Setup(repo => repo.TryGetValue(@event.Id, out @event))
@@ -31,10 +30,8 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Создание нескольких броней (до лимита) — все успешны, у каждой уникальный Id")]
         public async Task CreateFewBookingsTest()
         {
-            var eventRepository = new EventRepository() as IEventRepository;
-
-            var @event = CreateEventAvailableSeats(2);
-            eventRepository.Add(@event.Id, @event);
+            var eventRepository = new EventRepository();
+            var @event = eventRepository.CreateEventAvailableSeats(2);
 
             var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
             var booking1 = bookingService.CreateBooking(@event.Id);
@@ -68,7 +65,7 @@ namespace LearningTest.BookingServiceTests
         {
             // Создаём мок-объект события
             var mockEventRepository = new Mock<IEventRepository>();
-            var @event = CreateEventAvailableSeats(1);
+            var @event = CreateEventAvailableSeats();
 
             mockEventRepository
                 .Setup(repo => repo.TryGetValue(@event.Id, out @event))
@@ -132,11 +129,10 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Создание брони уменьшает AvailableSeats на 1")]
         public async Task CreateBookingDecreaseAvailableSeatsByOneTest()
         {
-            var eventRepository = new EventRepository() as IEventRepository;
-
             var expectedAvailableSeats = 2;
-            var @event = CreateEventAvailableSeats(expectedAvailableSeats + 1);
-            eventRepository.Add(@event.Id, @event);
+
+            var eventRepository = new EventRepository();
+            var @event = eventRepository.CreateEventAvailableSeats(expectedAvailableSeats + 1);
 
             CreateBookingServiceWithEventRepository(eventRepository)
                 .CreateBooking(@event.Id);
@@ -147,10 +143,8 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Бронирование при отсутствии|исчерпании мест → NoAvailableSeatsException")]
         public async Task CreateBookingNoAvailableSeatsExceptionTest()
         {
-            var eventRepository = new EventRepository() as IEventRepository;
-
-            var @event = CreateEventAvailableSeats(0);
-            eventRepository.Add(@event.Id, @event);
+            var eventRepository = new EventRepository();
+            var @event = eventRepository.CreateEventAvailableSeats(0);
 
             var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
 
