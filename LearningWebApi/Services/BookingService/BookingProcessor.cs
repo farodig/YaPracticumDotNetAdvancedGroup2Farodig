@@ -37,24 +37,34 @@ namespace LearningWebApi.Services.BookingService
 
         public async Task ProcessBookingAsync(Booking data, CancellationToken stoppingToken)
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
             try
             {
                 await _processingSemaphore.WaitAsync(stoppingToken);
 
-                if (_eventRepository.ContainsKey(data.EventId))
-                {
-                    ConfirmBooking(data);
-                    _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
-                }
-                else
+                if (!_eventRepository.TryGetValue(data.EventId, out Event? @event)
+                    || @event is null)
                 {
                     RejectBooking(data);
-                    _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
+                    SaveData(data);
+                    return;
                 }
 
-                SaveData(data);
+                try
+                {
+                    ConfirmBooking(data);
+                    SaveData(data);
+                }
+                catch (Exception cef)
+                {
+                    _logger.Error(cef);
+                    RejectBooking(data);
+                    SaveData(data);
+
+                    @event!.ReleaseSeats();
+                    SaveData(@event);
+                }
             }
             finally
             {
@@ -62,21 +72,31 @@ namespace LearningWebApi.Services.BookingService
             }
         }
 
-        private static void ConfirmBooking(Booking data)
+
+        private void ConfirmBooking(Booking data)
         {
             data.Status = BookingStatus.Confirmed;
             data.ProcessedAt = DateTime.Now;
+            _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
         }
 
-        private static void RejectBooking(Booking data)
+        private void RejectBooking(Booking data)
         {
             data.Status = BookingStatus.Rejected;
             data.ProcessedAt = DateTime.Now;
+            _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
         }
 
         private void SaveData(Booking data)
         {
             _bookingRepository[data.Id] = data;
+            _bookingRepository.SaveData();
+        }
+
+        private void SaveData(Event data)
+        {
+            _eventRepository[data.Id] = data;
+            _eventRepository.SaveData();
         }
     }
 }

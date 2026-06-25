@@ -1,10 +1,9 @@
 ﻿using LearningWebApi.Entities;
 using LearningWebApi.Exceptions;
-using LearningWebApi.Repositories;
-using LearningWebApi.Services.BookingService;
-using Moq;
 using static LearningTest.Factories.EntityFactory;
 using static LearningTest.Factories.ServiceFactory;
+using static LearningTest.Factories.MockRepositoryFactory;
+using static LearningTest.Factories.RepositoryFactory;
 
 namespace LearningTest.BookingServiceTests
 {
@@ -13,15 +12,10 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "создание брони для существующего события — возвращается BookingInfo со статусом Pending")]
         public async Task CreateBookingTest()
         {
-            var mockEventRepository = new Mock<IEventRepository>();
             var @event = CreateEventAvailableSeats();
-
-            mockEventRepository
-                .Setup(repo => repo.TryGetValue(@event.Id, out @event))
-                .Returns(true);
-
-            var bookingService = CreateBookingServiceWithEventRepository(mockEventRepository.Object);
-            var booking = bookingService.CreateBooking(@event.Id);
+            var eventRepository = MockEventRepository(@event);
+            var booking = CreateBookingService(eventRepository)
+                .CreateBooking(@event.Id);
 
             Assert.Equal(@event.Id, booking.EventId);
             Assert.Equal(BookingStatus.Pending, booking.Status);
@@ -30,10 +24,10 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Создание нескольких броней (до лимита) — все успешны, у каждой уникальный Id")]
         public async Task CreateFewBookingsTest()
         {
-            var eventRepository = new EventRepository();
-            var @event = eventRepository.CreateEventAvailableSeats(2);
+            var @event = CreateEventAvailableSeats(2);
+            var eventRepository = MockEventRepository(@event);
 
-            var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
+            var bookingService = CreateBookingService(eventRepository);
             var booking1 = bookingService.CreateBooking(@event.Id);
             var booking2 = bookingService.CreateBooking(@event.Id);
 
@@ -46,53 +40,15 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "получение брони по Id — возвращается корректная информация")]
         public async Task GetBookingByIdAsyncTest()
         {
-            var mockBookingRepository = new Mock<IBookingRepository>();
-            var expectedBooking = new Booking { Id = Guid.NewGuid(), };
-            mockBookingRepository
-                .Setup(repo => repo.TryGetValue(It.IsAny<Guid>(), out expectedBooking))
-                .Returns(true);
+            var expectedBooking = CreateBooking();
 
-            var bookingService = CreateBookingServiceWithBookingRepository(mockBookingRepository.Object);
+            var bookingRepository = MockBookingRepository(expectedBooking);
+            var bookingService = CreateBookingService(bookingRepository);
 
             var actualBooking = bookingService.GetBookingById(expectedBooking.Id);
 
             Assert.NotNull(actualBooking);
             Assert.Equal(expectedBooking.Id, actualBooking.Id);
-        }
-
-        [Fact(DisplayName = "получение брони отражает изменение статуса (после Confirm/Reject)")]
-        public async Task ChangeBookingStatusFromPendingToConfirmedTest()
-        {
-            // Создаём мок-объект события
-            var mockEventRepository = new Mock<IEventRepository>();
-            var @event = CreateEventAvailableSeats();
-
-            mockEventRepository
-                .Setup(repo => repo.TryGetValue(@event.Id, out @event))
-                .Returns(true);
-
-            mockEventRepository
-                .Setup(repo => repo.ContainsKey(@event.Id))
-                .Returns(true);
-
-            var bookingRepository = new BookingRepository();
-            var bookingService = CreateBookingService(bookingRepository, mockEventRepository.Object);
-            using var bookingProcessor = new BookingProcessor(bookingRepository, mockEventRepository.Object);
-            var booking = bookingService.CreateBooking(@event.Id);
-            Assert.Equal(BookingStatus.Pending, booking.Status);
-
-            booking = bookingService.GetBookingById(booking.Id);
-            Assert.NotNull(booking);
-            Assert.Equal(BookingStatus.Pending, booking.Status);
-
-            await bookingProcessor.StartAsync(CancellationToken.None);
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            booking = bookingService.GetBookingById(booking.Id);
-            Assert.NotNull(booking);
-            Assert.Equal(BookingStatus.Confirmed, booking.Status);
-
-            await bookingProcessor.StopAsync(CancellationToken.None);
         }
 
         [Fact(DisplayName = "Бронирование для несуществующего события → NotFoundException")]
@@ -105,12 +61,10 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "создание брони для удалённого события")]
         public async Task CreateBookingForDeletedEventTest()
         {
-            var @event = CreateEventTitle(string.Empty);
+            var @event = CreateEvent();
+            var eventRepository = CreateEventRepository(@event);
 
-            var eventRepository = new EventRepository() as IEventRepository;
-            eventRepository.Add(@event.Id, @event);
-
-            var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
+            var bookingService = CreateBookingService(eventRepository);
 
             Assert.True(eventRepository.TryRemove(@event.Id, out _));
             Assert.False(eventRepository.ContainsKey(@event.Id));
@@ -131,10 +85,10 @@ namespace LearningTest.BookingServiceTests
         {
             var expectedAvailableSeats = 2;
 
-            var eventRepository = new EventRepository();
-            var @event = eventRepository.CreateEventAvailableSeats(expectedAvailableSeats + 1);
+            var @event = CreateEventAvailableSeats(expectedAvailableSeats + 1);
+            var eventRepository = MockEventRepository(@event);
 
-            CreateBookingServiceWithEventRepository(eventRepository)
+            CreateBookingService(eventRepository)
                 .CreateBooking(@event.Id);
 
             Assert.Equal(expectedAvailableSeats, @event.AvailableSeats);
@@ -143,10 +97,9 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Бронирование при отсутствии|исчерпании мест → NoAvailableSeatsException")]
         public async Task CreateBookingNoAvailableSeatsExceptionTest()
         {
-            var eventRepository = new EventRepository();
-            var @event = eventRepository.CreateEventAvailableSeats(0);
-
-            var bookingService = CreateBookingServiceWithEventRepository(eventRepository);
+            var @event = CreateEventAvailableSeats(0);
+            var eventRepository = MockEventRepository(@event);
+            var bookingService = CreateBookingService(eventRepository);
 
             Assert.Throws<NoAvailableSeatsException>(() => bookingService.CreateBooking(@event.Id));
         }

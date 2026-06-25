@@ -26,8 +26,15 @@
         /// </summary>
         public void ReleaseSeats(int count = 1)
         {
-            // TODO; на будущее, при отклонении брони
-            throw new NotImplementedException("Освобождение мест");
+            lock (availableSeatsLocker)
+            {
+                AvailableSeats += count;
+
+                if (AvailableSeats > TotalSeats)
+                {
+                    AvailableSeats = TotalSeats;
+                }
+            }
         }
     }
 }
