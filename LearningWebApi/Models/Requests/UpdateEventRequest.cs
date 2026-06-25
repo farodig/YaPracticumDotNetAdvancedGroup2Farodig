@@ -42,7 +42,7 @@ namespace LearningWebApi.Models.Requests
         public int TotalSeats { get; set; }
 
         /// <summary>
-        /// Текущее количество свободных мест;
+        /// Текущее количество свободных мест
         /// </summary>
         public int? AvailableSeats { get; set; }
 
