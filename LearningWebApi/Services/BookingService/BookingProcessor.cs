@@ -37,7 +37,7 @@ namespace LearningWebApi.Services.BookingService
 
         public async Task ProcessBookingAsync(Booking data, CancellationToken stoppingToken)
         {
-            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
             try
             {

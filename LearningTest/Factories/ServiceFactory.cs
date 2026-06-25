@@ -2,6 +2,7 @@
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
+using Microsoft.Extensions.Hosting;
 using static LearningTest.Factories.RepositoryFactory;
 
 namespace LearningTest.Factories
@@ -43,6 +44,14 @@ namespace LearningTest.Factories
         public static IBookingService CreateBookingService(IBookingRepository bookingRepository, IEventRepository eventRepository)
         {
             return new BookingService(eventRepository, bookingRepository);
+        }
+
+        internal static async Task<BackgroundService> CreateBookingProcessor(IBookingRepository bookingRepository, IEventRepository eventRepository)
+        {
+            var processor = new BookingProcessor(bookingRepository, eventRepository);
+            await processor.StartAsync(CancellationToken.None);
+
+            return processor;
         }
     }
 }
