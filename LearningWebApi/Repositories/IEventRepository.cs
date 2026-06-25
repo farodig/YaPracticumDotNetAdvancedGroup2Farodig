@@ -17,5 +17,10 @@ namespace LearningWebApi.Repositories
         /// Удалить событие
         /// </summary>
         bool TryRemove(Guid key, [MaybeNullWhen(false)] out Event deleted);
+
+        /// <summary>
+        /// Сохранить данные в репозитории
+        /// </summary>
+        void SaveData();
     }
 }
