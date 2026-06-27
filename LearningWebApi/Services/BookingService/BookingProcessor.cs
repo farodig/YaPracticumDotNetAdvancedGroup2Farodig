@@ -1,12 +1,12 @@
 ﻿using LearningWebApi.Entities;
-using LearningWebApi.Repositories;
+using LearningWebApi.Services.EventService;
 using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
-    internal class BookingProcessor(IBookingService bookingService, IEventRepository eventRepository) : BackgroundService
+    internal class BookingProcessor(IBookingService bookingService, IEventService eventService) : BackgroundService
     {
-        private readonly IEventRepository _eventRepository = eventRepository;
+        private readonly IEventService _eventService = eventService;
         private readonly IBookingService _bookingService = bookingService;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
@@ -36,7 +36,7 @@ namespace LearningWebApi.Services.BookingService
                 // Имитация внешнего вызова
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
-                var hasEvent = _eventRepository.Get(data.EventId) is null;
+                var hasEvent = _eventService.GetEvent(data.EventId) is not null;
 
                 await _processingSemaphore.WaitAsync(stoppingToken);
 

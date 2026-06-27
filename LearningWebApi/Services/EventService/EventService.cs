@@ -15,8 +15,7 @@ namespace LearningWebApi.Services.EventService
 
         public Event? GetEvent(Guid id)
         {
-            var item = _repository.Get(id);
-            return item;
+            return _repository.Get(id);
         }
 
         public Event CreateEvent(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null)
