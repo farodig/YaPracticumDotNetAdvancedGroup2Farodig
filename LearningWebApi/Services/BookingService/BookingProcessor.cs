@@ -4,10 +4,10 @@ using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
-    internal class BookingProcessor(IBookingRepository bookingRepository, IEventRepository eventRepository) : BackgroundService
+    internal class BookingProcessor(IBookingService bookingService, IEventRepository eventRepository) : BackgroundService
     {
         private readonly IEventRepository _eventRepository = eventRepository;
-        private readonly IBookingRepository _bookingRepository = bookingRepository;
+        private readonly IBookingService _bookingService = bookingService;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
@@ -15,7 +15,7 @@ namespace LearningWebApi.Services.BookingService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var pendingBookings = GetPending()
+                var pendingBookings = _bookingService.GetPending()
                     .ToList();
 
                 var tasks = pendingBookings
@@ -28,75 +28,32 @@ namespace LearningWebApi.Services.BookingService
             }
         }
 
-        private IEnumerable<Booking> GetPending()
-        {
-            return _bookingRepository.Select(a => a.Value)
-                .Where(a => a.Status == BookingStatus.Pending)
-                .OrderBy(a => a.CreatedAt);
-        }
-
         public async Task ProcessBookingAsync(Booking data, CancellationToken stoppingToken)
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-
             try
             {
                 await _processingSemaphore.WaitAsync(stoppingToken);
 
-                if (!_eventRepository.TryGetValue(data.EventId, out Event? @event)
-                    || @event is null)
+                if (_eventRepository.GetEvent(data.EventId) is null)
                 {
-                    RejectBooking(data);
-                    SaveData(data);
+                    _bookingService.RejectBooking(data);
                     return;
                 }
 
                 try
                 {
-                    ConfirmBooking(data);
-                    SaveData(data);
+                    _bookingService.ConfirmBooking(data);
                 }
                 catch (Exception cef)
                 {
                     _logger.Error(cef);
-                    RejectBooking(data);
-                    SaveData(data);
-
-                    @event!.ReleaseSeats();
-                    SaveData(@event);
+                    _bookingService.RejectBooking(data);
                 }
             }
             finally
             {
                 _processingSemaphore.Release();
             }
-        }
-
-
-        private void ConfirmBooking(Booking data)
-        {
-            data.Status = BookingStatus.Confirmed;
-            data.ProcessedAt = DateTime.Now;
-            _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
-        }
-
-        private void RejectBooking(Booking data)
-        {
-            data.Status = BookingStatus.Rejected;
-            data.ProcessedAt = DateTime.Now;
-            _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
-        }
-
-        private void SaveData(Booking data)
-        {
-            _bookingRepository[data.Id] = data;
-            _bookingRepository.SaveData();
-        }
-
-        private void SaveData(Event data)
-        {
-            _eventRepository[data.Id] = data;
-            _eventRepository.SaveData();
         }
     }
 }

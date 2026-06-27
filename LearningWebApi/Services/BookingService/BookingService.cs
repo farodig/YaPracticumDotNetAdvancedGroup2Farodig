@@ -1,14 +1,14 @@
 ﻿using LearningWebApi.Entities;
 using LearningWebApi.Entities.Factories;
-using LearningWebApi.Exceptions;
 using LearningWebApi.Repositories;
+using LearningWebApi.Services.EventService;
 using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
-    internal class BookingService(IEventRepository eventRepository, IBookingRepository bookingRepository) : IBookingService
+    internal class BookingService(IEventService eventService, IBookingRepository bookingRepository) : IBookingService
     {
-        private readonly IEventRepository _eventRepository = eventRepository;
+        private readonly IEventService _eventService = eventService;
         private readonly IBookingRepository _bookingRepository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly Lock _bookingLock = new();
@@ -17,14 +17,7 @@ namespace LearningWebApi.Services.BookingService
         {
             lock (_bookingLock)
             {
-                // Получить событие из хранилища
-                if (!_eventRepository.TryGetValue(eventId, out Event? @event) || @event is null) throw new EventNotFoundException();
-
-                // Проверить на наличие свободных незарегистрированных мест
-                if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
-
-                // Обновляем событие в репозитории TODO: сейчас в этом нет смысла, т. к. хранится в памяти, а в будущем контракт метода изменится)
-                _eventRepository.TryUpdate(eventId, @event, @event);
+                _eventService.ReserveSeat(eventId);
 
                 // Создать бронь
                 var booking = BookingFactory.CreateBooking(eventId);
@@ -38,6 +31,31 @@ namespace LearningWebApi.Services.BookingService
         {
             _bookingRepository.TryGetValue(id, out Booking? item);
             return item;
+        }
+
+        public IEnumerable<Booking> GetPending()
+        {
+            return _bookingRepository.Select(a => a.Value)
+                .Where(a => a.Status == BookingStatus.Pending)
+                .OrderBy(a => a.CreatedAt);
+        }
+
+        public void ConfirmBooking(Booking data)
+        {
+            data.Status = BookingStatus.Confirmed;
+            data.ProcessedAt = DateTime.Now;
+            _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
+            _bookingRepository[data.Id] = data;
+        }
+
+        public void RejectBooking(Booking data)
+        {
+            data.Status = BookingStatus.Rejected;
+            data.ProcessedAt = DateTime.Now;
+            _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
+            _bookingRepository[data.Id] = data;
+
+            _eventService.ReleaseSeat(data.EventId);
         }
     }
 }

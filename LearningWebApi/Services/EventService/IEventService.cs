@@ -41,5 +41,15 @@ namespace LearningWebApi.Services.EventService
         /// <param name="id">Идентификатор события</param>
         /// <returns>true если удалось совершить действие над событием, false если событие не найдено</returns>
         bool TryDeleteEvent(Guid id);
+
+        /// <summary>
+        /// Зарезерировать место на событии
+        /// </summary>
+        void ReserveSeat(Guid id);
+
+        /// <summary>
+        /// Освободить место на событии
+        /// </summary>
+        void ReleaseSeat(Guid id);
     }
 }

@@ -19,6 +19,7 @@ namespace LearningTest.Factories
         {
             Id = Guid.NewGuid(),
             AvailableSeats = AvailableSeats,
+            TotalSeats = AvailableSeats,
         };
 
         public static Event CreateEventStartAt(DateTime startAt) => new()

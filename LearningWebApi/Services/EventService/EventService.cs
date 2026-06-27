@@ -1,4 +1,5 @@
 ﻿using LearningWebApi.Entities;
+using LearningWebApi.Exceptions;
 using LearningWebApi.Repositories;
 
 namespace LearningWebApi.Services.EventService
@@ -14,7 +15,7 @@ namespace LearningWebApi.Services.EventService
 
         public Event? GetEvent(Guid id)
         {
-            _repository.TryGetValue(id, out Event? item);
+            var item = _repository.GetEvent(id);
             return item;
         }
 
@@ -36,7 +37,7 @@ namespace LearningWebApi.Services.EventService
 
         public bool TryUpdateEvent(Event item)
         {
-            if (!_repository.TryGetValue(item.Id, out Event? oldValue))
+            if (_repository.GetEvent(item.Id) is not Event oldValue)
             {
                 return false;
             }
@@ -60,6 +61,30 @@ namespace LearningWebApi.Services.EventService
 
             _repository.TryRemove(id, out _);
             return true;
+        }
+
+        public void ReserveSeat(Guid id)
+        {
+            // Получить событие из хранилища
+            if (_repository.GetEvent(id) is not Event @event) throw new EventNotFoundException();
+
+            // Проверить на наличие свободных незарегистрированных мест
+            if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
+
+            // Обновляем событие в репозитории TODO: сейчас в этом нет смысла, т. к. хранится в памяти, а в будущем контракт метода изменится)
+            _repository.TryUpdate(id, @event, @event);
+        }
+
+        public void ReleaseSeat(Guid id)
+        {
+            if (_repository.GetEvent(id) is not Event @event)
+            {
+                // Событие может быть удалено
+                return;
+            }
+
+            @event.ReleaseSeats();
+            _repository[id] = @event;
         }
     }
 }

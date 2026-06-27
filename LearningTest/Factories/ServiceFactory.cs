@@ -12,43 +12,44 @@ namespace LearningTest.Factories
     /// </summary>
     public static class ServiceFactory
     {
-        /// <summary>
-        /// Создание сервиса событий с подготовленными данными для тестов
-        /// использование moq пока что супер избыточно (написание тестов ради тестов|кода ради кода)
-        /// </summary>
+        public static IEventService CreateEventService(IEventRepository repository)
+        {
+            return new EventService(repository);
+        }
+
         public static IEventService CreateEventService(params IEnumerable<Event> events)
         {
             var eventRepository = CreateEventRepository(events);
-            return new EventService(eventRepository);
+            return CreateEventService(eventRepository);
         }
 
         public static IBookingService CreateBookingService()
         {
             var bookingRepository = CreateBookingRepository();
-            var eventRepository = CreateEventRepository();
-            return new BookingService(eventRepository, bookingRepository);
+            var eventService = CreateEventService();
+            return new BookingService(eventService, bookingRepository);
         }
 
-        public static IBookingService CreateBookingService(IEventRepository eventRepository)
+        public static IBookingService CreateBookingService(IEventService eventService)
         {
             var bookingRepository = CreateBookingRepository();
-            return new BookingService(eventRepository, bookingRepository);
+            return new BookingService(eventService, bookingRepository);
         }
 
         public static IBookingService CreateBookingService(IBookingRepository bookingRepository)
         {
-            var eventRepository = CreateEventRepository();
-            return new BookingService(eventRepository, bookingRepository);
+            var eventService = CreateEventService();
+            return new BookingService(eventService, bookingRepository);
         }
 
-        public static IBookingService CreateBookingService(IBookingRepository bookingRepository, IEventRepository eventRepository)
+        public static IBookingService CreateBookingService(IBookingRepository bookingRepository, IEventService eventService)
         {
-            return new BookingService(eventRepository, bookingRepository);
+            return new BookingService(eventService, bookingRepository);
         }
 
-        internal static async Task<BackgroundService> CreateBookingProcessor(IBookingRepository bookingRepository, IEventRepository eventRepository)
+        internal static async Task<BackgroundService> CreateBookingProcessor(IBookingService bookingService, IEventRepository eventRepository)
         {
-            var processor = new BookingProcessor(bookingRepository, eventRepository);
+            var processor = new BookingProcessor(bookingService, eventRepository);
             await processor.StartAsync(CancellationToken.None);
 
             return processor;

@@ -16,5 +16,20 @@ namespace LearningWebApi.Services.BookingService
         /// получение брони по идентификатору
         /// </summary>
         public Booking? GetBookingById(Guid bookingId);
+
+        /// <summary>
+        /// Получить необработанные бронирования
+        /// </summary>
+        IEnumerable<Booking> GetPending();
+
+        /// <summary>
+        /// Подтвердить бронь
+        /// </summary>
+        void ConfirmBooking(Booking data);
+
+        /// <summary>
+        /// Отклонить бронь
+        /// </summary>
+        void RejectBooking(Booking data);
     }
 }

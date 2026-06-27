@@ -7,9 +7,5 @@ namespace LearningWebApi.Repositories
     /// </summary>
     public interface IBookingRepository : IDictionary<Guid, Booking>
     {
-        /// <summary>
-        /// Сохранить данные в репозитории
-        /// </summary>
-        void SaveData();
     }
 }

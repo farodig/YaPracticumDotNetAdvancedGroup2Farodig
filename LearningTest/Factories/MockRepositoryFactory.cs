@@ -13,8 +13,8 @@ namespace LearningTest.Factories
             {
                 var item = items[i];
                 mockRepository
-                    .Setup(repo => repo.TryGetValue(item.Id, out item))
-                    .Returns(true);
+                    .Setup(repo => repo.GetEvent(item.Id))
+                    .Returns(item);
 
                 mockRepository
                     .Setup(repo => repo.ContainsKey(item.Id))

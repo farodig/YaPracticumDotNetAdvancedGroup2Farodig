@@ -5,9 +5,10 @@ namespace LearningWebApi.Repositories
 {
     internal class EventRepository : ConcurrentDictionary<Guid, Event>, IEventRepository
     {
-        public void SaveData()
+        public Event? GetEvent(Guid eventId)
         {
-            // заглушка для БД всё в памяти, сохранять не нужно!
+            TryGetValue(eventId, out Event? @event);
+            return @event;
         }
     }
 }

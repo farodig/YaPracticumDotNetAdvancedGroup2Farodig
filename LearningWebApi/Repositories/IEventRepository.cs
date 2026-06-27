@@ -9,6 +9,11 @@ namespace LearningWebApi.Repositories
     public interface IEventRepository : IDictionary<Guid, Event>
     {
         /// <summary>
+        /// Получить событие по идентификатору
+        /// </summary>
+        Event? GetEvent(Guid eventId);
+
+        /// <summary>
         /// Обновить событие
         /// </summary>
         bool TryUpdate(Guid key, Event newValue, Event oldValue);
@@ -17,10 +22,5 @@ namespace LearningWebApi.Repositories
         /// Удалить событие
         /// </summary>
         bool TryRemove(Guid key, [MaybeNullWhen(false)] out Event deleted);
-
-        /// <summary>
-        /// Сохранить данные в репозитории
-        /// </summary>
-        void SaveData();
     }
 }
