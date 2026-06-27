@@ -177,6 +177,8 @@ namespace LearningTest.BookingServiceTests
         // Дано: событие на 5 мест, 20 конкурентных запросов
         // Ожидается: ровно 5 успешных броней, 15 — NoAvailableSeatsException
         [InlineData(5, 20, 5, 15)]
+        // AvailableSeats == 0 после гонки - это усилит покрытие.
+        [InlineData(0, 20, 0, 20)]
         public async Task OverbookingProtectionTest(int available, int concurrent,
             int expectedConfirmed, int expectedException)
         {

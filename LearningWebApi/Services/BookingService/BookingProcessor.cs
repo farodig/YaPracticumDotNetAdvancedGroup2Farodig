@@ -33,17 +33,23 @@ namespace LearningWebApi.Services.BookingService
         {
             try
             {
-                await _processingSemaphore.WaitAsync(stoppingToken);
+                // Имитация внешнего вызова
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
-                if (_eventRepository.Get(data.EventId) is null)
-                {
-                    _bookingService.RejectBooking(data);
-                    return;
-                }
+                var hasEvent = _eventRepository.Get(data.EventId) is null;
+
+                await _processingSemaphore.WaitAsync(stoppingToken);
 
                 try
                 {
-                    _bookingService.ConfirmBooking(data);
+                    if (hasEvent)
+                    {
+                        _bookingService.ConfirmBooking(data);
+                    }
+                    else
+                    {
+                        _bookingService.RejectBooking(data);
+                    }
                 }
                 catch (Exception cef)
                 {
