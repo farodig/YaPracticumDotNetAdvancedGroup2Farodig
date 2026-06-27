@@ -41,18 +41,5 @@ namespace LearningTest.Factories
             var eventService = CreateEventService();
             return new BookingService(eventService, bookingRepository);
         }
-
-        public static IBookingService CreateBookingService(IBookingRepository bookingRepository, IEventService eventService)
-        {
-            return new BookingService(eventService, bookingRepository);
-        }
-
-        internal static async Task<BackgroundService> CreateBookingProcessor(IBookingService bookingService, IEventRepository eventRepository)
-        {
-            var processor = new BookingProcessor(bookingService, eventRepository);
-            await processor.StartAsync(CancellationToken.None);
-
-            return processor;
-        }
     }
 }
