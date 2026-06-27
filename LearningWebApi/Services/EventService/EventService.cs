@@ -23,7 +23,7 @@ namespace LearningWebApi.Services.EventService
         {
             var id = Guid.NewGuid();
 
-            return _repository[id] = new Event()
+            var item = new Event()
             {
                 Id = id,
                 Title = title,
@@ -33,22 +33,19 @@ namespace LearningWebApi.Services.EventService
                 TotalSeats = totalSeats,
                 AvailableSeats = totalSeats,
             };
+            _repository.CreateOrUpdate(item);
+
+            return item;
         }
 
         public bool TryUpdateEvent(Event item)
         {
-            if (_repository.GetEvent(item.Id) is not Event oldValue)
+            if (_repository.GetEvent(item.Id) is null)
             {
                 return false;
             }
 
-            // Очевидный костыль если при обновлении не передали значение значит не меняем,
-            // в ТЗ отсутствует информация об обнолении но чётко уазано что AvailableSeats опциональный,
-            // а так же в ТЗ на этапе 2 опустились до названий объектов,
-            // которые по очевидным причинам у меня отличаются поэтому задание можно не однозначно понять
-            item.AvailableSeats ??= oldValue.AvailableSeats;
-
-            _repository.TryUpdate(item.Id, item, oldValue);
+            _repository.CreateOrUpdate(item);
             return true;
         }
 
@@ -72,7 +69,7 @@ namespace LearningWebApi.Services.EventService
             if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
 
             // Обновляем событие в репозитории TODO: сейчас в этом нет смысла, т. к. хранится в памяти, а в будущем контракт метода изменится)
-            _repository.TryUpdate(id, @event, @event);
+            _repository.CreateOrUpdate(@event);
         }
 
         public void ReleaseSeat(Guid id)
@@ -84,7 +81,8 @@ namespace LearningWebApi.Services.EventService
             }
 
             @event.ReleaseSeats();
-            _repository[id] = @event;
+
+            _repository.CreateOrUpdate(@event);
         }
     }
 }

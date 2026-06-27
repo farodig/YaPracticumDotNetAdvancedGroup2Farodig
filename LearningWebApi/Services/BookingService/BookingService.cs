@@ -17,6 +17,7 @@ namespace LearningWebApi.Services.BookingService
         {
             lock (_bookingLock)
             {
+                // TODO: по хорошему следует вынести за пределы lock (_bookingLock), но в ТЗ говорит резервировать места нужно с двойной блокировкой
                 _eventService.ReserveSeat(eventId);
 
                 // Создать бронь

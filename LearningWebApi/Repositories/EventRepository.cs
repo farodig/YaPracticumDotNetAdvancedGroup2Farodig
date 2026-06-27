@@ -10,5 +10,18 @@ namespace LearningWebApi.Repositories
             TryGetValue(eventId, out Event? @event);
             return @event;
         }
+
+        public void CreateOrUpdate(Event item)
+        {
+            var id = item.Id;
+            if (TryGetValue(id, out Event? oldItem))
+            {
+                TryUpdate(id, item, oldItem);
+            }
+            else
+            {
+                TryAdd(id, item);
+            }
+        }
     }
 }

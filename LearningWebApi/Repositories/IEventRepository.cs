@@ -16,7 +16,7 @@ namespace LearningWebApi.Repositories
         /// <summary>
         /// Обновить событие
         /// </summary>
-        bool TryUpdate(Guid key, Event newValue, Event oldValue);
+        void CreateOrUpdate(Event item);
 
         /// <summary>
         /// Удалить событие

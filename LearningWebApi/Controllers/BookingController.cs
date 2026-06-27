@@ -22,6 +22,7 @@ namespace LearningWebApi.Controllers
         /// <param name="id">Идентификатор события</param>
         /// <response code="202">Бронирование в обработке</response>
         /// <response code="404">Событие не найдено</response>
+        /// <response code="409">Конфликт бронирования мест события</response>
         [HttpPost("/events/{id}/book")]
         [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status202Accepted, "application/json")]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
