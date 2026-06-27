@@ -42,10 +42,9 @@ namespace LearningWebApi.Controllers
 
             return Ok(new PaginatedResult
             {
-                Items = filteredEvents
+                Items = [.. filteredEvents
                 .Pagination(page, pageSize)
-                .Select(EventFactory.ToEventRespose)
-                .ToList(),
+                .Select(EventFactory.ToEventRespose)],
                 PageNumber = page,
                 TotalCount = filteredEvents.Count(),
             });
@@ -83,6 +82,7 @@ namespace LearningWebApi.Controllers
                 data.Title,
                 data.StartAt!.Value,
                 data.EndAt!.Value,
+                data.TotalSeats,
                 data.Description)
                 .ToEventRespose();
 

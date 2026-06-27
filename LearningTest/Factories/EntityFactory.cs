@@ -4,10 +4,22 @@ namespace LearningTest.Factories
 {
     internal static class EntityFactory
     {
+        public static Event CreateEvent() => new()
+        {
+            Id = Guid.NewGuid(),
+        };
+
         public static Event CreateEventTitle(string title) => new()
         {
             Id = Guid.NewGuid(),
             Title = title,
+        };
+
+        public static Event CreateEventAvailableSeats(int AvailableSeats = 1) => new()
+        {
+            Id = Guid.NewGuid(),
+            AvailableSeats = AvailableSeats,
+            TotalSeats = AvailableSeats,
         };
 
         public static Event CreateEventStartAt(DateTime startAt) => new()
@@ -29,6 +41,11 @@ namespace LearningTest.Factories
             StartAt = startAt,
             EndAt = endAt,
             Description = description,
+        };
+
+        public static Booking CreateBooking() => new()
+        {
+            Id = Guid.NewGuid(),
         };
     }
 }

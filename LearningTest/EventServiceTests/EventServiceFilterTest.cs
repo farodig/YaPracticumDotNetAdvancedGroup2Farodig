@@ -21,19 +21,19 @@ namespace LearningTest.EventServiceTests
             var actual = eventService.GetEvents().FilterByTitle("To").OrderBy(a => a.Id).ToArray();
             Assert.Equal(expected, actual);
 
-            actual = eventService.GetEvents().FilterByTitle("title").OrderBy(a => a.Id).ToArray();
+            actual = [.. eventService.GetEvents().FilterByTitle("title").OrderBy(a => a.Id)];
             Assert.Equal(expected, actual);
 
             expected = [toCreateTitle];
-            actual = eventService.GetEvents().FilterByTitle("create").ToArray();
+            actual = [.. eventService.GetEvents().FilterByTitle("create")];
             Assert.Equal(expected, actual);
 
             expected = [toUpdateTitle];
-            actual = eventService.GetEvents().FilterByTitle("update").ToArray();
+            actual = [.. eventService.GetEvents().FilterByTitle("update")];
             Assert.Equal(expected, actual);
 
-            expected = new[] { toCreateTitle, toUpdateTitle }.OrderBy(a => a.Id).ToArray();
-            actual = eventService.GetEvents().FilterByTitle("ate").OrderBy(a => a.Id).ToArray();
+            expected = [.. new[] { toCreateTitle, toUpdateTitle }.OrderBy(a => a.Id)];
+            actual = [.. eventService.GetEvents().FilterByTitle("ate").OrderBy(a => a.Id)];
             Assert.Equal(expected, actual);
         }
 

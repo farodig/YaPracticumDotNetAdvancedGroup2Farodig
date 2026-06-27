@@ -1,11 +1,12 @@
 ﻿using LearningWebApi.Entities;
+using LearningWebApi.Exceptions;
 using LearningWebApi.Repositories;
 
 namespace LearningWebApi.Services.EventService
 {
     internal class EventService(IEventRepository repository) : IEventService
     {
-        private IEventRepository _repository = repository;
+        private readonly IEventRepository _repository = repository;
 
         public IEnumerable<Event> GetEvents()
         {
@@ -14,32 +15,36 @@ namespace LearningWebApi.Services.EventService
 
         public Event? GetEvent(Guid id)
         {
-            _repository.TryGetValue(id, out Event? item);
-            return item;
+            return _repository.Get(id);
         }
 
-        public Event CreateEvent(string title, DateTime startAt, DateTime endAt, string? description = null)
+        public Event CreateEvent(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null)
         {
             var id = Guid.NewGuid();
-            
-            return _repository[id] = new Event()
+
+            var item = new Event()
             {
                 Id = id,
                 Title = title,
                 Description = description,
                 StartAt = startAt,
                 EndAt = endAt,
+                TotalSeats = totalSeats,
+                AvailableSeats = totalSeats,
             };
+            _repository.CreateOrUpdate(item);
+
+            return item;
         }
 
         public bool TryUpdateEvent(Event item)
         {
-            if (!_repository.TryGetValue(item.Id, out Event? oldValue))
+            if (_repository.Get(item.Id) is null)
             {
                 return false;
             }
 
-            _repository.TryUpdate(item.Id, item, oldValue);
+            _repository.CreateOrUpdate(item);
             return true;
         }
 
@@ -50,8 +55,35 @@ namespace LearningWebApi.Services.EventService
                 return false;
             }
 
-            _repository.TryRemove(id, out _);
+            _repository.Remove(id);
             return true;
+        }
+
+        public void ReserveSeat(Guid id)
+        {
+            // Получить событие из хранилища
+            if (_repository.Get(id) is not Event @event) throw new EventNotFoundException();
+
+            // Попытка зарезервировать свободное место
+            if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
+
+            // Сохранить в репозитории
+            _repository.CreateOrUpdate(@event);
+        }
+
+        public void ReleaseSeat(Guid id)
+        {
+            if (_repository.Get(id) is not Event @event)
+            {
+                // Событие может быть удалено
+                return;
+            }
+
+            // Освободить зарезервированное место
+            @event.ReleaseSeats();
+
+            // Сохранить в репозитории
+            _repository.CreateOrUpdate(@event);
         }
     }
 }
