@@ -177,7 +177,7 @@ namespace LearningTest.BookingServiceTests
         // Дано: событие на 5 мест, 20 конкурентных запросов
         // Ожидается: ровно 5 успешных броней, 15 — NoAvailableSeatsException
         [InlineData(5, 20, 5, 15)]
-        public async Task OverbookingProtectionTest(int available, int conccurrent,
+        public async Task OverbookingProtectionTest(int available, int concurrent,
             int expectedConfirmed, int expectedException)
         {
             var @event = CreateEventAvailableSeats(available);
@@ -185,22 +185,28 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            var actualException = 0;
-            var actualBooking = 0;
-            for (int i = 0; i < conccurrent; i++)
+            Func<Guid, bool> TryCreateBooking = (Guid eventId) =>
             {
                 try
                 {
-                    bookingService.CreateBooking(@event.Id);
-                    actualBooking++;
+                    bookingService.CreateBooking(eventId);
+                    return true;
                 }
                 catch (NoAvailableSeatsException)
                 {
-                    actualException++;
+                    return false;
                 }
-            }
+            };
 
-            Assert.Equal(expectedConfirmed, actualBooking);
+            var concurrentTask = Enumerable.Repeat(0, concurrent)
+                .Select(_ => Task.Run(() => TryCreateBooking(@event.Id)));
+
+            var (actualConfirmed, actualException) = (await Task.WhenAll(concurrentTask)).Aggregate((Success: 0, Failure: 0),
+                (acc, x) => x
+                ? (acc.Success + 1, acc.Failure)
+                : (acc.Success, acc.Failure + 1));
+
+            Assert.Equal(expectedConfirmed, actualConfirmed);
             Assert.Equal(expectedException, actualException);
         }
 
@@ -208,20 +214,20 @@ namespace LearningTest.BookingServiceTests
         //Дано: событие на 10 мест, 10 одновременных запросов.
         //Ожидается: 10 броней с уникальными Id.
         [InlineData(10, 10, 10)]
-        public async Task UniquenessIdCompetitiveQueriesTest(int available, int conccurrent, int expected)
+        public async Task UniquenessIdCompetitiveQueriesTest(int available, int concurrent, int expected)
         {
             var @event = CreateEventAvailableSeats(available);
             var eventRepository = MockEventRepository(@event);
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            HashSet<Guid> bookingIds = [];
-            for (int i = 0; i < conccurrent; i++)
-            {
-                bookingIds.Add(bookingService.CreateBooking(@event.Id).Id);
-            }
+            var concurrentTask = Enumerable.Range(0, concurrent)
+                .Select(_ => Task.Run(() => bookingService.CreateBooking(@event.Id)));
 
-            var actual = bookingIds.Count;
+            var actual = (await Task.WhenAll(concurrentTask))
+                .Select(a => a.Id).ToHashSet()
+                .Count;
+
             Assert.Equal(expected, actual);
         }
     }
