@@ -1,5 +1,4 @@
 ﻿using LearningWebApi.Entities;
-using System.Diagnostics.CodeAnalysis;
 
 namespace LearningWebApi.Repositories
 {
@@ -11,16 +10,16 @@ namespace LearningWebApi.Repositories
         /// <summary>
         /// Получить событие по идентификатору
         /// </summary>
-        Event? GetEvent(Guid eventId);
+        Event? Get(Guid id);
 
         /// <summary>
-        /// Обновить событие
+        /// Создать или обновить событие
         /// </summary>
         void CreateOrUpdate(Event item);
 
         /// <summary>
         /// Удалить событие
         /// </summary>
-        bool TryRemove(Guid key, [MaybeNullWhen(false)] out Event deleted);
+        new void Remove(Guid id);
     }
 }

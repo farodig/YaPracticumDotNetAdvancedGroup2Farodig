@@ -5,9 +5,9 @@ namespace LearningWebApi.Repositories
 {
     internal class EventRepository : ConcurrentDictionary<Guid, Event>, IEventRepository
     {
-        public Event? GetEvent(Guid eventId)
+        public Event? Get(Guid id)
         {
-            TryGetValue(eventId, out Event? @event);
+            TryGetValue(id, out Event? @event);
             return @event;
         }
 
@@ -22,6 +22,11 @@ namespace LearningWebApi.Repositories
             {
                 TryAdd(id, item);
             }
+        }
+
+        public void Remove(Guid id)
+        {
+            TryRemove(id, out _);
         }
     }
 }

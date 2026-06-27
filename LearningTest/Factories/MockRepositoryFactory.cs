@@ -13,7 +13,7 @@ namespace LearningTest.Factories
             {
                 var item = items[i];
                 mockRepository
-                    .Setup(repo => repo.GetEvent(item.Id))
+                    .Setup(repo => repo.Get(item.Id))
                     .Returns(item);
 
                 mockRepository
@@ -29,14 +29,10 @@ namespace LearningTest.Factories
             var mockRepository = new Mock<IBookingRepository>();
             for (int i = 0; i < items.Length; i++)
             {
-                var @event = items[i];
+                var item = items[i];
                 mockRepository
-                    .Setup(repo => repo.TryGetValue(@event.Id, out @event))
-                    .Returns(true);
-
-                //mockRepository
-                //    .Setup(repo => repo.ContainsKey(@event.Id))
-                //    .Returns(true);
+                    .Setup(repo => repo.Get(item.Id))
+                    .Returns(item);
             }
 
             return mockRepository.Object;

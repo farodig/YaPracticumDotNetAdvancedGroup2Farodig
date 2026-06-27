@@ -9,7 +9,7 @@ namespace LearningWebApi.Services.BookingService
     internal class BookingService(IEventService eventService, IBookingRepository bookingRepository) : IBookingService
     {
         private readonly IEventService _eventService = eventService;
-        private readonly IBookingRepository _bookingRepository = bookingRepository;
+        private readonly IBookingRepository _repository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly Lock _bookingLock = new();
 
@@ -22,7 +22,7 @@ namespace LearningWebApi.Services.BookingService
 
                 // Создать бронь
                 var booking = BookingFactory.CreateBooking(eventId);
-                _bookingRepository.Add(booking.Id, booking);
+                _repository.CreateOrUpdate(booking);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking;
             }
@@ -30,13 +30,17 @@ namespace LearningWebApi.Services.BookingService
 
         public Booking? GetBookingById(Guid id)
         {
-            _bookingRepository.TryGetValue(id, out Booking? item);
-            return item;
+            return _repository.Get(id);
+        }
+
+        public void CancelBooking(Guid bookingId)
+        {
+            _repository.Remove(bookingId);
         }
 
         public IEnumerable<Booking> GetPending()
         {
-            return _bookingRepository.Select(a => a.Value)
+            return _repository.Select(a => a.Value)
                 .Where(a => a.Status == BookingStatus.Pending)
                 .OrderBy(a => a.CreatedAt);
         }
@@ -46,7 +50,7 @@ namespace LearningWebApi.Services.BookingService
             data.Status = BookingStatus.Confirmed;
             data.ProcessedAt = DateTime.Now;
             _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
-            _bookingRepository[data.Id] = data;
+            _repository.CreateOrUpdate(data);
         }
 
         public void RejectBooking(Booking data)
@@ -54,7 +58,7 @@ namespace LearningWebApi.Services.BookingService
             data.Status = BookingStatus.Rejected;
             data.ProcessedAt = DateTime.Now;
             _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
-            _bookingRepository[data.Id] = data;
+            _repository.CreateOrUpdate(data);
 
             _eventService.ReleaseSeat(data.EventId);
         }

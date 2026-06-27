@@ -60,7 +60,7 @@ namespace LearningTest.BookingServiceTests
             Assert.Throws<EventNotFoundException>(() => bookingService.CreateBooking(Guid.NewGuid()));
         }
 
-        [Fact(DisplayName = "создание брони для удалённого события")]
+        [Fact(DisplayName = "Создание брони для удалённого события")]
         public async Task CreateBookingForDeletedEventTest()
         {
             var @event = CreateEvent();
@@ -69,7 +69,7 @@ namespace LearningTest.BookingServiceTests
 
             var bookingService = CreateBookingService(eventService);
 
-            Assert.True(eventRepository.TryRemove(@event.Id, out _));
+            Assert.True(eventService.TryDeleteEvent(@event.Id));
             Assert.False(eventRepository.ContainsKey(@event.Id));
 
             Assert.Throws<EventNotFoundException>(() => bookingService.CreateBooking(@event.Id));
@@ -86,16 +86,19 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Создание брони уменьшает AvailableSeats на 1")]
         public async Task CreateBookingDecreaseAvailableSeatsByOneTest()
         {
-            var expectedAvailableSeats = 2;
+            var initialSeats = 2;
 
-            var @event = CreateEventAvailableSeats(expectedAvailableSeats + 1);
+            var @event = CreateEventAvailableSeats(initialSeats);
             var eventRepository = MockEventRepository(@event);
             var eventService = CreateEventService(eventRepository);
+            var bookingService = CreateBookingService(eventService);
 
-            CreateBookingService(eventService)
-                .CreateBooking(@event.Id);
-
-            Assert.Equal(expectedAvailableSeats, @event.AvailableSeats);
+            // Бронируем пока есть места
+            for (int expected = initialSeats; expected > 0;)
+            {
+                bookingService.CreateBooking(@event.Id);
+                Assert.Equal(--expected, @event.AvailableSeats);
+            }
         }
 
         [Fact(DisplayName = "Бронирование при отсутствии|исчерпании мест → NoAvailableSeatsException")]

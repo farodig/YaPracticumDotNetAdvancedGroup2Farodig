@@ -18,6 +18,11 @@ namespace LearningWebApi.Services.BookingService
         public Booking? GetBookingById(Guid bookingId);
 
         /// <summary>
+        /// Отменить бронирование
+        /// </summary>
+        public void CancelBooking(Guid bookingId);
+
+        /// <summary>
         /// Получить необработанные бронирования
         /// </summary>
         IEnumerable<Booking> GetPending();

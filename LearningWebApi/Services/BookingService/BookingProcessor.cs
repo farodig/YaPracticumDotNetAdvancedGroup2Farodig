@@ -15,14 +15,15 @@ namespace LearningWebApi.Services.BookingService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Добавляем задержку в случае отсутствия задач, чтобы не зависало
+                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+
                 var pendingBookings = _bookingService.GetPending()
                     .ToList();
 
                 var tasks = pendingBookings
                     // Добавляем задачи по обработки брони
-                    .Select(booking => ProcessBookingAsync(booking, stoppingToken))
-                    // Добавляем задержку в случае отсутствия задач, чтобы не зависало
-                    .Append(Task.Delay(TimeSpan.FromSeconds(2), stoppingToken));
+                    .Select(booking => ProcessBookingAsync(booking, stoppingToken));
 
                 await Task.WhenAll(tasks);
             }
@@ -34,7 +35,7 @@ namespace LearningWebApi.Services.BookingService
             {
                 await _processingSemaphore.WaitAsync(stoppingToken);
 
-                if (_eventRepository.GetEvent(data.EventId) is null)
+                if (_eventRepository.Get(data.EventId) is null)
                 {
                     _bookingService.RejectBooking(data);
                     return;
@@ -50,10 +51,28 @@ namespace LearningWebApi.Services.BookingService
                     _bookingService.RejectBooking(data);
                 }
             }
+            catch (OperationCanceledException)
+            {
+                CancelOperation(data);
+            }
             finally
             {
-                _processingSemaphore.Release();
+                try
+                {
+                    _processingSemaphore.Release();
+                }
+                // Операция была прервана раньше чем был вызыван WaitAsync
+                catch (SemaphoreFullException)
+                {
+                    CancelOperation(data);
+                }
             }
+        }
+
+        private void CancelOperation(Booking data)
+        {
+            _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+            _bookingService.CancelBooking(data.Id);
         }
     }
 }
