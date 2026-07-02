@@ -4,7 +4,9 @@
 
 1. Скачать актуальный [SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 2. Скачать [репозиторий](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig.git) себе на компьютер
-3. В git переключиться на ветку main
+3. В git переключиться на последнюю актуальную ветку
+4. Установить [PostgreSQL](https://www.postgresql.org/download/) и добавить пользователя со всеми правами Username=postgres;Password=postgres
+   или скачать и запустить [образ docker postgresql](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig/blob/sprint-5/docker-compose_.yml
 5. Зайти в консоль от администратора
 6. В корневой папке проекта выполнить команду dotnet test
 7. Зайти в подпапку скачанного репозитория LearningWebApi/
