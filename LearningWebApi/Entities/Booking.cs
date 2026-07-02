@@ -29,5 +29,10 @@
         /// Дата и время обработки
         /// </summary>
         public DateTime?  ProcessedAt{ get; set; }
+
+        /// <summary>
+        /// Событие к которому относится бронь
+        /// </summary>
+        public Event Event { get; set; } = null!;
     }
 }
