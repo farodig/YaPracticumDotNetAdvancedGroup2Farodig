@@ -24,7 +24,7 @@ namespace LearningTest.BookingServiceTests
             using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
 
             // Начали обрабатывать бронь
-            var process = bookingProcessor.ProcessBookingAsync(bookingService, booking, eventService, cts.Token);
+            var process = bookingProcessor.ProcessBookingAsync(booking, cts.Token);
 
             // Отменили операцию
             cts.Cancel();
@@ -47,7 +47,7 @@ namespace LearningTest.BookingServiceTests
             var booking = await bookingService.CreateBookingAsync(@event.Id);
 
             using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
-            await bookingProcessor.ProcessBookingAsync(bookingService, booking, eventService, CancellationToken.None);
+            await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
 
             Assert.Equal(BookingStatus.Confirmed, booking.Status);
         }
@@ -66,7 +66,7 @@ namespace LearningTest.BookingServiceTests
             await eventService.TryDeleteEventAsync(@event.Id);
 
             using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
-            await bookingProcessor.ProcessBookingAsync(bookingService, booking, eventService, CancellationToken.None);
+            await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
 
             Assert.Equal(BookingStatus.Rejected, booking.Status);
         }

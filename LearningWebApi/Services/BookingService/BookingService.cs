@@ -62,9 +62,9 @@ namespace LearningWebApi.Services.BookingService
         {
             data.Status = BookingStatus.Rejected;
             data.ProcessedAt = DateTime.Now;
+            await _eventService.ReleaseSeatAsync(data.EventId, cts ?? CancellationToken.None);
             await _repository.TryUpdateAsync(data, cts ?? CancellationToken.None);
             _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
-            await _eventService.ReleaseSeatAsync(data.EventId, cts ?? CancellationToken.None);
         }
     }
 }

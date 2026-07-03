@@ -30,6 +30,15 @@ namespace LearningWebApi.Repositories
             return await _dbContext.SaveChangesAsync(cts ?? CancellationToken.None);
         }
 
+        public async Task<bool> TryUpdateContextAsync(Event item, CancellationToken? cts = null)
+        {
+            var existing = await _dbContext.Events.FindAsync(item.Id);
+            if (existing == null) return false;
+
+            _dbContext.Entry(existing).CurrentValues.SetValues(item);
+            return true;
+        }
+
         public async Task<int> TryRemoveAsync(Guid id, CancellationToken? cts = null)
         {
             var toDelete = await _dbContext.Events

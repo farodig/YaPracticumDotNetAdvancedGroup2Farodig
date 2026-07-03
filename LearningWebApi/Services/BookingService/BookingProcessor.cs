@@ -14,31 +14,29 @@ namespace LearningWebApi.Services.BookingService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = _scopeFactory.CreateScope();
-                var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-
                 // Добавляем задержку в случае отсутствия задач, чтобы не зависало
                 await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
-                var pendingBookings = bookingService.GetPending()
-                    .ToList();
+                var pendingBookings = GetPending();
 
                 var tasks = pendingBookings
                     // Добавляем задачи по обработки брони
-                    .Select(booking => ProcessBookingAsync(bookingService, booking, eventService, stoppingToken));
+                    .Select(booking => ProcessBookingAsync(booking, stoppingToken));
 
                 await Task.WhenAll(tasks);
             }
         }
 
-        public async Task ProcessBookingAsync(IBookingService bookingService, Booking data, IEventService eventService, CancellationToken stoppingToken)
+        public async Task ProcessBookingAsync(Booking data, CancellationToken stoppingToken)
         {
             try
             {
                 // Имитация внешнего вызова
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
+                using var scope = _scopeFactory.CreateScope();
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
                 var hasEvent = await eventService.GetEventAsync(data.EventId, stoppingToken) is not null;
 
                 await _processingSemaphore.WaitAsync(stoppingToken);
@@ -62,6 +60,8 @@ namespace LearningWebApi.Services.BookingService
             }
             catch (OperationCanceledException)
             {
+                using var scope = _scopeFactory.CreateScope();
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
                 await bookingService.CancelBookingAsync(data, CancellationToken.None);
             }
             finally
@@ -73,9 +73,18 @@ namespace LearningWebApi.Services.BookingService
                 // Операция была прервана раньше чем был вызыван WaitAsync
                 catch (SemaphoreFullException)
                 {
+                    using var scope = _scopeFactory.CreateScope();
+                    var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
                     await bookingService.CancelBookingAsync(data, CancellationToken.None);
                 }
             }
+        }
+
+        private List<Booking> GetPending()
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+            return [.. bookingService.GetPending()];
         }
     }
 }

@@ -54,8 +54,7 @@ namespace LearningWebApi.Services.EventService
             // Попытка зарезервировать свободное место
             if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
 
-            // Сохранить в репозитории
-            await _repository.TryUpdateAsync(@event, cts ?? CancellationToken.None);
+            await _repository.TryUpdateContextAsync(@event, cts ?? CancellationToken.None);
         }
 
         public async Task ReleaseSeatAsync(Guid id, CancellationToken? cts = null)
@@ -69,8 +68,7 @@ namespace LearningWebApi.Services.EventService
             // Освободить зарезервированное место
             @event.ReleaseSeats();
 
-            // Сохранить в репозитории
-            await _repository.TryUpdateAsync(@event, cts ?? CancellationToken.None);
+            await _repository.TryUpdateContextAsync(@event, cts ?? CancellationToken.None);
         }
     }
 }

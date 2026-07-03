@@ -38,7 +38,7 @@ builder.Services.AddCors(options =>
 });
 
 
-//builder.Logging.ClearProviders();
+builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
 var app = builder.Build();
