@@ -5,6 +5,7 @@ namespace LearningWebApi.Services.EventService
     /// <summary>
     /// Фильтрация событий
     /// </summary>
+    /// TODO: необходимо переработать фильтры FROMSQL
     public static class EventFilterExtension
     {
         /// <summary>

@@ -2,7 +2,6 @@
 using LearningWebApi.Entities.Factories;
 using LearningWebApi.Models.Responses;
 using LearningWebApi.Services.BookingService;
-using LearningWebApi.Services.EventService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningWebApi.Controllers
@@ -28,7 +27,7 @@ namespace LearningWebApi.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
-            if (_bookingService.CreateBooking(id) is not Booking item)
+            if (await _bookingService.CreateBookingAsync(id, HttpContext.RequestAborted) is not Booking item)
             {
                 return NotFound();
             }

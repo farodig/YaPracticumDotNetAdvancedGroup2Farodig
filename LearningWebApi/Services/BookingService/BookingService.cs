@@ -11,20 +11,24 @@ namespace LearningWebApi.Services.BookingService
         private readonly IEventService _eventService = eventService;
         private readonly IBookingRepository _repository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly Lock _bookingLock = new();
+        private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
 
-        public Booking CreateBooking(Guid eventId)
+        public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken? cts = null)
         {
-            lock (_bookingLock)
+            await _bookingSemaphore.WaitAsync(cts ?? CancellationToken.None);
+            try
             {
-                // TODO: по хорошему следует вынести за пределы lock (_bookingLock), но в ТЗ говорит резервировать места нужно с двойной блокировкой
-                _eventService.ReserveSeat(eventId);
+                await _eventService.ReserveSeatAsync(eventId, cts ?? CancellationToken.None);
 
                 // Создать бронь
                 var booking = BookingFactory.CreateBooking(eventId);
                 _repository.CreateOrUpdate(booking);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking;
+            }
+            finally
+            {
+                _bookingSemaphore.Release();
             }
         }
 
@@ -53,14 +57,14 @@ namespace LearningWebApi.Services.BookingService
             _repository.CreateOrUpdate(data);
         }
 
-        public void RejectBooking(Booking data)
+        public async Task RejectBookingAsync(Booking data, CancellationToken? cts = null)
         {
             data.Status = BookingStatus.Rejected;
             data.ProcessedAt = DateTime.Now;
             _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
             _repository.CreateOrUpdate(data);
 
-            _eventService.ReleaseSeat(data.EventId);
+            await _eventService.ReleaseSeatAsync(data.EventId, cts ?? CancellationToken.None);
         }
     }
 }

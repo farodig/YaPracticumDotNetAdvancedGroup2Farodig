@@ -8,23 +8,21 @@ namespace LearningWebApi.Services.EventService
     {
         private readonly IEventRepository _repository = repository;
 
-        public IEnumerable<Event> GetEvents()
+        public IQueryable<Event> GetEvents()
         {
-            return _repository.Values;
+            return _repository.GetEvents();
         }
 
-        public Event? GetEvent(Guid id)
+        public async Task<Event?> GetEventAsync(Guid id, CancellationToken? cts = null)
         {
-            return _repository.Get(id);
+            return await _repository.GetAsync(id, cts ?? CancellationToken.None);
         }
 
-        public Event CreateEvent(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null)
+        public async Task<Event> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken? cts = null)
         {
-            var id = Guid.NewGuid();
-
             var item = new Event()
             {
-                Id = id,
+                Id = Guid.NewGuid(),
                 Title = title,
                 Description = description,
                 StartAt = startAt,
@@ -32,48 +30,37 @@ namespace LearningWebApi.Services.EventService
                 TotalSeats = totalSeats,
                 AvailableSeats = totalSeats,
             };
-            _repository.CreateOrUpdate(item);
+
+            await _repository.CreateAsync(item, cts ?? CancellationToken.None);
 
             return item;
         }
 
-        public bool TryUpdateEvent(Event item)
+        public async Task<bool> TryUpdateEventAsync(Event item, CancellationToken? cts = null)
         {
-            if (_repository.Get(item.Id) is null)
-            {
-                return false;
-            }
-
-            _repository.CreateOrUpdate(item);
-            return true;
+            return await _repository.TryUpdateAsync(item, cts ?? CancellationToken.None) > 0;
         }
 
-        public bool TryDeleteEvent(Guid id)
+        public async Task<bool> TryDeleteEventAsync(Guid id, CancellationToken? cts = null)
         {
-            if (!_repository.ContainsKey(id))
-            {
-                return false;
-            }
-
-            _repository.Remove(id);
-            return true;
+            return await _repository.TryRemoveAsync(id, cts ?? CancellationToken.None) > 0;
         }
 
-        public void ReserveSeat(Guid id)
+        public async Task ReserveSeatAsync(Guid id, CancellationToken? cts = null)
         {
             // Получить событие из хранилища
-            if (_repository.Get(id) is not Event @event) throw new EventNotFoundException();
+            if (await _repository.GetAsync(id, cts ?? CancellationToken.None) is not Event @event) throw new EventNotFoundException();
 
             // Попытка зарезервировать свободное место
             if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
 
             // Сохранить в репозитории
-            _repository.CreateOrUpdate(@event);
+            await _repository.TryUpdateAsync(@event, cts ?? CancellationToken.None);
         }
 
-        public void ReleaseSeat(Guid id)
+        public async Task ReleaseSeatAsync(Guid id, CancellationToken? cts = null)
         {
-            if (_repository.Get(id) is not Event @event)
+            if (await _repository.GetAsync(id, cts ?? CancellationToken.None) is not Event @event)
             {
                 // Событие может быть удалено
                 return;
@@ -83,7 +70,7 @@ namespace LearningWebApi.Services.EventService
             @event.ReleaseSeats();
 
             // Сохранить в репозитории
-            _repository.CreateOrUpdate(@event);
+            await _repository.TryUpdateAsync(@event, cts ?? CancellationToken.None);
         }
     }
 }

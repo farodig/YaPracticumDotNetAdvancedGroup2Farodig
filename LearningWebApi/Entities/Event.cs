@@ -3,7 +3,7 @@
     /// <summary>
     /// Событие
     /// </summary>
-    public partial class Event
+    public class Event
     {
         /// <summary>
         /// Идентификатор события

@@ -12,8 +12,8 @@ namespace LearningWebApi.DataAccess.AppDbContextConfigurations
             builder.ToTable("events", t =>
             {
                 // Ограничения даты и времени
-                t.HasCheckConstraint("CK_Event_Dates", "[StartAt] < [EndAt]");
-                t.HasCheckConstraint("CK_Event_StartAt", "[StartAt] > GETDATE()");
+                t.HasCheckConstraint("CK_Event_Dates", "\"StartAt\" < \"EndAt\"");
+                t.HasCheckConstraint("CK_Event_StartAt", "\"StartAt\" > NOW()");
             });
 
             // Первичный ключ

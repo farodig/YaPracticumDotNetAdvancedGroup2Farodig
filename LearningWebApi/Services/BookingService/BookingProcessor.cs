@@ -4,10 +4,9 @@ using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
-    internal class BookingProcessor(IBookingService bookingService, IEventService eventService) : BackgroundService
+    internal class BookingProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
     {
-        private readonly IEventService _eventService = eventService;
-        private readonly IBookingService _bookingService = bookingService;
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
@@ -15,28 +14,32 @@ namespace LearningWebApi.Services.BookingService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                using var scope = _scopeFactory.CreateScope();
+                var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
                 // Добавляем задержку в случае отсутствия задач, чтобы не зависало
                 await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
-                var pendingBookings = _bookingService.GetPending()
+                var pendingBookings = bookingService.GetPending()
                     .ToList();
 
                 var tasks = pendingBookings
                     // Добавляем задачи по обработки брони
-                    .Select(booking => ProcessBookingAsync(booking, stoppingToken));
+                    .Select(booking => ProcessBookingAsync(bookingService, booking, eventService, stoppingToken));
 
                 await Task.WhenAll(tasks);
             }
         }
 
-        public async Task ProcessBookingAsync(Booking data, CancellationToken stoppingToken)
+        public async Task ProcessBookingAsync(IBookingService bookingService, Booking data, IEventService eventService, CancellationToken stoppingToken)
         {
             try
             {
                 // Имитация внешнего вызова
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
-                var hasEvent = _eventService.GetEvent(data.EventId) is not null;
+                var hasEvent = await eventService.GetEventAsync(data.EventId, stoppingToken) is not null;
 
                 await _processingSemaphore.WaitAsync(stoppingToken);
 
@@ -44,22 +47,22 @@ namespace LearningWebApi.Services.BookingService
                 {
                     if (hasEvent)
                     {
-                        _bookingService.ConfirmBooking(data);
+                        bookingService.ConfirmBooking(data);
                     }
                     else
                     {
-                        _bookingService.RejectBooking(data);
+                        await bookingService.RejectBookingAsync(data, stoppingToken);
                     }
                 }
                 catch (Exception cef)
                 {
                     _logger.Error(cef);
-                    _bookingService.RejectBooking(data);
+                    await bookingService.RejectBookingAsync(data, stoppingToken);
                 }
             }
             catch (OperationCanceledException)
             {
-                CancelOperation(data);
+                CancelOperation(bookingService, data);
             }
             finally
             {
@@ -70,15 +73,15 @@ namespace LearningWebApi.Services.BookingService
                 // Операция была прервана раньше чем был вызыван WaitAsync
                 catch (SemaphoreFullException)
                 {
-                    CancelOperation(data);
+                    CancelOperation(bookingService, data);
                 }
             }
         }
 
-        private void CancelOperation(Booking data)
+        private void CancelOperation(IBookingService bookingService, Booking data)
         {
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
-            _bookingService.CancelBooking(data.Id);
+            bookingService.CancelBooking(data.Id);
         }
     }
 }

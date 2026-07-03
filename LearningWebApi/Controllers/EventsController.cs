@@ -4,6 +4,7 @@ using LearningWebApi.Models.Requests;
 using LearningWebApi.Models.Responses;
 using LearningWebApi.Services.EventService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Controllers
 {
@@ -27,15 +28,17 @@ namespace LearningWebApi.Controllers
         /// <response code="200">Список событий успешно возвращён</response>
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK, "application/json")]
-        public IActionResult GetEvents(
+        public async Task<IActionResult> GetEvents(
             [FromQuery] string? title = null,
             [FromQuery] DateTime? from = null,
             [FromQuery] DateTime? to = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            var filteredEvents = _eventService
+            var filteredEvents = (await _eventService
                 .GetEvents()
+                .ToListAsync(HttpContext.RequestAborted))
+                // TODO: требуется переработка, фильтры сработают только после загрузки из БД
                 .FilterByTitle(title)
                 .FilterByFrom(from)
                 .FilterByTo(to);
@@ -58,9 +61,9 @@ namespace LearningWebApi.Controllers
         /// <response code="404">Событие не найдено</response>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK, "application/json")]
-        public IActionResult GetEvent(Guid id)
+        public async Task<IActionResult> GetEvent(Guid id)
         {
-            if (_eventService.GetEvent(id) is not Event item)
+            if (await _eventService.GetEventAsync(id, HttpContext.RequestAborted) is not Event item)
             {
                 return NotFound();
             }
@@ -76,14 +79,15 @@ namespace LearningWebApi.Controllers
         [HttpPost]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created, "application/json")]
-        public IActionResult CreateEvent([FromBody] CreateEventRequest data)
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest data)
         {
-            var created = _eventService.CreateEvent(
+            var created = (await _eventService.CreateEventAsync(
                 data.Title,
                 data.StartAt!.Value,
                 data.EndAt!.Value,
                 data.TotalSeats,
-                data.Description)
+                data.Description,
+                HttpContext.RequestAborted))
                 .ToEventRespose();
 
             return CreatedAtAction(
@@ -101,11 +105,11 @@ namespace LearningWebApi.Controllers
         /// <response code="404">Событие не найдено</response>
         [HttpPut("{id}")]
         [Consumes("application/json")]
-        public IActionResult UpdateEvent([FromRoute] Guid id, [FromBody] UpdateEventRequest data)
+        public async Task<IActionResult> UpdateEvent([FromRoute] Guid id, [FromBody] UpdateEventRequest data)
         {
             var toUpdate = data.CreateEvent(id);
 
-            if (!_eventService.TryUpdateEvent(toUpdate))
+            if (!await _eventService.TryUpdateEventAsync(toUpdate, HttpContext.RequestAborted))
             {
                 return NotFound();
             }
@@ -120,9 +124,9 @@ namespace LearningWebApi.Controllers
         /// <response code="200">Событие успешно удалено</response>
         /// <response code="404">Событие не найдено</response>
         [HttpDelete("{id}")]
-        public IActionResult DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteEvent(Guid id)
         {
-            if (!_eventService.TryDeleteEvent(id))
+            if (!await _eventService.TryDeleteEventAsync(id, HttpContext.RequestAborted))
             {
                 return NotFound();
             }

@@ -1,3 +1,4 @@
+using LearningWebApi.DataAccess;
 using LearningWebApi.Middlewares;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
@@ -7,10 +8,11 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IEventRepository, EventRepository>();
-builder.Services.AddSingleton<IEventService, EventService>();
-builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
-builder.Services.AddSingleton<IBookingService, BookingService>();
+builder.AppDbConfigure();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddHostedService<BookingProcessor>();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -53,5 +55,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.AppDbInitialize();
 
 app.Run();
