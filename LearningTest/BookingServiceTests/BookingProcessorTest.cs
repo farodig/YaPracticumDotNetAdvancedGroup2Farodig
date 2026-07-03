@@ -18,13 +18,13 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingService(eventService);
 
             // Создали бронь
-            var booking = bookingService.CreateBooking(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
 
             using var cts = new CancellationTokenSource();
-            using var bookingProcessor = new BookingProcessor(bookingService, eventService);
+            using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
 
             // Начали обрабатывать бронь
-            var process = Task.Run(() => bookingProcessor.ProcessBookingAsync(booking, cts.Token));
+            var process = bookingProcessor.ProcessBookingAsync(bookingService, booking, eventService, cts.Token);
 
             // Отменили операцию
             cts.Cancel();
@@ -44,10 +44,10 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingService(eventService);
 
             // Создать бронь
-            var booking = bookingService.CreateBooking(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
 
-            using var bookingProcessor = new BookingProcessor(bookingService, eventService);
-            await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
+            using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
+            await bookingProcessor.ProcessBookingAsync(bookingService, booking, eventService, CancellationToken.None);
 
             Assert.Equal(BookingStatus.Confirmed, booking.Status);
         }
@@ -56,17 +56,17 @@ namespace LearningTest.BookingServiceTests
         public async Task ProcessBookingNotExistedEventTest()
         {
             var @event = CreateEventAvailableSeats();
-            var eventRepository = CreateEventRepository(@event);
+            var eventRepository = await CreateEventRepositoryAsync(@event);
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
             // Создать бронь
-            var booking = bookingService.CreateBooking(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
             // Удалить бронь
-            eventService.TryDeleteEvent(@event.Id);
+            await eventService.TryDeleteEventAsync(@event.Id);
 
-            using var bookingProcessor = new BookingProcessor(bookingService, eventService);
-            await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
+            using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
+            await bookingProcessor.ProcessBookingAsync(bookingService, booking, eventService, CancellationToken.None);
 
             Assert.Equal(BookingStatus.Rejected, booking.Status);
         }

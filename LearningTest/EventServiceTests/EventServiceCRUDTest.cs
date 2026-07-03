@@ -6,7 +6,7 @@ namespace LearningTest.EventServiceTests
     public class EventServiceCRUDTest
     {
         [Fact(DisplayName = "создание события")]
-        public void CreateEventTest()
+        public async Task CreateEventTest()
         {
             var expected = new Event
             {
@@ -17,8 +17,9 @@ namespace LearningTest.EventServiceTests
                 TotalSeats = 10,
                 AvailableSeats = 10,
             };
-            var actual = CreateEventService()
-                .CreateEvent(expected.Title,
+            var service = await CreateEventService();
+            var actual = await service
+                .CreateEventAsync(expected.Title,
                 expected.StartAt,
                 expected.EndAt,
                 expected.TotalSeats,
@@ -33,7 +34,7 @@ namespace LearningTest.EventServiceTests
         }
 
         [Fact(DisplayName = "получение всех событий")]
-        public void GetEventsTest()
+        public async Task GetEventsTest()
         {
             var expected = new[] {new Event
             {
@@ -43,14 +44,14 @@ namespace LearningTest.EventServiceTests
                 EndAt = DateTime.Now,
                 Description = "GetEventsDescription",
             }};
-            var actual = CreateEventService(expected)
-                .GetEvents();
+            var service = await CreateEventService(expected);
+            var actual = service.GetEvents();
 
             Assert.Equal(expected, actual);
         }
 
         [Fact(DisplayName = "получение события по ID")]
-        public void GetEventTest()
+        public async Task GetEventTest()
         {
             var expected = new Event
             {
@@ -60,8 +61,9 @@ namespace LearningTest.EventServiceTests
                 EndAt = DateTime.Now,
                 Description = "GetEventDescription",
             };
-            var actual = CreateEventService(expected)
-                .GetEvent(expected.Id);
+
+            var service = await CreateEventService(expected);
+            var actual = await service.GetEventAsync(expected.Id);
 
             Assert.Equal(expected, actual);
         }
@@ -69,27 +71,27 @@ namespace LearningTest.EventServiceTests
         [Theory(DisplayName = "попытка получить событие с несуществующим ID")]
         [InlineData("FEE94FA8-F78B-490B-84F5-80CD75B5A841")]
         [InlineData("00000000-0000-0000-0000-000000000000")]
-        public void GetEventNotExistIdFailTest(Guid id)
+        public async Task GetEventNotExistIdFailTest(Guid id)
         {
-            var item = CreateEventService()
-                .GetEvent(id);
+            var service = await CreateEventService();
+            var item = await service.GetEventAsync(id);
             Assert.Null(item);
         }
 
         [Theory(DisplayName = "попытка обновить событие с несуществующим ID")]
         [InlineData("FEE94FA8-F78B-490B-84F5-80CD75B5A841")]
         [InlineData("00000000-0000-0000-0000-000000000000")]
-        public void TryUpdateEventNotExistIdFailTest(Guid id)
+        public async Task TryUpdateEventNotExistIdFailTest(Guid id)
         {
-            Assert.False(CreateEventService()
-                .TryUpdateEvent(new Event
+            var service = await CreateEventService();
+            Assert.False(await service.TryUpdateEventAsync(new Event
             {
                 Id = id,
             }));
         }
 
         [Fact(DisplayName = "обновление существующего события")]
-        public void TryUpdateEventTest()
+        public async Task TryUpdateEventTest()
         {
             var toUpdate = new Event
             {
@@ -111,12 +113,12 @@ namespace LearningTest.EventServiceTests
                 TotalSeats = 11,
                 AvailableSeats = 6,
             };
-            Assert.True(CreateEventService(toUpdate)
-                .TryUpdateEvent(updated));
+            var service = await CreateEventService(toUpdate);
+            Assert.True(await service.TryUpdateEventAsync(updated));
         }
 
         [Fact(DisplayName = "удаление существующего события")]
-        public void TryDeleteEventTest()
+        public async Task TryDeleteEventTest()
         {
             var toDelete = new Event
             {
@@ -126,8 +128,9 @@ namespace LearningTest.EventServiceTests
                 EndAt = DateTime.Now,
                 Description = "ToDeleteDescription",
             };
-            Assert.True(CreateEventService(toDelete)
-                .TryDeleteEvent(toDelete.Id));
+            var service = await CreateEventService(toDelete);
+            await service.TryDeleteEventAsync(toDelete.Id);
+            Assert.Null(await service.GetEventAsync(toDelete.Id));
         }
     }
 }

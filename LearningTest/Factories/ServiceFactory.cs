@@ -2,7 +2,7 @@
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using static LearningTest.Factories.RepositoryFactory;
 
 namespace LearningTest.Factories
@@ -17,16 +17,16 @@ namespace LearningTest.Factories
             return new EventService(repository);
         }
 
-        public static IEventService CreateEventService(params IEnumerable<Event> events)
+        public static async Task<IEventService> CreateEventService(params IEnumerable<Event> events)
         {
-            var eventRepository = CreateEventRepository(events);
+            var eventRepository = await CreateEventRepositoryAsync(events);
             return CreateEventService(eventRepository);
         }
 
-        public static IBookingService CreateBookingService()
+        public static async Task<IBookingService> CreateBookingService()
         {
             var bookingRepository = CreateBookingRepository();
-            var eventService = CreateEventService();
+            var eventService = await CreateEventService();
             return new BookingService(eventService, bookingRepository);
         }
 
@@ -36,10 +36,20 @@ namespace LearningTest.Factories
             return new BookingService(eventService, bookingRepository);
         }
 
-        public static IBookingService CreateBookingService(IBookingRepository bookingRepository)
+        public static async Task<IBookingService> CreateBookingService(IBookingRepository bookingRepository)
         {
-            var eventService = CreateEventService();
+            var eventService = await CreateEventService();
             return new BookingService(eventService, bookingRepository);
+        }
+
+        internal static BookingProcessor CreateBookingProcessor(IBookingService bookingService, IEventService eventService)
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton(bookingService);
+            services.AddSingleton(eventService);
+            var serviceProvider = services.BuildServiceProvider();
+            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            return new BookingProcessor(scopeFactory);
         }
     }
 }

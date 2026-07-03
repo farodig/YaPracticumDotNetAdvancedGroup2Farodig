@@ -15,8 +15,8 @@ namespace LearningTest.BookingServiceTests
             var @event = CreateEventAvailableSeats();
             var eventRepository = MockEventRepository(@event);
             var eventService = CreateEventService(eventRepository);
-            var booking = CreateBookingService(eventService)
-                .CreateBooking(@event.Id);
+            var booking = await CreateBookingService(eventService)
+                .CreateBookingAsync(@event.Id);
 
             Assert.Equal(@event.Id, booking.EventId);
             Assert.Equal(BookingStatus.Pending, booking.Status);
@@ -30,8 +30,8 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
 
             var bookingService = CreateBookingService(eventService);
-            var booking1 = bookingService.CreateBooking(@event.Id);
-            var booking2 = bookingService.CreateBooking(@event.Id);
+            var booking1 = await bookingService.CreateBookingAsync(@event.Id);
+            var booking2 = await bookingService.CreateBookingAsync(@event.Id);
 
             Assert.Equal(@event.Id, booking1.EventId);
             Assert.Equal(@event.Id, booking2.EventId);
@@ -45,7 +45,7 @@ namespace LearningTest.BookingServiceTests
             var expectedBooking = CreateBooking();
 
             var bookingRepository = MockBookingRepository(expectedBooking);
-            var bookingService = CreateBookingService(bookingRepository);
+            var bookingService = await CreateBookingService(bookingRepository);
 
             var actualBooking = bookingService.GetBookingById(expectedBooking.Id);
 
@@ -56,29 +56,29 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "Бронирование для несуществующего события → NotFoundException")]
         public async Task CreateBookingNotFoundExceptionTest()
         {
-            var bookingService = CreateBookingService();
-            Assert.Throws<EventNotFoundException>(() => bookingService.CreateBooking(Guid.NewGuid()));
+            var bookingService = await CreateBookingService();
+            await Assert.ThrowsAsync<EventNotFoundException>(async () => await bookingService.CreateBookingAsync(Guid.NewGuid()));
         }
 
         [Fact(DisplayName = "Создание брони для удалённого события")]
         public async Task CreateBookingForDeletedEventTest()
         {
             var @event = CreateEvent();
-            var eventRepository = CreateEventRepository(@event);
+            var eventRepository = await CreateEventRepositoryAsync(@event);
             var eventService = CreateEventService(eventRepository);
 
             var bookingService = CreateBookingService(eventService);
 
-            Assert.True(eventService.TryDeleteEvent(@event.Id));
-            Assert.False(eventRepository.ContainsKey(@event.Id));
+            Assert.True(await eventService.TryDeleteEventAsync(@event.Id));
+            Assert.Null(await eventRepository.GetAsync(@event.Id));
 
-            Assert.Throws<EventNotFoundException>(() => bookingService.CreateBooking(@event.Id));
+            await Assert.ThrowsAsync<EventNotFoundException>(async () => await bookingService.CreateBookingAsync(@event.Id));
         }
 
         [Fact(DisplayName = "Получение брони по несуществующему Id")]
         public async Task GetNotExitedBookingTest()
         {
-            var bookingService = CreateBookingService();
+            var bookingService = await CreateBookingService();
             var booking = bookingService.GetBookingById(Guid.NewGuid());
             Assert.Null(booking);
         }
@@ -96,7 +96,7 @@ namespace LearningTest.BookingServiceTests
             // Бронируем пока есть места
             for (int expected = initialSeats; expected > 0;)
             {
-                bookingService.CreateBooking(@event.Id);
+                await bookingService.CreateBookingAsync(@event.Id);
                 Assert.Equal(--expected, @event.AvailableSeats);
             }
         }
@@ -109,7 +109,7 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            Assert.Throws<NoAvailableSeatsException>(() => bookingService.CreateBooking(@event.Id));
+            await Assert.ThrowsAsync<NoAvailableSeatsException>(async () => await bookingService.CreateBookingAsync(@event.Id));
         }
 
         [Fact(DisplayName = "После подтверждения бронь возвращает статус Confirmed и заполненный ProcessedAt")]
@@ -120,7 +120,7 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            var booking = bookingService.CreateBooking(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
             bookingService.ConfirmBooking(booking);
 
             Assert.NotNull(booking.ProcessedAt);
@@ -135,8 +135,8 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            var booking = bookingService.CreateBooking(@event.Id);
-            bookingService.RejectBooking(booking);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            await bookingService.RejectBookingAsync(booking);
 
             Assert.NotNull(booking.ProcessedAt);
             Assert.Equal(BookingStatus.Rejected, booking.Status);
@@ -153,10 +153,10 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            var booking = bookingService.CreateBooking(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
             Assert.Equal(expectedModifySeats, @event.AvailableSeats);
 
-            bookingService.RejectBooking(booking);
+            await bookingService.RejectBookingAsync(booking);
             Assert.Equal(expectedAvailableSeats, @event.AvailableSeats);
         }
 
@@ -167,9 +167,9 @@ namespace LearningTest.BookingServiceTests
             var eventRepository = MockEventRepository(@event);
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
-            var booking = bookingService.CreateBooking(@event.Id);
-            bookingService.RejectBooking(booking);
-            bookingService.CreateBooking(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            await bookingService.RejectBookingAsync(booking);
+            await bookingService.CreateBookingAsync(@event.Id);
         }
 
 
@@ -187,21 +187,21 @@ namespace LearningTest.BookingServiceTests
             var eventService = CreateEventService(eventRepository);
             var bookingService = CreateBookingService(eventService);
 
-            Func<Guid, bool> TryCreateBooking = (Guid eventId) =>
+            async Task<bool> TryCreateBookingAsync(Guid eventId)
             {
                 try
                 {
-                    bookingService.CreateBooking(eventId);
+                    await bookingService.CreateBookingAsync(eventId);
                     return true;
                 }
                 catch (NoAvailableSeatsException)
                 {
                     return false;
                 }
-            };
+            }
 
             var concurrentTask = Enumerable.Repeat(0, concurrent)
-                .Select(_ => Task.Run(() => TryCreateBooking(@event.Id)));
+                .Select(_ => TryCreateBookingAsync(@event.Id));
 
             var (actualConfirmed, actualException) = (await Task.WhenAll(concurrentTask)).Aggregate((Success: 0, Failure: 0),
                 (acc, x) => x
@@ -224,7 +224,7 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingService(eventService);
 
             var concurrentTask = Enumerable.Range(0, concurrent)
-                .Select(_ => Task.Run(() => bookingService.CreateBooking(@event.Id)));
+                .Select(_ => bookingService.CreateBookingAsync(@event.Id));
 
             var actual = (await Task.WhenAll(concurrentTask))
                 .Select(a => a.Id).ToHashSet()

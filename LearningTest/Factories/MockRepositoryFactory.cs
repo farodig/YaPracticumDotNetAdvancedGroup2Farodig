@@ -13,12 +13,8 @@ namespace LearningTest.Factories
             {
                 var item = items[i];
                 mockRepository
-                    .Setup(repo => repo.Get(item.Id))
-                    .Returns(item);
-
-                mockRepository
-                    .Setup(repo => repo.ContainsKey(item.Id))
-                    .Returns(true);
+                    .Setup(repo => repo.GetAsync(item.Id, It.IsAny<CancellationToken?>()))
+                    .ReturnsAsync((Event?)item);
             }
 
             return mockRepository.Object;
