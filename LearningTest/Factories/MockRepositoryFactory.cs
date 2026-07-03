@@ -27,8 +27,8 @@ namespace LearningTest.Factories
             {
                 var item = items[i];
                 mockRepository
-                    .Setup(repo => repo.Get(item.Id))
-                    .Returns(item);
+                    .Setup(repo => repo.GetAsync(item.Id, It.IsAny<CancellationToken?>()))
+                    .ReturnsAsync((Booking?)item);
             }
 
             return mockRepository.Object;

@@ -32,7 +32,7 @@ namespace LearningTest.BookingServiceTests
             await process;
 
             // Убедились что созданной брони не существует
-            Assert.Null(bookingService.GetBookingById(booking.Id));
+            Assert.Null(await bookingService.GetBookingByIdAsync(booking.Id));
         }
 
         [Fact(DisplayName = "Проверка успешной обработки бронирования события")]

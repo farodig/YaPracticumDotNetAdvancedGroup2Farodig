@@ -47,7 +47,7 @@ namespace LearningWebApi.Services.BookingService
                 {
                     if (hasEvent)
                     {
-                        bookingService.ConfirmBooking(data);
+                        await bookingService.ConfirmBookingAsync(data, stoppingToken);
                     }
                     else
                     {
@@ -62,7 +62,7 @@ namespace LearningWebApi.Services.BookingService
             }
             catch (OperationCanceledException)
             {
-                CancelOperation(bookingService, data);
+                await bookingService.CancelBookingAsync(data, CancellationToken.None);
             }
             finally
             {
@@ -73,15 +73,9 @@ namespace LearningWebApi.Services.BookingService
                 // Операция была прервана раньше чем был вызыван WaitAsync
                 catch (SemaphoreFullException)
                 {
-                    CancelOperation(bookingService, data);
+                    await bookingService.CancelBookingAsync(data, CancellationToken.None);
                 }
             }
-        }
-
-        private void CancelOperation(IBookingService bookingService, Booking data)
-        {
-            _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
-            bookingService.CancelBooking(data.Id);
         }
     }
 }

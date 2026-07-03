@@ -48,7 +48,7 @@ namespace LearningWebApi.Controllers
         [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<BookingResponse>> GetBooking(Guid id)
         {
-            if (_bookingService.GetBookingById(id) is not Booking item)
+            if (await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted) is not Booking item)
             {
                 return NotFound();
             }

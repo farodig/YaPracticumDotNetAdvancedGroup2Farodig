@@ -47,7 +47,7 @@ namespace LearningTest.BookingServiceTests
             var bookingRepository = MockBookingRepository(expectedBooking);
             var bookingService = await CreateBookingService(bookingRepository);
 
-            var actualBooking = bookingService.GetBookingById(expectedBooking.Id);
+            var actualBooking = await bookingService.GetBookingByIdAsync(expectedBooking.Id);
 
             Assert.NotNull(actualBooking);
             Assert.Equal(expectedBooking.Id, actualBooking.Id);
@@ -79,7 +79,7 @@ namespace LearningTest.BookingServiceTests
         public async Task GetNotExitedBookingTest()
         {
             var bookingService = await CreateBookingService();
-            var booking = bookingService.GetBookingById(Guid.NewGuid());
+            var booking = await bookingService.GetBookingByIdAsync(Guid.NewGuid());
             Assert.Null(booking);
         }
 
@@ -121,7 +121,7 @@ namespace LearningTest.BookingServiceTests
             var bookingService = CreateBookingService(eventService);
 
             var booking = await bookingService.CreateBookingAsync(@event.Id);
-            bookingService.ConfirmBooking(booking);
+            await bookingService.ConfirmBookingAsync(booking);
 
             Assert.NotNull(booking.ProcessedAt);
             Assert.Equal(BookingStatus.Confirmed, booking.Status);

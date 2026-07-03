@@ -22,9 +22,13 @@ namespace LearningTest.Factories
             return repository;
         }
 
-        public static IBookingRepository CreateBookingRepository() => new BookingRepository()
+        public static IBookingRepository CreateBookingRepository()
         {
-
-        };
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            var repository = new BookingRepository(new AppDbContext(options));
+            return repository;
+        }
     }
 }

@@ -23,14 +23,13 @@ namespace LearningWebApi.DataAccess
         /// </summary>
         public static void AppDbInitialize(this WebApplication app)
         {
-            if (app.Environment.IsDevelopment())
-            {
-                using var scope = app.Services.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            using var scope = app.Services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-            }
+            // Для простоты отладки удаляем базу
+            // context.Database.EnsureDeleted();
+
+            context.Database.EnsureCreated();
         }
     }
 }

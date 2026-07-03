@@ -1,32 +1,47 @@
-﻿using LearningWebApi.Entities;
-using System.Collections.Concurrent;
+﻿using LearningWebApi.DataAccess;
+using LearningWebApi.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Repositories
 {
-    internal class BookingRepository : ConcurrentDictionary<Guid, Booking>, IBookingRepository
+    internal class BookingRepository(AppDbContext dbContext) : IBookingRepository
     {
-        public Booking? Get(Guid id)
+        private readonly AppDbContext _dbContext = dbContext;
+
+        public IQueryable<Booking> GetBookings()
         {
-            TryGetValue(id, out Booking? item);
-            return item;
+            return _dbContext.Bookings.AsQueryable();
         }
 
-        public void CreateOrUpdate(Booking item)
+        public async Task<Booking?> GetAsync(Guid id, CancellationToken? cts = null)
         {
-            var id = item.Id;
-            if (TryGetValue(id, out Booking? oldItem))
-            {
-                TryUpdate(id, item, oldItem);
-            }
-            else
-            {
-                TryAdd(id, item);
-            }
+            return await _dbContext.Bookings.FirstOrDefaultAsync(e => e.Id == id, cts ?? CancellationToken.None);
         }
 
-        public void Remove(Guid id)
+        public async Task CreateAsync(Booking item, CancellationToken? cts = null)
         {
-            TryRemove(id, out _);
+            await _dbContext.Bookings.AddAsync(item, cts ?? CancellationToken.None);
+            await _dbContext.SaveChangesAsync(cts ?? CancellationToken.None);
+        }
+
+        public async Task<int> TryUpdateAsync(Booking item, CancellationToken? cts = null)
+        {
+            var existing = await _dbContext.Bookings.FindAsync(item.Id);
+            if (existing == null) return 0;
+
+            _dbContext.Entry(existing).CurrentValues.SetValues(item);
+            return await _dbContext.SaveChangesAsync(cts ?? CancellationToken.None);
+        }
+
+        public async Task<int> TryRemoveAsync(Guid id, CancellationToken? cts = null)
+        {
+            var toDelete = await _dbContext.Bookings
+                .Where(a => a.Id == id)
+                .ToArrayAsync(cts ?? CancellationToken.None);
+            if (toDelete.Length == 0) return 0;
+
+            _dbContext.Bookings.RemoveRange(toDelete);
+            return await _dbContext.SaveChangesAsync(cts ?? CancellationToken.None);
         }
     }
 }
