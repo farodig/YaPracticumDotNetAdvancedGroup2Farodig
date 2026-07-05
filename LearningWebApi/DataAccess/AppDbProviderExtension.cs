@@ -2,7 +2,7 @@
 
 namespace LearningWebApi.DataAccess
 {
-    internal static class AppDbInitializer
+    internal static class AppDbProviderExtension
     {
         /// <summary>
         /// Конфигурирование бд
@@ -10,7 +10,7 @@ namespace LearningWebApi.DataAccess
         public static void AppDbConfigure(this WebApplicationBuilder builder)
         {
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'Default' not found.");
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
@@ -26,10 +26,14 @@ namespace LearningWebApi.DataAccess
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            // Для простоты отладки удаляем базу
-            // context.Database.EnsureDeleted();
-
-            context.Database.EnsureCreated();
+            if (app.Environment.IsProduction())
+            {
+                context.Database.Migrate();
+            }
+            else if (app.Environment.IsDevelopment())
+            {
+                context.Database.EnsureCreated();
+            }
         }
     }
 }

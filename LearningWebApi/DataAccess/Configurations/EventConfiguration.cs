@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LearningWebApi.DataAccess.AppDbContextConfigurations
+namespace LearningWebApi.DataAccess.Configurations
 {
     internal class EventConfiguration : IEntityTypeConfiguration<Event>
     {
