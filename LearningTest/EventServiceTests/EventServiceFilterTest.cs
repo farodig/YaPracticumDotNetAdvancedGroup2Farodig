@@ -1,13 +1,13 @@
-﻿using LearningWebApi.Services.EventService;
-using static LearningTest.Factories.ServiceFactory;
-using static LearningTest.Factories.EntityFactory;
+﻿using LearningTest.Helpers;
 using LearningWebApi.Entities;
+using LearningWebApi.Services.EventService;
+using static LearningTest.Helpers.EntityFactory;
 
 namespace LearningTest.EventServiceTests
 {
-    public class EventServiceFilterTest
+    public class EventServiceFilterTest : AServiceCollection
     {
-        [Fact(DisplayName = "фильтрация по названию")]
+        [Fact(DisplayName = "01. Фильтрация по названию")]
         public async Task FilterByTitleTest()
         {
             var toCreateTitle = CreateEventTitle("ToCreateTitle");
@@ -15,7 +15,7 @@ namespace LearningTest.EventServiceTests
             var toDeleteTitle = CreateEventTitle("ToDeleteTitle");
 
             IEnumerable<Event> data = [toCreateTitle, toUpdateTitle, toDeleteTitle];
-            var eventService = await CreateEventService(data);
+            var eventService = GetInitializedService<IEventService, Event>(data);
 
             IEnumerable<Event> expected = data.OrderBy(a => a.Id);
             var actual = eventService.GetEvents().FilterByTitle("To").OrderBy(a => a.Id).ToArray();
@@ -37,7 +37,7 @@ namespace LearningTest.EventServiceTests
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = "фильтрация по дате startDate")]
+        [Fact(DisplayName = "02. Фильтрация по дате startDate")]
         public async Task FilterByFromTest()
         {
             var minOrDefault = CreateEventStartAt(default);
@@ -47,7 +47,7 @@ namespace LearningTest.EventServiceTests
             var max = CreateEventStartAt(DateTime.MaxValue);
 
             IEnumerable<Event> all = [minOrDefault, less, now, more, max];
-            var eventService = await CreateEventService(all);
+            var eventService = GetInitializedService<IEventService, Event>(all);
 
             var expected = all.OrderBy(a => a.StartAt);
             var actual = eventService.GetEvents().FilterByFrom(null).OrderBy(a => a.StartAt);
@@ -78,7 +78,7 @@ namespace LearningTest.EventServiceTests
             Assert.Equal(expected, actual);
         }
 
-        [Fact(DisplayName = "фильтрация по дате endDate")]
+        [Fact(DisplayName = "03. Фильтрация по дате endDate")]
         public async Task FilterByToTest()
         {
             var minOrDefault = CreateEventEndAt(default);
@@ -88,7 +88,7 @@ namespace LearningTest.EventServiceTests
             var max = CreateEventEndAt(DateTime.MaxValue);
 
             IEnumerable<Event> all = [minOrDefault, less, now, more, max];
-            var eventService = await CreateEventService(all);
+            var eventService = GetInitializedService<IEventService, Event>(all);
 
             var expected = all.OrderBy(a => a.EndAt);
             var actual = eventService.GetEvents().FilterByTo(null).OrderBy(a => a.EndAt);
@@ -119,7 +119,7 @@ namespace LearningTest.EventServiceTests
             Assert.Equal(expected, actual);
         }
 
-        [Theory(DisplayName = "комбинированная фильтрация")]
+        [Theory(DisplayName = "04. Комбинированная фильтрация")]
         [InlineData("one", null, null, 3)]
         [InlineData("two", null, null, 3)]
         [InlineData("three", null, null, 3)]
@@ -152,7 +152,7 @@ namespace LearningTest.EventServiceTests
             IEnumerable<Event> all = [pastone, pasttwo, pastthree,
                 one, two, three,
                 skipone, skiptwo, skipthree];
-            var eventService = await CreateEventService(all);
+            var eventService = GetInitializedService<IEventService, Event>(all);
 
             var actual = eventService.GetEvents()
                 .FilterByTitle(title)

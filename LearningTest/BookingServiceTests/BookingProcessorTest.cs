@@ -1,27 +1,24 @@
-﻿using LearningWebApi.Services.BookingService;
-using static LearningTest.Factories.EntityFactory;
-using static LearningTest.Factories.MockRepositoryFactory;
-using static LearningTest.Factories.ServiceFactory;
-using static LearningTest.Factories.RepositoryFactory;
+﻿using LearningTest.Helpers;
 using LearningWebApi.Entities;
+using LearningWebApi.Services.BookingService;
+using LearningWebApi.Services.EventService;
+using static LearningTest.Helpers.EntityFactory;
 
 namespace LearningTest.BookingServiceTests
 {
-    public class BookingProcessorTest
+    public class BookingProcessorTest : AServiceCollection
     {
-        [Fact(DisplayName = "Проверка корректной отмены обработчика BookingProcessor")]
+        [Fact(DisplayName = "01. Проверка корректной отмены обработчика BookingProcessor")]
         public async Task CancelBookingProcessTest()
         {
             var @event = CreateEventAvailableSeats();
-            var eventRepository = MockEventRepository(@event);
-            var eventService = CreateEventService(eventRepository);
-            var bookingService = CreateBookingService(eventService);
+            var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создали бронь
             var booking = await bookingService.CreateBookingAsync(@event.Id);
 
             using var cts = new CancellationTokenSource();
-            using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
+            using var bookingProcessor = GetHostedService<BookingProcessor>()!;
 
             // Начали обрабатывать бронь
             var process = bookingProcessor.ProcessBookingAsync(booking, cts.Token);
@@ -35,37 +32,33 @@ namespace LearningTest.BookingServiceTests
             Assert.Null(await bookingService.GetBookingByIdAsync(booking.Id));
         }
 
-        [Fact(DisplayName = "Проверка успешной обработки бронирования события")]
+        [Fact(DisplayName = "02. Проверка успешной обработки бронирования события")]
         public async Task ProcessSuccessBookingEventTest()
         {
             var @event = CreateEventAvailableSeats();
-            var eventRepository = MockEventRepository(@event);
-            var eventService = CreateEventService(eventRepository);
-            var bookingService = CreateBookingService(eventService);
+            var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создать бронь
             var booking = await bookingService.CreateBookingAsync(@event.Id);
 
-            using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
+            using var bookingProcessor = GetHostedService<BookingProcessor>()!;
             await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
 
             Assert.Equal(BookingStatus.Confirmed, booking.Status);
         }
 
-        [Fact(DisplayName = "Проверка обработки бронирования события которое было удалено")]
+        [Fact(DisplayName = "03. Проверка обработки бронирования события которое было удалено")]
         public async Task ProcessBookingNotExistedEventTest()
         {
             var @event = CreateEventAvailableSeats();
-            var eventRepository = await CreateEventRepositoryAsync(@event);
-            var eventService = CreateEventService(eventRepository);
-            var bookingService = CreateBookingService(eventService);
+            var (eventService, bookingService) = GetInitializedServices<IEventService, IBookingService, Event>(@event);
 
             // Создать бронь
             var booking = await bookingService.CreateBookingAsync(@event.Id);
             // Удалить бронь
             await eventService.TryDeleteEventAsync(@event.Id);
 
-            using var bookingProcessor = CreateBookingProcessor(bookingService, eventService);
+            using var bookingProcessor = GetHostedService<BookingProcessor>()!;
             await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
 
             Assert.Equal(BookingStatus.Rejected, booking.Status);

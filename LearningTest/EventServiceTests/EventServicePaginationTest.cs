@@ -1,15 +1,15 @@
-﻿using LearningWebApi.Entities;
+﻿using LearningTest.Helpers;
+using LearningWebApi.Entities;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Factories.ServiceFactory;
 
 namespace LearningTest.EventServiceTests
 {
-    public class EventServicePaginationTest
+    public class EventServicePaginationTest : AServiceCollection
     {
         private readonly IEnumerable<Event> _randomData;
-        private readonly Task<IEventService> _eventService;
+        private readonly IEventService _eventService;
 
-        public EventServicePaginationTest()
+        public EventServicePaginationTest() : base()
         {
             var rnd = new Random();
 
@@ -30,17 +30,16 @@ namespace LearningTest.EventServiceTests
                     EndAt = GetRandomDate(),
                     Description = $"Random description {i}"
                 })];
-            _eventService = CreateEventService(_randomData);
+            _eventService = GetInitializedService<IEventService, Event>(_randomData);
         }
 
-        [Theory(DisplayName = "пагинация событий номер страницы")]
+        [Theory(DisplayName = "01. Пагинация событий номер страницы")]
         [InlineData(1)]
         [InlineData(20)]
         public async Task PaginationPageNumberTest(int pageNumber)
         {
             var pageSize = 10;
-            var service = await _eventService;
-            var actual = service.GetEvents()
+            var actual = _eventService.GetEvents()
                 .Pagination(pageNumber, pageSize)
                 .Count();
 
@@ -48,26 +47,24 @@ namespace LearningTest.EventServiceTests
             Assert.True(actual >= 0);
         }
 
-        [Theory(DisplayName = "пагинация событий некорректный номер страницы")]
+        [Theory(DisplayName = "02. Пагинация событий некорректный номер страницы")]
         [InlineData(-1)]
         [InlineData(0)]
         public async Task PaginationPageNumberFailTest(int pageNumber)
         {
-            var service = await _eventService;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                service.GetEvents()
+                _eventService.GetEvents()
                     .Pagination(pageNumber, pageSize: 10);
             });
         }
 
-        [Theory(DisplayName = "пагинация событий количество событий на странице")]
+        [Theory(DisplayName = "03. Пагинация событий количество событий на странице")]
         [InlineData(1)]
         [InlineData(20)]
         public async Task PaginationPageSizeTest(int pageSize)
         {
-            var service = await _eventService;
-            var actual = service.GetEvents()
+            var actual = _eventService.GetEvents()
                 .Pagination(page: 1, pageSize)
                 .Count();
 
@@ -75,20 +72,19 @@ namespace LearningTest.EventServiceTests
             Assert.True(actual >= 0);
         }
 
-        [Theory(DisplayName = "пагинация событий некорректное количество событий на странице")]
+        [Theory(DisplayName = "04. Пагинация событий некорректное количество событий на странице")]
         [InlineData(-1)]
         [InlineData(0)]
         public async Task PaginationPageSizeFailTest(int pageSize)
         {
-            var service = await _eventService;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                service.GetEvents()
+                _eventService.GetEvents()
                 .Pagination(page: 1, pageSize);
             });
         }
 
-        [Theory(DisplayName = "пагинация - проверка состава элементов (ожидаемый диапазон)")]
+        [Theory(DisplayName = "05. Пагинация - проверка состава элементов (ожидаемый диапазон)")]
         [InlineData(1, 10)]
         [InlineData(2, 5)]
         public async Task PaginationOrderElementsTest(int pageNumber, int pageSize)
@@ -97,8 +93,7 @@ namespace LearningTest.EventServiceTests
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
-            var service = await _eventService;
-            var actual = service.GetEvents()
+            var actual = _eventService.GetEvents()
                 .Pagination(pageNumber, pageSize);
 
             Assert.Equal(expected, actual);

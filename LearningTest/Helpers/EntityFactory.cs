@@ -1,6 +1,6 @@
 ﻿using LearningWebApi.Entities;
 
-namespace LearningTest.Factories
+namespace LearningTest.Helpers
 {
     internal static class EntityFactory
     {
@@ -42,6 +42,13 @@ namespace LearningTest.Factories
             EndAt = endAt,
             Description = description,
         };
+
+        public static Event CreateEvent(Action<Event>? configure = null)
+        {
+            var eventData = CreateEvent();
+            configure?.Invoke(eventData);
+            return eventData;
+        }
 
         public static Booking CreateBooking() => new()
         {

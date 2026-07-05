@@ -5,7 +5,7 @@ namespace LearningTest.EventServiceTests
 {
     public class EventValidationTest
     {
-        [Theory(DisplayName = "создание события с некорректными данными")]
+        [Theory(DisplayName = "01. Создание события с некорректными данными")]
         [InlineData("", -1, 1, 10, nameof(CreateEventRequest.Title))]
         [InlineData("incorrectStart", -1, 1, 10, nameof(CreateEventRequest.StartAt))]
         [InlineData("incorrectBothDate", 1, -1, 10, nameof(CreateEventRequest.EndAt))]
@@ -28,7 +28,7 @@ namespace LearningTest.EventServiceTests
             Assert.Contains(validationResults, v => v.MemberNames.Contains(memberName));
         }
 
-        [Theory(DisplayName = "обновление события с некорректными датами (EndAt раньше StartAt)")]
+        [Theory(DisplayName = "02. Обновление события с некорректными датами (EndAt раньше StartAt)")]
         [InlineData("", -1, 1, nameof(CreateEventRequest.Title))]
         [InlineData("incorrectStart", -1, 1, nameof(CreateEventRequest.StartAt))]
         [InlineData("incorrectBothDate", 1, -1, nameof(CreateEventRequest.EndAt))]
