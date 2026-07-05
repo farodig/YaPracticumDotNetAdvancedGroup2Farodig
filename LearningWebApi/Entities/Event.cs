@@ -3,7 +3,7 @@
     /// <summary>
     /// Событие
     /// </summary>
-    public partial class Event
+    public class Event
     {
         /// <summary>
         /// Идентификатор события
@@ -39,5 +39,10 @@
         /// Текущее количество свободных мест;
         /// </summary>
         public int? AvailableSeats { get; set; }
+
+        /// <summary>
+        /// бронирования
+        /// </summary>
+        public List<Booking> Bookings { get; set; } = [];
     }
 }

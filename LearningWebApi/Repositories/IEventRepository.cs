@@ -5,21 +5,39 @@ namespace LearningWebApi.Repositories
     /// <summary>
     /// Репозиторий событий
     /// </summary>
-    public interface IEventRepository : IDictionary<Guid, Event>
+    public interface IEventRepository
     {
+        /// <summary>
+        /// Получить все события
+        /// </summary>
+        IQueryable<Event> GetEvents();
+
         /// <summary>
         /// Получить событие по идентификатору
         /// </summary>
-        Event? Get(Guid id);
+        Task<Event?> GetAsync(Guid id, CancellationToken? cts = null);
 
         /// <summary>
-        /// Создать или обновить событие
+        /// Создать событие
         /// </summary>
-        void CreateOrUpdate(Event item);
+        Task CreateAsync(Event item, CancellationToken? cts = null);
 
         /// <summary>
-        /// Удалить событие
+        /// Обновить событие
         /// </summary>
-        new void Remove(Guid id);
+        /// <returns>Количество удалённых из базы событий</returns>
+        Task<int> TryUpdateAsync(Event item, CancellationToken? cts = null);
+
+        /// <summary>
+        /// Обновить событие в локальном контексте (подготовить но не сохранять) 
+        /// </summary>
+        /// <returns>Количество удалённых из базы событий</returns>
+        Task<bool> TryUpdateContextAsync(Event item, CancellationToken? cts = null);
+
+        /// <summary>
+        /// Удалить событие по Id
+        /// </summary>
+        /// <returns>Количество удалённых из базы событий</returns>
+        Task<int> TryRemoveAsync(Guid id, CancellationToken? cts = null);
     }
 }

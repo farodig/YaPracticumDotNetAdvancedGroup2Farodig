@@ -11,56 +11,60 @@ namespace LearningWebApi.Services.BookingService
         private readonly IEventService _eventService = eventService;
         private readonly IBookingRepository _repository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly Lock _bookingLock = new();
+        private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
 
-        public Booking CreateBooking(Guid eventId)
+        public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken? cts = null)
         {
-            lock (_bookingLock)
+            await _bookingSemaphore.WaitAsync(cts ?? CancellationToken.None);
+            try
             {
-                // TODO: по хорошему следует вынести за пределы lock (_bookingLock), но в ТЗ говорит резервировать места нужно с двойной блокировкой
-                _eventService.ReserveSeat(eventId);
+                await _eventService.ReserveSeatAsync(eventId, cts ?? CancellationToken.None);
 
                 // Создать бронь
                 var booking = BookingFactory.CreateBooking(eventId);
-                _repository.CreateOrUpdate(booking);
+                await _repository.CreateAsync(booking, cts ?? CancellationToken.None);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking;
             }
+            finally
+            {
+                _bookingSemaphore.Release();
+            }
         }
 
-        public Booking? GetBookingById(Guid id)
+        public async Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken? cts = null)
         {
-            return _repository.Get(id);
+            return await _repository.GetAsync(id, cts ?? CancellationToken.None);
         }
 
-        public void CancelBooking(Guid bookingId)
+        public async Task CancelBookingAsync(Booking data, CancellationToken? cts = null)
         {
-            _repository.Remove(bookingId);
+            await _repository.TryRemoveAsync(data.Id, cts ?? CancellationToken.None);
+            _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
         public IEnumerable<Booking> GetPending()
         {
-            return _repository.Select(a => a.Value)
+            return _repository.GetBookings()
                 .Where(a => a.Status == BookingStatus.Pending)
                 .OrderBy(a => a.CreatedAt);
         }
 
-        public void ConfirmBooking(Booking data)
+        public async Task ConfirmBookingAsync(Booking data, CancellationToken? cts = null)
         {
             data.Status = BookingStatus.Confirmed;
             data.ProcessedAt = DateTime.Now;
+            await _repository.TryUpdateAsync(data, cts ?? CancellationToken.None);
             _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
-            _repository.CreateOrUpdate(data);
         }
 
-        public void RejectBooking(Booking data)
+        public async Task RejectBookingAsync(Booking data, CancellationToken? cts = null)
         {
             data.Status = BookingStatus.Rejected;
             data.ProcessedAt = DateTime.Now;
+            await _eventService.ReleaseSeatAsync(data.EventId, cts ?? CancellationToken.None);
+            await _repository.TryUpdateAsync(data, cts ?? CancellationToken.None);
             _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
-            _repository.CreateOrUpdate(data);
-
-            _eventService.ReleaseSeat(data.EventId);
         }
     }
 }

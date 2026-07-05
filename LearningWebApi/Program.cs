@@ -1,47 +1,18 @@
+using LearningWebApi;
+using LearningWebApi.DataAccess;
 using LearningWebApi.Middlewares;
-using LearningWebApi.Repositories;
-using LearningWebApi.Services.BookingService;
-using LearningWebApi.Services.EventService;
-using NLog.Web;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IEventRepository, EventRepository>();
-builder.Services.AddSingleton<IEventService, EventService>();
-builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
-builder.Services.AddSingleton<IBookingService, BookingService>();
-builder.Services.AddHostedService<BookingProcessor>();
-builder.Services.AddSwaggerGen(options =>
-{
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath, true);
-});
+builder.AppDbConfigure();
+builder.Services.AddEventService();
+builder.Services.AddBookingService();
+builder.AddSwaggerService();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSwagger",
-        policy =>
-        {
-            // Читаем из настроек или используем значения по умолчанию
-            var origins = (builder.Configuration["ASPNETCORE_URLS"] ??
-                       builder.Configuration["urls"] ?? string.Empty)
-                       .Split(';');
-
-            policy.WithOrigins(origins)
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
-});
-
-
-//builder.Logging.ClearProviders();
-builder.Host.UseNLog();
+builder.AddNlog();
 
 var app = builder.Build();
 
-//app.UseMiddleware<GlobalLoggerMiddleware>();
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
@@ -53,5 +24,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.AppDbInitialize();
 
 app.Run();

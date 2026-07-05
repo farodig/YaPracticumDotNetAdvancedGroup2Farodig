@@ -8,19 +8,19 @@ namespace LearningWebApi.Services.BookingService
     public interface IBookingService
     {
         /// <summary>
-        /// создание брони для указанного события
+        /// Создание брони для указанного события
         /// </summary>
-        public Booking CreateBooking(Guid eventId);
+        Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken? cts = null);
 
         /// <summary>
-        /// получение брони по идентификатору
+        /// Получение брони по идентификатору
         /// </summary>
-        public Booking? GetBookingById(Guid bookingId);
+        Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken? cts = null);
 
         /// <summary>
         /// Отменить бронирование
         /// </summary>
-        public void CancelBooking(Guid bookingId);
+        Task CancelBookingAsync(Booking data, CancellationToken? cts = null);
 
         /// <summary>
         /// Получить необработанные бронирования
@@ -30,11 +30,11 @@ namespace LearningWebApi.Services.BookingService
         /// <summary>
         /// Подтвердить бронь
         /// </summary>
-        void ConfirmBooking(Booking data);
+        Task ConfirmBookingAsync(Booking data, CancellationToken? cts = null);
 
         /// <summary>
         /// Отклонить бронь
         /// </summary>
-        void RejectBooking(Booking data);
+        Task RejectBookingAsync(Booking data, CancellationToken? cts = null);
     }
 }

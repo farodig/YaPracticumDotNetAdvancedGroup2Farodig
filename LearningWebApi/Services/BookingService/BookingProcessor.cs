@@ -4,10 +4,9 @@ using NLog;
 
 namespace LearningWebApi.Services.BookingService
 {
-    internal class BookingProcessor(IBookingService bookingService, IEventService eventService) : BackgroundService
+    internal class BookingProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
     {
-        private readonly IEventService _eventService = eventService;
-        private readonly IBookingService _bookingService = bookingService;
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
@@ -18,8 +17,7 @@ namespace LearningWebApi.Services.BookingService
                 // Добавляем задержку в случае отсутствия задач, чтобы не зависало
                 await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
-                var pendingBookings = _bookingService.GetPending()
-                    .ToList();
+                var pendingBookings = GetPending();
 
                 var tasks = pendingBookings
                     // Добавляем задачи по обработки брони
@@ -36,7 +34,10 @@ namespace LearningWebApi.Services.BookingService
                 // Имитация внешнего вызова
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
-                var hasEvent = _eventService.GetEvent(data.EventId) is not null;
+                using var scope = _scopeFactory.CreateScope();
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+                var hasEvent = await eventService.GetEventAsync(data.EventId, stoppingToken) is not null;
 
                 await _processingSemaphore.WaitAsync(stoppingToken);
 
@@ -44,22 +45,24 @@ namespace LearningWebApi.Services.BookingService
                 {
                     if (hasEvent)
                     {
-                        _bookingService.ConfirmBooking(data);
+                        await bookingService.ConfirmBookingAsync(data, stoppingToken);
                     }
                     else
                     {
-                        _bookingService.RejectBooking(data);
+                        await bookingService.RejectBookingAsync(data, stoppingToken);
                     }
                 }
                 catch (Exception cef)
                 {
                     _logger.Error(cef);
-                    _bookingService.RejectBooking(data);
+                    await bookingService.RejectBookingAsync(data, stoppingToken);
                 }
             }
             catch (OperationCanceledException)
             {
-                CancelOperation(data);
+                using var scope = _scopeFactory.CreateScope();
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                await bookingService.CancelBookingAsync(data, CancellationToken.None);
             }
             finally
             {
@@ -70,15 +73,18 @@ namespace LearningWebApi.Services.BookingService
                 // Операция была прервана раньше чем был вызыван WaitAsync
                 catch (SemaphoreFullException)
                 {
-                    CancelOperation(data);
+                    using var scope = _scopeFactory.CreateScope();
+                    var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                    await bookingService.CancelBookingAsync(data, CancellationToken.None);
                 }
             }
         }
 
-        private void CancelOperation(Booking data)
+        private List<Booking> GetPending()
         {
-            _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
-            _bookingService.CancelBooking(data.Id);
+            using var scope = _scopeFactory.CreateScope();
+            var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+            return [.. bookingService.GetPending()];
         }
     }
 }

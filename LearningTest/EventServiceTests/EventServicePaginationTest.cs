@@ -1,15 +1,16 @@
-﻿using LearningWebApi.Entities;
+﻿using LearningTest.Helpers;
+using LearningWebApi.Entities;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Factories.ServiceFactory;
 
 namespace LearningTest.EventServiceTests
 {
-    public class EventServicePaginationTest
+    [Trait("Category", "Unit")]
+    public class EventServicePaginationTest : AServiceCollection
     {
         private readonly IEnumerable<Event> _randomData;
         private readonly IEventService _eventService;
 
-        public EventServicePaginationTest()
+        public EventServicePaginationTest() : base()
         {
             var rnd = new Random();
 
@@ -30,13 +31,13 @@ namespace LearningTest.EventServiceTests
                     EndAt = GetRandomDate(),
                     Description = $"Random description {i}"
                 })];
-            _eventService = CreateEventService(_randomData);
+            _eventService = GetInitializedService<IEventService, Event>(_randomData);
         }
 
-        [Theory(DisplayName = "пагинация событий номер страницы")]
+        [Theory(DisplayName = "01. Пагинация событий номер страницы")]
         [InlineData(1)]
         [InlineData(20)]
-        public void PaginationPageNumberTest(int pageNumber)
+        public async Task PaginationPageNumberTest(int pageNumber)
         {
             var pageSize = 10;
             var actual = _eventService.GetEvents()
@@ -47,10 +48,10 @@ namespace LearningTest.EventServiceTests
             Assert.True(actual >= 0);
         }
 
-        [Theory(DisplayName = "пагинация событий некорректный номер страницы")]
+        [Theory(DisplayName = "02. Пагинация событий некорректный номер страницы")]
         [InlineData(-1)]
         [InlineData(0)]
-        public void PaginationPageNumberFailTest(int pageNumber)
+        public async Task PaginationPageNumberFailTest(int pageNumber)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -59,10 +60,10 @@ namespace LearningTest.EventServiceTests
             });
         }
 
-        [Theory(DisplayName = "пагинация событий количество событий на странице")]
+        [Theory(DisplayName = "03. Пагинация событий количество событий на странице")]
         [InlineData(1)]
         [InlineData(20)]
-        public void PaginationPageSizeTest(int pageSize)
+        public async Task PaginationPageSizeTest(int pageSize)
         {
             var actual = _eventService.GetEvents()
                 .Pagination(page: 1, pageSize)
@@ -72,10 +73,10 @@ namespace LearningTest.EventServiceTests
             Assert.True(actual >= 0);
         }
 
-        [Theory(DisplayName = "пагинация событий некорректное количество событий на странице")]
+        [Theory(DisplayName = "04. Пагинация событий некорректное количество событий на странице")]
         [InlineData(-1)]
         [InlineData(0)]
-        public void PaginationPageSizeFailTest(int pageSize)
+        public async Task PaginationPageSizeFailTest(int pageSize)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -84,10 +85,10 @@ namespace LearningTest.EventServiceTests
             });
         }
 
-        [Theory(DisplayName = "пагинация - проверка состава элементов (ожидаемый диапазон)")]
+        [Theory(DisplayName = "05. Пагинация - проверка состава элементов (ожидаемый диапазон)")]
         [InlineData(1, 10)]
         [InlineData(2, 5)]
-        public void PaginationOrderElementsTest(int pageNumber, int pageSize)
+        public async Task PaginationOrderElementsTest(int pageNumber, int pageSize)
         {
             var expected = _randomData.OrderBy(c => c.StartAt)
                 .Skip((pageNumber - 1) * pageSize)
