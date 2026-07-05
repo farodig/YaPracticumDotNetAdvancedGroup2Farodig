@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LearningTest.EventServiceTests
 {
+    [Trait("Category", "Unit")]
     public class EventValidationTest
     {
         [Theory(DisplayName = "01. Создание события с некорректными данными")]

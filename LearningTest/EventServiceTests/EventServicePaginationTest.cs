@@ -4,6 +4,7 @@ using LearningWebApi.Services.EventService;
 
 namespace LearningTest.EventServiceTests
 {
+    [Trait("Category", "Unit")]
     public class EventServicePaginationTest : AServiceCollection
     {
         private readonly IEnumerable<Event> _randomData;

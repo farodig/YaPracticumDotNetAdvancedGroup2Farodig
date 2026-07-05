@@ -6,6 +6,7 @@ using static LearningTest.Helpers.EntityFactory;
 
 namespace LearningTest.BookingServiceTests
 {
+    [Trait("Category", "Unit")]
     public class BookingProcessorTest : AServiceCollection
     {
         [Fact(DisplayName = "01. Проверка корректной отмены обработчика BookingProcessor")]

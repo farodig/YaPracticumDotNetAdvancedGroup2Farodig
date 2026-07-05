@@ -8,6 +8,7 @@ using static LearningTest.Helpers.EntityFactory;
 
 namespace LearningTest.BookingServiceTests
 {
+    [Trait("Category", "Unit")]
     public class BookingServiceTest : AServiceCollection
     {
         [Fact(DisplayName = "01. Создание брони для существующего события — возвращается BookingInfo со статусом Pending")]

@@ -7,11 +7,31 @@
 3. В git переключиться на последнюю актуальную ветку
 4. Установить [PostgreSQL](https://www.postgresql.org/download/) и добавить пользователя со всеми правами Username=postgres;Password=postgres
    или скачать и запустить [образ docker postgresql](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig/blob/sprint-5/docker-compose_.yml
-5. Зайти в консоль от администратора
-6. В корневой папке проекта выполнить команду dotnet test
-7. Зайти в подпапку скачанного репозитория LearningWebApi/
-8. Выполнить команду dotnet run
-9. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
+5. В файл конфигурации appsettings.json в корневой узел добавить строку подключения если данные подключения к бд будут отличаться
+```markdown
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
+  }
+```
+📝 **Примечание:** Если БД пустая, то структура будет создана при первом запуске через EnsureCreated
+
+6. Зайти в консоль от администратора
+7. В корневой папке проекта выполнить команду dotnet test
+
+💡 **Совет:** Тесты разделены на юнит и интеграционные, их можно запускать по отдельности.
+```markdown
+Запустить только юнит тесты:
+dotnet test --filter "Category=Unit"
+```
+```markdown
+Запустить только интеграционные тесты:
+dotnet test --filter "Category=Integration"
+```
+⚠️ **Важно:** В тестах используется БД InMemory-провайдер
+
+8. Зайти в подпапку скачанного репозитория LearningWebApi/
+9. Выполнить команду dotnet run
+10. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
 
 ## API
 

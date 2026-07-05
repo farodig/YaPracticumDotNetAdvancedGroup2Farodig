@@ -5,6 +5,7 @@ using static LearningTest.Helpers.EntityFactory;
 
 namespace LearningTest.EventServiceTests
 {
+    [Trait("Category", "Unit")]
     public class EventServiceFilterTest : AServiceCollection
     {
         [Fact(DisplayName = "01. Фильтрация по названию")]

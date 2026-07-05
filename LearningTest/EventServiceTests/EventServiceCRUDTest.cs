@@ -5,6 +5,7 @@ using static LearningTest.Helpers.EntityFactory;
 
 namespace LearningTest.EventServiceTests
 {
+    [Trait("Category", "Unit")]
     public class EventServiceCRUDTest : AServiceCollection
     {
         [Fact(DisplayName = "01. Создание события")]

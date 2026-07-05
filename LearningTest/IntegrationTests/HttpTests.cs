@@ -5,6 +5,7 @@ using System.Net;
 
 namespace LearningTest.IntegrationTests
 {
+    [Trait("Category", "Integration")]
     public class HttpTests(IntegrationTestFactory factory) : AHttpClient(factory)
     {
         [Fact(DisplayName = "01. Создание объекта")]
