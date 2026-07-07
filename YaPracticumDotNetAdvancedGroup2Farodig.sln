@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningTest", "LearningTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{793C33D8-A9BC-49FC-923B-79AC762C83E9}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose_.yml = docker-compose_.yml
+		docker-compose.yml = docker-compose.yml
 		README.md = README.md
 	EndProjectSection
 EndProject

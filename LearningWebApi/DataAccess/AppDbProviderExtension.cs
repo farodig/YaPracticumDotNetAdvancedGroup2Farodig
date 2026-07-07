@@ -26,14 +26,7 @@ namespace LearningWebApi.DataAccess
             using var scope = app.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            if (app.Environment.IsProduction())
-            {
-                context.Database.Migrate();
-            }
-            else if (app.Environment.IsDevelopment())
-            {
-                context.Database.EnsureCreated();
-            }
+            context.Database.Migrate();
         }
     }
 }
