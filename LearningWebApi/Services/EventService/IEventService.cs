@@ -17,7 +17,7 @@ namespace LearningWebApi.Services.EventService
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <param name="cts">Токен отмены</param>
-        Task<Event?> GetEventAsync(Guid id, CancellationToken? cts = null);
+        Task<Event?> GetEventAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Создать событие
@@ -28,7 +28,7 @@ namespace LearningWebApi.Services.EventService
         /// <param name="description">Описание события</param>
         /// <param name="cts">Токен отмены</param>
         /// <param name="totalSeats">Общее количество мест на событии</param>
-        Task<Event> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken? cts = null);
+        Task<Event> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken cts = default);
 
         /// <summary>
         /// Обновить существующее событие
@@ -36,7 +36,7 @@ namespace LearningWebApi.Services.EventService
         /// <param name="item">Событие</param>
         /// <param name="cts">Токен отмены</param>
         /// <returns>true если удалось совершить действие над событием, false если событие не найдено</returns>
-        Task<bool> TryUpdateEventAsync(Event item, CancellationToken? cts = null);
+        Task<bool> TryUpdateEventAsync(Event item, CancellationToken cts = default);
 
         /// <summary>
         /// Удалить существующее событие
@@ -44,16 +44,16 @@ namespace LearningWebApi.Services.EventService
         /// <param name="id">Идентификатор события</param>
         /// <param name="cts">Токен отмены</param>
         /// <returns>true если удалось совершить действие над событием, false если событие не найдено</returns>
-        Task<bool> TryDeleteEventAsync(Guid id, CancellationToken? cts = null);
+        Task<bool> TryDeleteEventAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Зарезерировать место на событии
         /// </summary>
-        Task ReserveSeatAsync(Guid id, CancellationToken? cts = null);
+        Task ReserveSeatAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Освободить место на событии
         /// </summary>
-        Task ReleaseSeatAsync(Guid id, CancellationToken? cts = null);
+        Task ReleaseSeatAsync(Guid id, CancellationToken cts = default);
     }
 }

@@ -15,29 +15,29 @@ namespace LearningWebApi.Repositories
         /// <summary>
         /// Получить событие по идентификатору
         /// </summary>
-        Task<Event?> GetAsync(Guid id, CancellationToken? cts = null);
+        Task<Event?> GetAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Создать событие
         /// </summary>
-        Task CreateAsync(Event item, CancellationToken? cts = null);
+        Task CreateAsync(Event item, CancellationToken cts = default);
 
         /// <summary>
         /// Обновить событие
         /// </summary>
         /// <returns>Количество удалённых из базы событий</returns>
-        Task<int> TryUpdateAsync(Event item, CancellationToken? cts = null);
+        Task<int> TryUpdateAsync(Event item, CancellationToken cts = default);
 
         /// <summary>
         /// Обновить событие в локальном контексте (подготовить но не сохранять) 
         /// </summary>
         /// <returns>Количество удалённых из базы событий</returns>
-        Task<bool> TryUpdateContextAsync(Event item, CancellationToken? cts = null);
+        Task<bool> TryUpdateContextAsync(Event item, CancellationToken cts = default);
 
         /// <summary>
         /// Удалить событие по Id
         /// </summary>
         /// <returns>Количество удалённых из базы событий</returns>
-        Task<int> TryRemoveAsync(Guid id, CancellationToken? cts = null);
+        Task<int> TryRemoveAsync(Guid id, CancellationToken cts = default);
     }
 }
