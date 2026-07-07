@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{793C33D8-A
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learning.IntegrationTests", "Learning.IntegrationTests\Learning.IntegrationTests.csproj", "{B342729D-CE0A-4394-982C-D9B64CD13B59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
