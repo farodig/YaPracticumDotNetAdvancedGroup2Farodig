@@ -71,7 +71,7 @@ namespace Learning.UnitTests.EventServiceTests
         public async Task TryUpdateEventNotExistIdFailTest(Guid id)
         {
             var service = GetService<IEventService>();
-            Assert.False(await service.TryUpdateEventAsync(CreateEvent(e => e.Id = id)));
+            Assert.False(await service.TryUpdateEventAsync(CreateEvent(eventId: id)));
         }
 
         [Fact(DisplayName = "06. Обновление существующего события")]
