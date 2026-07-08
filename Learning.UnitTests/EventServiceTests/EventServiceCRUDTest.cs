@@ -1,9 +1,9 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.UnitTests.Helpers;
 using LearningWebApi.Entities;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Helpers.EntityFactory;
+using static Learning.UnitTests.Helpers.EntityFactory;
 
-namespace LearningTest.EventServiceTests
+namespace Learning.UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventServiceCRUDTest : AServiceCollection

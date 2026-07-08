@@ -1,12 +1,12 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.UnitTests.Helpers;
 using LearningWebApi.Entities;
 using LearningWebApi.Exceptions;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Helpers.EntityFactory;
+using static Learning.UnitTests.Helpers.EntityFactory;
 
-namespace LearningTest.BookingServiceTests
+namespace Learning.UnitTests.BookingServiceTests
 {
     [Trait("Category", "Unit")]
     public class BookingServiceTest : AServiceCollection

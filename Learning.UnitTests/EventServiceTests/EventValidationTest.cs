@@ -1,7 +1,7 @@
 ﻿using LearningWebApi.Models.Requests;
 using System.ComponentModel.DataAnnotations;
 
-namespace LearningTest.EventServiceTests
+namespace Learning.UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventValidationTest

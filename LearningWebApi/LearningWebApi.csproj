@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="LearningTest" />
+    <InternalsVisibleTo Include="Learning.UnitTests" />
     <InternalsVisibleTo Include="Learning.IntegrationTests" />
   </ItemGroup>
 

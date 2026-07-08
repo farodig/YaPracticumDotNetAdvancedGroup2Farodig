@@ -3,7 +3,7 @@ using LearningWebApi.DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace LearningTest.Helpers
+namespace Learning.UnitTests.Helpers
 {
     public abstract class AServiceCollection : IDisposable
     {

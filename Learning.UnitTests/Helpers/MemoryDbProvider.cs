@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LearningTest.Helpers
+namespace Learning.UnitTests.Helpers
 {
     internal static class MemoryDbProvider
     {

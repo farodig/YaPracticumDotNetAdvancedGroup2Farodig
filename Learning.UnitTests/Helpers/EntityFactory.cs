@@ -1,6 +1,6 @@
 ﻿using LearningWebApi.Entities;
 
-namespace LearningTest.Helpers
+namespace Learning.UnitTests.Helpers
 {
     internal static class EntityFactory
     {
