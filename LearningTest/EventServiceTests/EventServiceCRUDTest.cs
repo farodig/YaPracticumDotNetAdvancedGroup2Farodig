@@ -23,6 +23,7 @@ namespace LearningTest.EventServiceTests
             Assert.Equal(expected.Description, actual.Description);
             Assert.Equal(expected.TotalSeats, actual.TotalSeats);
             Assert.Equal(expected.AvailableSeats, actual.AvailableSeats);
+            Assert.Equal(actual.TotalSeats, actual.AvailableSeats);
         }
 
         [Fact(DisplayName = "02. Получение всех событий")]
