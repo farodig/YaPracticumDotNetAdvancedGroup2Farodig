@@ -1,4 +1,5 @@
 ﻿using LearningWebApi.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Repositories
 {
@@ -14,11 +15,7 @@ namespace LearningWebApi.Repositories
         {
             if (!string.IsNullOrWhiteSpace(title))
             {
-                // TODO: проверить: В EF Core 5+ и выше Contains с StringComparison автоматически транслируется в LIKE или ILIKE, так сказала Алиса AI :)
-                data = data.Where(a => a.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
-                // TODO: Ломает юнит тесты с поиском
-                //data = data.Where(a => EF.Functions.ILike(a.Title, $"%{title}%"));
-                // TODO: жду предложений
+                data = data.Where(a => EF.Functions.ILike(a.Title, $"%{title}%"));
             }
 
             return data;
