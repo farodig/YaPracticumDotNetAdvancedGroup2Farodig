@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace LearningTest.Helpers
+namespace Learning.IntegrationTests.Helpers
 {
+    [CollectionDefinition("SequentialTests", DisableParallelization = true)]
     public abstract class AHttpClient(IntegrationTestFactory factory) : IClassFixture<IntegrationTestFactory>
     {
         private readonly HttpClient _client = factory.CreateClient();

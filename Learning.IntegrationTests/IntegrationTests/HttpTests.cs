@@ -1,11 +1,12 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.IntegrationTests.Helpers;
 using LearningWebApi.Models.Requests;
 using LearningWebApi.Models.Responses;
 using System.Net;
 
-namespace LearningTest.IntegrationTests
+namespace Learning.UnitTests.IntegrationTests
 {
     [Trait("Category", "Integration")]
+    [Collection("SequentialTests")]
     public class HttpTests(IntegrationTestFactory factory) : AHttpClient(factory)
     {
         [Fact(DisplayName = "01. Создание объекта")]
