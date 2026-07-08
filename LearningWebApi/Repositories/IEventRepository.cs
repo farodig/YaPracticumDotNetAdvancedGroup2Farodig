@@ -8,9 +8,15 @@ namespace LearningWebApi.Repositories
     public interface IEventRepository
     {
         /// <summary>
-        /// Получить все события
+        /// Получить все события постранично и с фильтрами
         /// </summary>
-        IQueryable<Event> GetEvents();
+        Task<IEnumerable<Event>> GetEventsAsync(
+            int page,
+            int pageSize,
+            string? title = null,
+            DateTime? from = null,
+            DateTime? to = null,
+            CancellationToken cts = default);
 
         /// <summary>
         /// Получить событие по идентификатору

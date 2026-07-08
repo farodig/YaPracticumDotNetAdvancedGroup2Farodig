@@ -32,7 +32,7 @@ namespace LearningTest.EventServiceTests
             var expected = Enumerable.Range(1, 3).Select(a => CreateEvent()).ToArray();
             var service = GetInitializedService<IEventService, Event>(expected);
             
-            var actual = service.GetEvents().ToArray();
+            var actual = await service.GetEventsAsync(1, 3);
 
             Assert.Equal(expected, actual);
         }

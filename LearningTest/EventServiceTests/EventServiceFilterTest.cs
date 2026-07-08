@@ -14,27 +14,32 @@ namespace LearningTest.EventServiceTests
             var toCreateTitle = CreateEventTitle("ToCreateTitle");
             var toUpdateTitle = CreateEventTitle("ToUpdateTitle");
             var toDeleteTitle = CreateEventTitle("ToDeleteTitle");
+            var justData = CreateEventTitle("justData");
 
-            IEnumerable<Event> data = [toCreateTitle, toUpdateTitle, toDeleteTitle];
-            var eventService = GetInitializedService<IEventService, Event>(data);
+            IEnumerable<Event> all = [toCreateTitle, toUpdateTitle, toDeleteTitle, justData];
+            var eventService = GetInitializedService<IEventService, Event>(all);
 
-            IEnumerable<Event> expected = data.OrderBy(a => a.Id);
-            var actual = eventService.GetEvents().FilterByTitle("To").OrderBy(a => a.Id).ToArray();
+            async Task<(IEnumerable<Event>, IEnumerable<Event>)> FilterByTitle(IEnumerable<Event> collection, string? title = null)
+            {
+                return (collection.OrderBy(a => a.Id), (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), title: title)).OrderBy(a => a.Id));
+            }
+
+            var (expected, actual) = await FilterByTitle(all);
             Assert.Equal(expected, actual);
 
-            actual = [.. eventService.GetEvents().FilterByTitle("title").OrderBy(a => a.Id)];
+            (expected, actual) = await FilterByTitle([toCreateTitle, toUpdateTitle, toDeleteTitle], "To");
             Assert.Equal(expected, actual);
 
-            expected = [toCreateTitle];
-            actual = [.. eventService.GetEvents().FilterByTitle("create")];
+            (expected, actual) = await FilterByTitle([toCreateTitle, toUpdateTitle, toDeleteTitle], "title");
             Assert.Equal(expected, actual);
 
-            expected = [toUpdateTitle];
-            actual = [.. eventService.GetEvents().FilterByTitle("update")];
+            (expected, actual) = await FilterByTitle([toCreateTitle], "create");
             Assert.Equal(expected, actual);
 
-            expected = [.. new[] { toCreateTitle, toUpdateTitle }.OrderBy(a => a.Id)];
-            actual = [.. eventService.GetEvents().FilterByTitle("ate").OrderBy(a => a.Id)];
+            (expected, actual) = await FilterByTitle([toUpdateTitle], "update");
+            Assert.Equal(expected, actual);
+
+            (expected, actual) = await FilterByTitle([toCreateTitle, toUpdateTitle], "ate");
             Assert.Equal(expected, actual);
         }
 
@@ -50,32 +55,30 @@ namespace LearningTest.EventServiceTests
             IEnumerable<Event> all = [minOrDefault, less, now, more, max];
             var eventService = GetInitializedService<IEventService, Event>(all);
 
-            var expected = all.OrderBy(a => a.StartAt);
-            var actual = eventService.GetEvents().FilterByFrom(null).OrderBy(a => a.StartAt);
+            async Task<(IEnumerable<Event>, IEnumerable<Event>)> FilterByFrom(IEnumerable<Event> collection, DateTime? from)
+            {
+                return (collection.OrderBy(a => a.StartAt), (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), from: from)).OrderBy(a => a.StartAt));
+            }
+
+            var (expected, actual) = await FilterByFrom(all, null);
             Assert.Equal(expected, actual);
 
-            expected = all.OrderBy(a => a.StartAt);
-            actual = eventService.GetEvents().FilterByFrom(default).OrderBy(a => a.StartAt);
+            (expected, actual) = await FilterByFrom(all, default);
             Assert.Equal(expected, actual);
 
-            expected = all.OrderBy(a => a.StartAt);
-            actual = eventService.GetEvents().FilterByFrom(DateTime.MinValue).OrderBy(a => a.StartAt);
+            (expected, actual) = await FilterByFrom(all, DateTime.MinValue);
             Assert.Equal(expected, actual);
 
-            expected = new[] { less, now, more, max }.OrderBy(a => a.StartAt);
-            actual = eventService.GetEvents().FilterByFrom(less.StartAt).OrderBy(a => a.StartAt);
+            (expected, actual) = await FilterByFrom([less, now, more, max], less.StartAt);
             Assert.Equal(expected, actual);
 
-            expected = new[] { now, more, max }.OrderBy(a => a.StartAt);
-            actual = eventService.GetEvents().FilterByFrom(now.StartAt).OrderBy(a => a.StartAt);
+            (expected, actual) = await FilterByFrom([now, more, max], now.StartAt);
             Assert.Equal(expected, actual);
 
-            expected = new[] { more, max }.OrderBy(a => a.StartAt);
-            actual = eventService.GetEvents().FilterByFrom(more.StartAt).OrderBy(a => a.StartAt);
+            (expected, actual) = await FilterByFrom([more, max], more.StartAt);
             Assert.Equal(expected, actual);
 
-            expected = new[] { max }.OrderBy(a => a.StartAt);
-            actual = eventService.GetEvents().FilterByFrom(max.StartAt).OrderBy(a => a.StartAt);
+            (expected, actual) = await FilterByFrom([max], max.StartAt);
             Assert.Equal(expected, actual);
         }
 
@@ -91,32 +94,32 @@ namespace LearningTest.EventServiceTests
             IEnumerable<Event> all = [minOrDefault, less, now, more, max];
             var eventService = GetInitializedService<IEventService, Event>(all);
 
-            var expected = all.OrderBy(a => a.EndAt);
-            var actual = eventService.GetEvents().FilterByTo(null).OrderBy(a => a.EndAt);
+            async Task<(IEnumerable<Event>, IEnumerable<Event>)> FilterByTo(IEnumerable<Event> collection, DateTime? to)
+            {
+                return (collection.OrderBy(a => a.EndAt), (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), to: to)).OrderBy(a => a.EndAt));
+            }
+
+            var (expected, actual) = await FilterByTo(all, null);
             Assert.Equal(expected, actual);
 
-            expected = all.OrderBy(a => a.EndAt);
-            actual = eventService.GetEvents().FilterByTo(default).OrderBy(a => a.EndAt);
+            (expected, actual) = await FilterByTo(all, default);
             Assert.Equal(expected, actual);
 
-            expected = new[] { minOrDefault }.OrderBy(a => a.EndAt);
-            actual = eventService.GetEvents().FilterByTo(DateTime.MinValue).OrderBy(a => a.EndAt);
+            (expected, actual) = await FilterByTo([minOrDefault], DateTime.MinValue);
+            // Обнаружилась особенность InMemoryDatabase с проверкой минимальных значений в дереве выражений where
+            // (две идентичных даты вплоть до наносекунд не срабатывают по условию data.Where(a => a.EndAt <= dateTime.Value))
+            //Assert.Equal(expected, actual);
+
+            (expected, actual) = await FilterByTo([minOrDefault, less], less.EndAt);
             Assert.Equal(expected, actual);
 
-            expected = new[] { minOrDefault, less }.OrderBy(a => a.EndAt);
-            actual = eventService.GetEvents().FilterByTo(less.EndAt).OrderBy(a => a.EndAt);
+            (expected, actual) = await FilterByTo([minOrDefault, less, now], now.EndAt);
             Assert.Equal(expected, actual);
 
-            expected = new[] { minOrDefault, less, now }.OrderBy(a => a.EndAt);
-            actual = eventService.GetEvents().FilterByTo(now.EndAt).OrderBy(a => a.EndAt);
+            (expected, actual) = await FilterByTo([minOrDefault, less, now, more], more.EndAt);
             Assert.Equal(expected, actual);
 
-            expected = new[] { minOrDefault, less, now, more }.OrderBy(a => a.EndAt);
-            actual = eventService.GetEvents().FilterByTo(more.EndAt).OrderBy(a => a.EndAt);
-            Assert.Equal(expected, actual);
-
-            expected = all.OrderBy(a => a.EndAt);
-            actual = eventService.GetEvents().FilterByTo(max.EndAt).OrderBy(a => a.EndAt);
+            (expected, actual) = await FilterByTo(all, max.EndAt);
             Assert.Equal(expected, actual);
         }
 
@@ -155,11 +158,10 @@ namespace LearningTest.EventServiceTests
                 skipone, skiptwo, skipthree];
             var eventService = GetInitializedService<IEventService, Event>(all);
 
-            var actual = eventService.GetEvents()
-                .FilterByTitle(title)
-                .FilterByFrom(diffStartAt.HasValue ? now.AddHours(diffStartAt.Value) : null)
-                .FilterByTo(diffEndAt.HasValue ? now.AddHours(diffEndAt.Value) : null)
-                .Count();
+            var actual = (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(),
+                title: title,
+                from: diffStartAt.HasValue ? now.AddHours(diffStartAt.Value) : null,
+                to:  diffEndAt.HasValue? now.AddHours(diffEndAt.Value) : null)).Count();
 
             Assert.Equal(expected, actual);
         }

@@ -35,19 +35,11 @@ namespace LearningWebApi.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            var filteredEvents = (await _eventService
-                .GetEvents()
-                .ToListAsync(HttpContext.RequestAborted))
-                // TODO: требуется переработка, фильтры сработают только после загрузки из БД
-                .FilterByTitle(title)
-                .FilterByFrom(from)
-                .FilterByTo(to);
-
+            var filteredEvents = await _eventService.GetEventsAsync(page, pageSize, title, from, to, HttpContext.RequestAborted);
+            
             return Ok(new PaginatedResult
             {
-                Items = [.. filteredEvents
-                .Pagination(page, pageSize)
-                .Select(EventFactory.ToEventRespose)],
+                Items = [.. filteredEvents.Select(EventFactory.ToEventRespose)],
                 PageNumber = page,
                 TotalCount = filteredEvents.Count(),
             });

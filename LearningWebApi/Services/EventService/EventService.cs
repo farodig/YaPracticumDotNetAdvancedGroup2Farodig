@@ -8,9 +8,15 @@ namespace LearningWebApi.Services.EventService
     {
         private readonly IEventRepository _repository = repository;
 
-        public IQueryable<Event> GetEvents()
+        public async Task<IEnumerable<Event>> GetEventsAsync(
+            int page,
+            int pageSize,
+            string? title = null, 
+            DateTime? from = null, 
+            DateTime? to = null,
+            CancellationToken cts = default)
         {
-            return _repository.GetEvents();
+            return await _repository.GetEventsAsync(page, pageSize, title, from, to, cts);
         }
 
         public async Task<Event?> GetEventAsync(Guid id, CancellationToken cts = default)

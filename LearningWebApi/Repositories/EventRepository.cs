@@ -8,9 +8,21 @@ namespace LearningWebApi.Repositories
     {
         private readonly AppDbContext _dbContext = dbContext;
 
-        public IQueryable<Event> GetEvents()
+        public async Task<IEnumerable<Event>> GetEventsAsync(
+            int page,
+            int pageSize,
+            string? title = null,
+            DateTime? from = null,
+            DateTime? to = null,
+            CancellationToken cts = default)
         {
-            return _dbContext.Events.AsQueryable();
+            return await _dbContext.Events
+                .AsQueryable()
+                .FilterByTitle(title)
+                .FilterByFrom(from)
+                .FilterByTo(to)
+                .Pagination(page, pageSize)
+                .ToListAsync(cts);
         }
 
         public async Task<Event?> GetAsync(Guid id, CancellationToken cts = default) => await _dbContext.Events.FirstOrDefaultAsync(e => e.Id == id, cts);
