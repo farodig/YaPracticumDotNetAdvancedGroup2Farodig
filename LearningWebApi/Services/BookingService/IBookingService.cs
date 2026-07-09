@@ -25,7 +25,7 @@ namespace LearningWebApi.Services.BookingService
         /// <summary>
         /// Получить необработанные бронирования
         /// </summary>
-        IEnumerable<Booking> GetPending();
+        Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default);
 
         /// <summary>
         /// Подтвердить бронь

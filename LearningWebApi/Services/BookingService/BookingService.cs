@@ -43,10 +43,9 @@ namespace LearningWebApi.Services.BookingService
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
-        public IEnumerable<Booking> GetPending()
+        public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)
         {
-            return _repository.GetBookings()
-                .Where(a => a.Status == BookingStatus.Pending)
+            return (await _repository.GetBookingsByStatus(BookingStatus.Pending))
                 .OrderBy(a => a.CreatedAt);
         }
 

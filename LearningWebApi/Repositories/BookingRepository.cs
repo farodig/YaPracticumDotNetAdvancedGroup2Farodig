@@ -8,9 +8,11 @@ namespace LearningWebApi.Repositories
     {
         private readonly AppDbContext _dbContext = dbContext;
 
-        public IQueryable<Booking> GetBookings()
+        public async Task<IEnumerable<Booking>> GetBookingsByStatus(BookingStatus status, CancellationToken cts = default)
         {
-            return _dbContext.Bookings.AsQueryable();
+            return await _dbContext.Bookings
+                .Where(a => a.Status == status)
+                .ToListAsync(cts);
         }
 
         public async Task<Booking?> GetAsync(Guid id, CancellationToken cts = default)

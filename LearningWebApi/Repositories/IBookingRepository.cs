@@ -15,7 +15,7 @@ namespace LearningWebApi.Repositories
         /// <summary>
         /// Получить все бронирования
         /// </summary>
-        IQueryable<Booking> GetBookings();
+        Task<IEnumerable<Booking>> GetBookingsByStatus(BookingStatus status, CancellationToken cts = default);
 
         /// <summary>
         /// Создать бронь события

@@ -17,11 +17,8 @@ namespace LearningWebApi.Services.BookingService
                 // Добавляем задержку в случае отсутствия задач, чтобы не зависало
                 await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
-                var pendingBookings = GetPending();
-
-                var tasks = pendingBookings
-                    // Добавляем задачи по обработки брони
-                    .Select(booking => ProcessBookingAsync(booking, stoppingToken));
+                // Добавляем задачи по обработки брони
+                var tasks = await GetBookingTasksAsync(stoppingToken);
 
                 await Task.WhenAll(tasks);
             }
@@ -80,11 +77,12 @@ namespace LearningWebApi.Services.BookingService
             }
         }
 
-        private List<Booking> GetPending()
+        private async Task<IEnumerable<Task>> GetBookingTasksAsync(CancellationToken cts = default)
         {
             using var scope = _scopeFactory.CreateScope();
             var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-            return [.. bookingService.GetPending()];
+            var orderedPendings = await bookingService.GetPendingByCreatedAsync(cts);
+            return orderedPendings.Select(booking => ProcessBookingAsync(booking, cts));
         }
     }
 }
