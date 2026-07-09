@@ -7,7 +7,7 @@
 3. В git переключиться на последнюю актуальную ветку
 4. Установить [PostgreSQL](https://www.postgresql.org/download/) и добавить пользователя со всеми правами Username=postgres;Password=postgres
    или скачать и запустить [образ docker postgresql](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig/blob/sprint-5/docker-compose_.yml)
-5. В файл конфигурации appsettings.json в корневой узел добавить строку подключения если данные подключения к бд будут отличаться
+5. В файл конфигурации appsettings.json в корневой узел добавить строку подключения если данные подключения к [БД](#бд-postgresql) будут отличаться
 ```markdown
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
@@ -27,7 +27,7 @@ dotnet test --filter "Category=Unit"
 Запустить только интеграционные тесты:
 dotnet test --filter "Category=Integration"
 ```
-⚠️ **Важно:** В тестах используется БД InMemory-провайдер
+⚠️ **Важно:** В юнит тестах используется БД InMemory-провайдер а для запуска итеграционных тестов на компьютере должен быть установлен Docker
 
 8. Зайти в подпапку скачанного репозитория LearningWebApi/
 9. Выполнить команду dotnet run
@@ -231,3 +231,44 @@ Status code 200
   "createdAt": "2026-05-15T23:06:43.594218+03:00",
   "processedAt": "2026-05-15T23:06:46.3624755+03:00"
 }
+
+
+## БД PostgreSQL
+
+### Строка подключения
+
+```markdown
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
+  }
+```
+
+### Особенности
+
+Cхема управляется миграциями EF Core
+
+#### Добавление изменений
+
+Изменения в структуру базы вносятся через код. После внесения изменений необходимо выполнить команду add добавления миграции
+
+> dotnet ef migrations add [ИмяМиграции]
+
+После того как миграция будет создана и код миграции проверен, можно внести изменения командой update
+
+> dotnet ef database update
+
+#### Откат изменений
+
+Если нужно откатить изменения то можно выполнить следующие команды:
+
+Откатить изменения в БД последней миграции
+
+> dotnet ef database update [Имя_Предыдущей_Миграции]
+
+Или откатить изменения всех миграций
+
+> dotnet ef database update 0
+
+После отката изменений в БД можно удалить саму миграцию
+
+> dotnet ef migrations remove
