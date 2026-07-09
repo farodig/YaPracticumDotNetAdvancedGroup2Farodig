@@ -1,9 +1,9 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.UnitTests.Helpers;
 using LearningWebApi.Entities;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Helpers.EntityFactory;
+using static Learning.UnitTests.Helpers.EntityFactory;
 
-namespace LearningTest.EventServiceTests
+namespace Learning.UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventServiceCRUDTest : AServiceCollection
@@ -23,6 +23,7 @@ namespace LearningTest.EventServiceTests
             Assert.Equal(expected.Description, actual.Description);
             Assert.Equal(expected.TotalSeats, actual.TotalSeats);
             Assert.Equal(expected.AvailableSeats, actual.AvailableSeats);
+            Assert.Equal(actual.TotalSeats, actual.AvailableSeats);
         }
 
         [Fact(DisplayName = "02. Получение всех событий")]
@@ -31,7 +32,7 @@ namespace LearningTest.EventServiceTests
             var expected = Enumerable.Range(1, 3).Select(a => CreateEvent()).ToArray();
             var service = GetInitializedService<IEventService, Event>(expected);
             
-            var actual = service.GetEvents().ToArray();
+            var actual = await service.GetEventsAsync(1, 3);
 
             Assert.Equal(expected, actual);
         }
@@ -70,7 +71,7 @@ namespace LearningTest.EventServiceTests
         public async Task TryUpdateEventNotExistIdFailTest(Guid id)
         {
             var service = GetService<IEventService>();
-            Assert.False(await service.TryUpdateEventAsync(CreateEvent(e => e.Id = id)));
+            Assert.False(await service.TryUpdateEventAsync(CreateEvent(eventId: id)));
         }
 
         [Fact(DisplayName = "06. Обновление существующего события")]

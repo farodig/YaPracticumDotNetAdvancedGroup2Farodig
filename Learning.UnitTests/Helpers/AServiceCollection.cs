@@ -1,27 +1,25 @@
 ﻿using LearningWebApi;
 using LearningWebApi.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace LearningTest.Helpers
+namespace Learning.UnitTests.Helpers
 {
     public abstract class AServiceCollection : IDisposable
     {
         public AServiceCollection()
         {
             var services = new ServiceCollection();
-            services.AppDbInMemoryConfigure();
+
+            var dbName = Guid.NewGuid().ToString();
+            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(dbName));
             services.AddEventService();
             services.AddBookingService();
 
             ServiceProvider = services.BuildServiceProvider();
             Scope = ServiceProvider.CreateScope();
 
-            DBEnsureCreated();
-        }
-
-        private void DBEnsureCreated()
-        {
             var context = Scope.ServiceProvider.GetRequiredService<AppDbContext>();
             context.Database.EnsureCreated();
         }
@@ -75,8 +73,8 @@ namespace LearningTest.Helpers
 
         protected readonly IServiceScope Scope;
 
+        #region IDisposable
         private bool _disposed;
-
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -101,5 +99,6 @@ namespace LearningTest.Helpers
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+        #endregion IDisposable
     }
 }

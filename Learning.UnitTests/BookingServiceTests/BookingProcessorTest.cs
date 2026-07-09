@@ -1,10 +1,10 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.UnitTests.Helpers;
 using LearningWebApi.Entities;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Helpers.EntityFactory;
+using static Learning.UnitTests.Helpers.EntityFactory;
 
-namespace LearningTest.BookingServiceTests
+namespace Learning.UnitTests.BookingServiceTests
 {
     [Trait("Category", "Unit")]
     public class BookingProcessorTest : AServiceCollection
@@ -12,7 +12,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "01. Проверка корректной отмены обработчика BookingProcessor")]
         public async Task CancelBookingProcessTest()
         {
-            var @event = CreateEventAvailableSeats();
+            var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создали бронь
@@ -36,7 +36,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "02. Проверка успешной обработки бронирования события")]
         public async Task ProcessSuccessBookingEventTest()
         {
-            var @event = CreateEventAvailableSeats();
+            var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создать бронь
@@ -51,7 +51,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "03. Проверка обработки бронирования события которое было удалено")]
         public async Task ProcessBookingNotExistedEventTest()
         {
-            var @event = CreateEventAvailableSeats();
+            var @event = CreateEvent(totalSeats: 1);
             var (eventService, bookingService) = GetInitializedServices<IEventService, IBookingService, Event>(@event);
 
             // Создать бронь

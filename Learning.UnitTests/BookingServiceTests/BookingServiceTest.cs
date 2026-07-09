@@ -1,12 +1,12 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.UnitTests.Helpers;
 using LearningWebApi.Entities;
 using LearningWebApi.Exceptions;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
-using static LearningTest.Helpers.EntityFactory;
+using static Learning.UnitTests.Helpers.EntityFactory;
 
-namespace LearningTest.BookingServiceTests
+namespace Learning.UnitTests.BookingServiceTests
 {
     [Trait("Category", "Unit")]
     public class BookingServiceTest : AServiceCollection
@@ -14,7 +14,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "01. Создание брони для существующего события — возвращается BookingInfo со статусом Pending")]
         public async Task CreateBookingTest()
         {
-            var @event = CreateEventAvailableSeats();
+            var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
             var booking = await bookingService.CreateBookingAsync(@event.Id);
 
@@ -25,7 +25,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "02. Создание нескольких броней (до лимита) — все успешны, у каждой уникальный Id")]
         public async Task CreateFewBookingsTest()
         {
-            var @event = CreateEventAvailableSeats(2);
+            var @event = CreateEvent(totalSeats: 2);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var booking1 = await bookingService.CreateBookingAsync(@event.Id);
@@ -80,7 +80,7 @@ namespace LearningTest.BookingServiceTests
         public async Task CreateBookingDecreaseAvailableSeatsByOneTest()
         {
             var initialSeats = 2;
-            var @event = CreateEventAvailableSeats(initialSeats);
+            var @event = CreateEvent(totalSeats: initialSeats);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Бронируем пока есть места
@@ -94,7 +94,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "08. Бронирование при отсутствии|исчерпании мест → NoAvailableSeatsException")]
         public async Task CreateBookingNoAvailableSeatsExceptionTest()
         {
-            var @event = CreateEventAvailableSeats(0);
+            var @event = CreateEvent(totalSeats: 0);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             await Assert.ThrowsAsync<NoAvailableSeatsException>(async () => await bookingService.CreateBookingAsync(@event.Id));
@@ -103,7 +103,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "09. После подтверждения бронь возвращает статус Confirmed и заполненный ProcessedAt")]
         public async Task BookingServiceConfirmBookingTest()
         {
-            var @event = CreateEventAvailableSeats();
+            var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var booking = await bookingService.CreateBookingAsync(@event.Id);
@@ -116,7 +116,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "10. После отклонения бронь возвращает статус Rejected и заполненный ProcessedAt")]
         public async Task BookingServiceRejectBookingTest()
         {
-            var @event = CreateEventAvailableSeats();
+            var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var booking = await bookingService.CreateBookingAsync(@event.Id);
@@ -132,7 +132,7 @@ namespace LearningTest.BookingServiceTests
             var expectedAvailableSeats = 3;
             var expectedModifySeats = 2;
 
-            var @event = CreateEventAvailableSeats(expectedAvailableSeats);
+            var @event = CreateEvent(totalSeats: expectedAvailableSeats);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var booking = await bookingService.CreateBookingAsync(@event.Id);
@@ -145,7 +145,7 @@ namespace LearningTest.BookingServiceTests
         [Fact(DisplayName = "12. После отклонения брони можно успешно создать новую бронь на то же место")]
         public async Task BookingServiceRejectAndCreateBookingTest()
         {
-            var @event = CreateEventAvailableSeats(1);
+            var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var booking = await bookingService.CreateBookingAsync(@event.Id);
@@ -163,7 +163,7 @@ namespace LearningTest.BookingServiceTests
         public async Task OverbookingProtectionTest(int available, int concurrent,
             int expectedConfirmed, int expectedException)
         {
-            var @event = CreateEventAvailableSeats(available);
+            var @event = CreateEvent(totalSeats: available);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             async Task<bool> TryCreateBookingAsync(Guid eventId)
@@ -197,7 +197,7 @@ namespace LearningTest.BookingServiceTests
         [InlineData(10, 10, 10)]
         public async Task UniquenessIdCompetitiveQueriesTest(int available, int concurrent, int expected)
         {
-            var @event = CreateEventAvailableSeats(available);
+            var @event = CreateEvent(totalSeats: available);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var concurrentTask = Enumerable.Range(0, concurrent)

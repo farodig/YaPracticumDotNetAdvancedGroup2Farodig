@@ -1,8 +1,8 @@
-﻿using LearningTest.Helpers;
+﻿using Learning.UnitTests.Helpers;
 using LearningWebApi.Entities;
 using LearningWebApi.Services.EventService;
 
-namespace LearningTest.EventServiceTests
+namespace Learning.UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventServicePaginationTest : AServiceCollection
@@ -40,8 +40,7 @@ namespace LearningTest.EventServiceTests
         public async Task PaginationPageNumberTest(int pageNumber)
         {
             var pageSize = 10;
-            var actual = _eventService.GetEvents()
-                .Pagination(pageNumber, pageSize)
+            var actual = (await _eventService.GetEventsAsync(pageNumber, pageSize))
                 .Count();
 
             Assert.True(actual <= pageSize);
@@ -53,10 +52,9 @@ namespace LearningTest.EventServiceTests
         [InlineData(0)]
         public async Task PaginationPageNumberFailTest(int pageNumber)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _eventService.GetEvents()
-                    .Pagination(pageNumber, pageSize: 10);
+                await _eventService.GetEventsAsync(pageNumber, pageSize: 10);
             });
         }
 
@@ -65,8 +63,7 @@ namespace LearningTest.EventServiceTests
         [InlineData(20)]
         public async Task PaginationPageSizeTest(int pageSize)
         {
-            var actual = _eventService.GetEvents()
-                .Pagination(page: 1, pageSize)
+            var actual = (await _eventService.GetEventsAsync(page: 1, pageSize))
                 .Count();
 
             Assert.True(actual <= pageSize);
@@ -78,10 +75,9 @@ namespace LearningTest.EventServiceTests
         [InlineData(0)]
         public async Task PaginationPageSizeFailTest(int pageSize)
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _eventService.GetEvents()
-                .Pagination(page: 1, pageSize);
+                await _eventService.GetEventsAsync(page: 1, pageSize);
             });
         }
 
@@ -94,8 +90,7 @@ namespace LearningTest.EventServiceTests
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
 
-            var actual = _eventService.GetEvents()
-                .Pagination(pageNumber, pageSize);
+            var actual = await _eventService.GetEventsAsync(pageNumber, pageSize);
 
             Assert.Equal(expected, actual);
         }

@@ -10,26 +10,26 @@ namespace LearningWebApi.Repositories
         /// <summary>
         /// Получить бронь по идентификатору
         /// </summary>
-        Task<Booking?> GetAsync(Guid id, CancellationToken? cts = null);
+        Task<Booking?> GetAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Получить все бронирования
         /// </summary>
-        IQueryable<Booking> GetBookings();
+        Task<IEnumerable<Booking>> GetBookingsByStatus(BookingStatus status, CancellationToken cts = default);
 
         /// <summary>
         /// Создать бронь события
         /// </summary>
-        Task CreateAsync(Booking item, CancellationToken? cts = null);
+        Task CreateAsync(Booking item, CancellationToken cts = default);
 
         /// <summary>
         /// Обновить бронь события
         /// </summary>
-        Task<int> TryUpdateAsync(Booking item, CancellationToken? cts = null);
+        Task<int> TryUpdateAsync(Booking item, CancellationToken cts = default);
 
         /// <summary>
         /// Удалить бронирование
         /// </summary>
-        Task<int> TryRemoveAsync(Guid id, CancellationToken? cts = null);
+        Task<int> TryRemoveAsync(Guid id, CancellationToken cts = default);
     }
 }

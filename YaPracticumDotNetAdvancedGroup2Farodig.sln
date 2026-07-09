@@ -5,13 +5,15 @@ VisualStudioVersion = 18.6.11716.218
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningWebApi", "LearningWebApi\LearningWebApi.csproj", "{DC5E1D4C-8151-095D-966D-60A2FB1C259C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningTest", "LearningTest\LearningTest.csproj", "{4042A249-A25E-4B5A-81C7-F28D151F0A78}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{793C33D8-A9BC-49FC-923B-79AC762C83E9}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose_.yml = docker-compose_.yml
+		docker-compose.yml = docker-compose.yml
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learning.IntegrationTests", "Learning.IntegrationTests\Learning.IntegrationTests.csproj", "{B342729D-CE0A-4394-982C-D9B64CD13B59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learning.UnitTests", "Learning.UnitTests\Learning.UnitTests.csproj", "{33B8E782-5CBD-4B20-CE7B-684AA5DB70F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,14 @@ Global
 		{DC5E1D4C-8151-095D-966D-60A2FB1C259C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC5E1D4C-8151-095D-966D-60A2FB1C259C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC5E1D4C-8151-095D-966D-60A2FB1C259C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4042A249-A25E-4B5A-81C7-F28D151F0A78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B342729D-CE0A-4394-982C-D9B64CD13B59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33B8E782-5CBD-4B20-CE7B-684AA5DB70F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33B8E782-5CBD-4B20-CE7B-684AA5DB70F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33B8E782-5CBD-4B20-CE7B-684AA5DB70F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33B8E782-5CBD-4B20-CE7B-684AA5DB70F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

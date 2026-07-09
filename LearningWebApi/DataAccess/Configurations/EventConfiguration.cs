@@ -14,6 +14,7 @@ namespace LearningWebApi.DataAccess.Configurations
                 // Ограничения даты и времени
                 t.HasCheckConstraint("CK_Event_Dates", "\"StartAt\" < \"EndAt\"");
                 t.HasCheckConstraint("CK_Event_StartAt", "\"StartAt\" > NOW()");
+                t.HasCheckConstraint("CK_Event_TotalSeats", "\"TotalSeats\" >= 1");
             });
 
             // Первичный ключ
@@ -32,8 +33,7 @@ namespace LearningWebApi.DataAccess.Configurations
                    .IsRequired();
 
             builder.Property(e => e.TotalSeats)
-                .IsRequired()
-                .HasAnnotation("MinValue", 1);
+                .IsRequired();
         }
     }
 }

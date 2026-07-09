@@ -4,11 +4,17 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
 
-namespace LearningTest.Helpers
+namespace Learning.IntegrationTests.Helpers
 {
-    public class IntegrationTestFactory : WebApplicationFactory<Program>
+    public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
+        private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:16-alpine")
+            .WithName("test-postgres-reuse")
+            .WithReuse(true)
+            .Build();
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureTestServices(services =>
@@ -17,7 +23,8 @@ namespace LearningTest.Helpers
                 RemoveAllDbContextRegistrations(services);
 
                 // Подставляем строку от контейнера
-                services.AppDbInMemoryConfigure();
+                services.AddDbContext<AppDbContext>(options => 
+                    options.UseNpgsql(_postgres.GetConnectionString()));
             });
         }
 
@@ -43,5 +50,18 @@ namespace LearningTest.Helpers
                 services.Remove(descriptor);
             }
         }
+
+        #region IAsyncLifetime
+        public async Task InitializeAsync()
+        {
+            await _postgres.StartAsync();
+        }
+
+        new public async Task DisposeAsync()
+        {
+            await _postgres.DisposeAsync();
+            await base.DisposeAsync();
+        }
+        #endregion IAsyncLifetime
     }
 }

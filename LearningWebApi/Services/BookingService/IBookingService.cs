@@ -10,31 +10,31 @@ namespace LearningWebApi.Services.BookingService
         /// <summary>
         /// Создание брони для указанного события
         /// </summary>
-        Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken? cts = null);
+        Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken cts = default);
 
         /// <summary>
         /// Получение брони по идентификатору
         /// </summary>
-        Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken? cts = null);
+        Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Отменить бронирование
         /// </summary>
-        Task CancelBookingAsync(Booking data, CancellationToken? cts = null);
+        Task CancelBookingAsync(Booking data, CancellationToken cts = default);
 
         /// <summary>
         /// Получить необработанные бронирования
         /// </summary>
-        IEnumerable<Booking> GetPending();
+        Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default);
 
         /// <summary>
         /// Подтвердить бронь
         /// </summary>
-        Task ConfirmBookingAsync(Booking data, CancellationToken? cts = null);
+        Task ConfirmBookingAsync(Booking data, CancellationToken cts = default);
 
         /// <summary>
         /// Отклонить бронь
         /// </summary>
-        Task RejectBookingAsync(Booking data, CancellationToken? cts = null);
+        Task RejectBookingAsync(Booking data, CancellationToken cts = default);
     }
 }
