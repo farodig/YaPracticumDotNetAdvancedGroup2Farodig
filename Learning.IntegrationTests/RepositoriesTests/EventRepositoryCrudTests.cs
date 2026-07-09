@@ -30,6 +30,7 @@ namespace Learning.IntegrationTests.RepositoriesTests
                 .FirstOrDefaultAsync(b => b.Id == eventId);
 
             Assert.NotNull(saved);
+            Assert.Equal(@event.Id, saved.Id);
             Assert.Equal(@event.Title, saved.Title);
             Assert.Equal(@event.StartAt, saved.StartAt, TimeSpan.FromMilliseconds(1));
             Assert.Equal(@event.EndAt, saved.EndAt, TimeSpan.FromMilliseconds(1));
@@ -54,6 +55,7 @@ namespace Learning.IntegrationTests.RepositoriesTests
             var actual = await repository.GetAsync(eventId);
 
             Assert.NotNull(actual);
+            Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.Title, actual.Title);
             Assert.Equal(expected.StartAt, actual.StartAt, TimeSpan.FromMilliseconds(1));
             Assert.Equal(expected.EndAt, actual.EndAt, TimeSpan.FromMilliseconds(1));
@@ -97,6 +99,7 @@ namespace Learning.IntegrationTests.RepositoriesTests
             Assert.True(updatedCollection.Count() == 1);
             var updated = updatedCollection.FirstOrDefault();
             Assert.NotNull(updated);
+            Assert.Equal(@event2.Id, updated.Id);
             Assert.Equal(@event2.Title, updated.Title);
             Assert.Equal(@event2.StartAt, updated.StartAt, TimeSpan.FromMilliseconds(1));
             Assert.Equal(@event2.EndAt, updated.EndAt, TimeSpan.FromMilliseconds(1));

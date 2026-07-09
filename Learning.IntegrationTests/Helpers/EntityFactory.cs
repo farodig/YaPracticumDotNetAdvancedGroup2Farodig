@@ -18,14 +18,23 @@ namespace Learning.IntegrationTests.Helpers
             Description = description,
         };
 
-        public static Booking CreateBooking() => new()
+        public static Booking CreateBooking(Guid? id = null, Guid? eventId = null, BookingStatus? status = null, DateTime? createdAt = null, DateTime? processedAt = null) => new()
         {
-            Id = Guid.NewGuid(),
+            Id = id ?? Guid.NewGuid(),
+            EventId = eventId ?? throw new ArgumentNullException(nameof(eventId)),
+            Status = status ?? BookingStatus.Pending,
+            CreatedAt = createdAt ?? DateTime.Now,
+            ProcessedAt = processedAt,
         };
 
         public static IEventRepository CreateEventRepository(AppDbContext context)
         {
             return new EventRepository(context);
+        }
+
+        public static IBookingRepository CreateBookingRepository(AppDbContext context)
+        {
+            return new BookingRepository(context);
         }
     }
 }
