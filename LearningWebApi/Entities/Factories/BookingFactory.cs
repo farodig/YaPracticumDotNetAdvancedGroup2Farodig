@@ -1,4 +1,5 @@
-﻿using LearningWebApi.Models.Responses;
+﻿using Domain.Entities;
+using LearningWebApi.Models.Responses;
 
 namespace LearningWebApi.Entities.Factories
 {
@@ -8,7 +9,7 @@ namespace LearningWebApi.Entities.Factories
         {
             Id = Guid.NewGuid(),
             EventId = eventId,
-            Status = BookingStatus.Pending,
+            Status = Domain.Entities.BookingStatus.Pending,
             CreatedAt = DateTime.Now,
         };
 

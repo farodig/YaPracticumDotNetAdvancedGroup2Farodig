@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Entities;
+﻿using Domain.Entities;
 using LearningWebApi.Services.EventService;
 using NLog;
 

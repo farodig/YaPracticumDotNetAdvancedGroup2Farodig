@@ -1,5 +1,5 @@
-﻿using Learning.IntegrationTests.Helpers;
-using LearningWebApi.Entities;
+﻿using Domain.Entities;
+using Learning.IntegrationTests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using static Learning.IntegrationTests.Helpers.EntityFactory;
 
@@ -96,7 +96,7 @@ namespace Learning.IntegrationTests.RepositoriesTests
                 .Where(b => b.Id == eventId)
                 .ToListAsync();
 
-            Assert.True(updatedCollection.Count() == 1);
+            Assert.Single(updatedCollection);
             var updated = updatedCollection.FirstOrDefault();
             Assert.NotNull(updated);
             Assert.Equal(@event2.Id, updated.Id);

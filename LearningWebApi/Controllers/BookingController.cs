@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Entities;
+﻿using Domain.Entities;
 using LearningWebApi.Entities.Factories;
 using LearningWebApi.Models.Responses;
 using LearningWebApi.Services.BookingService;

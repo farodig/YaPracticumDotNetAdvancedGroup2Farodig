@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Exceptions;
+﻿using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.Json;

@@ -1,6 +1,6 @@
-﻿using Learning.UnitTests.Helpers;
-using LearningWebApi.Entities;
-using LearningWebApi.Exceptions;
+﻿using Domain.Entities;
+using Domain.Exceptions;
+using Learning.UnitTests.Helpers;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;

@@ -1,4 +1,4 @@
-﻿namespace LearningWebApi.Exceptions
+﻿namespace Domain.Exceptions
 {
     /// <summary>
     /// Событие не найдено

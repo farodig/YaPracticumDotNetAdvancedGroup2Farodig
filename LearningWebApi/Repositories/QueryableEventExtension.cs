@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Repositories

@@ -1,5 +1,5 @@
-﻿using LearningWebApi.DataAccess;
-using LearningWebApi.Entities;
+﻿using Domain.Entities;
+using LearningWebApi.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Repositories
@@ -28,7 +28,7 @@ namespace LearningWebApi.Repositories
 
         public async Task<int> TryUpdateAsync(Booking item, CancellationToken cts = default)
         {
-            var existing = await _dbContext.Bookings.FindAsync(item.Id);
+            var existing = await _dbContext.Bookings.FindAsync([item.Id], cts);
             if (existing == null) return 0;
 
             _dbContext.Entry(existing).CurrentValues.SetValues(item);

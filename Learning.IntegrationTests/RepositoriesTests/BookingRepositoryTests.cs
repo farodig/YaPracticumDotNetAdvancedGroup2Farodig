@@ -1,5 +1,5 @@
-﻿using Learning.IntegrationTests.Helpers;
-using LearningWebApi.Entities;
+﻿using Domain.Entities;
+using Learning.IntegrationTests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using static Learning.IntegrationTests.Helpers.EntityFactory;
 

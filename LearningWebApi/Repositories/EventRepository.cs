@@ -1,5 +1,5 @@
-﻿using LearningWebApi.DataAccess;
-using LearningWebApi.Entities;
+﻿using Domain.Entities;
+using LearningWebApi.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Repositories
@@ -35,7 +35,7 @@ namespace LearningWebApi.Repositories
 
         public async Task<int> TryUpdateAsync(Event item, CancellationToken cts = default)
         {
-            var existing = await _dbContext.Events.FindAsync(item.Id);
+            var existing = await _dbContext.Events.FindAsync([item.Id], cts);
             if (existing == null) return 0;
 
             _dbContext.Entry(existing).CurrentValues.SetValues(item);
@@ -44,7 +44,7 @@ namespace LearningWebApi.Repositories
 
         public async Task<bool> TryUpdateContextAsync(Event item, CancellationToken cts = default)
         {
-            var existing = await _dbContext.Events.FindAsync(item.Id);
+            var existing = await _dbContext.Events.FindAsync([item.Id], cts);
             if (existing == null) return false;
 
             _dbContext.Entry(existing).CurrentValues.SetValues(item);

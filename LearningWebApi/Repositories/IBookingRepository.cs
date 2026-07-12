@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Entities;
+﻿using Domain.Entities;
 
 namespace LearningWebApi.Repositories
 {

@@ -1,4 +1,6 @@
-﻿namespace LearningWebApi.Entities
+﻿using Domain.Entities;
+
+namespace LearningWebApi.Entities
 {
     internal static class EventReservationLogic
     {

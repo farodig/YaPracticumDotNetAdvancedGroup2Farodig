@@ -1,5 +1,6 @@
-﻿using LearningWebApi.Entities;
-using LearningWebApi.Exceptions;
+﻿using Domain.Entities;
+using Domain.Exceptions;
+using LearningWebApi.Entities;
 using LearningWebApi.Repositories;
 
 namespace LearningWebApi.Services.EventService

@@ -1,4 +1,4 @@
-﻿namespace LearningWebApi.Entities
+﻿namespace Domain.Entities
 {
     /// <summary>
     /// Событие

@@ -1,10 +1,9 @@
-﻿using LearningWebApi.Entities;
+﻿using Domain.Entities;
 using LearningWebApi.Entities.Factories;
 using LearningWebApi.Models.Requests;
 using LearningWebApi.Models.Responses;
 using LearningWebApi.Services.EventService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LearningWebApi.Controllers
 {

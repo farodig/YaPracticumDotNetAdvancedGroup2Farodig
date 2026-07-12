@@ -1,4 +1,5 @@
-﻿using LearningWebApi.Models.Requests;
+﻿using Domain.Entities;
+using LearningWebApi.Models.Requests;
 using LearningWebApi.Models.Responses;
 
 namespace LearningWebApi.Entities.Factories

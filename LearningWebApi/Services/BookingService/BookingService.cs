@@ -1,4 +1,4 @@
-﻿using LearningWebApi.Entities;
+﻿using Domain.Entities;
 using LearningWebApi.Entities.Factories;
 using LearningWebApi.Repositories;
 using LearningWebApi.Services.EventService;
@@ -45,7 +45,7 @@ namespace LearningWebApi.Services.BookingService
 
         public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)
         {
-            return (await _repository.GetBookingsByStatus(BookingStatus.Pending))
+            return (await _repository.GetBookingsByStatus(BookingStatus.Pending, cts))
                 .OrderBy(a => a.CreatedAt);
         }
 
