@@ -1,15 +1,14 @@
-﻿using LearningWebApi.DataAccess;
+﻿using DotNet.Testcontainers.Containers;
+using LearningWebApi.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Testcontainers.PostgreSql;
+using static Learning.IntegrationTests.Helpers.DatabaseContainerFactory;
 
 namespace Learning.IntegrationTests.Helpers
 {
     public abstract class ADockerDB : IAsyncLifetime
     {
-        private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:16-alpine")
-            .WithName("test-postgres-reuse")
-            .WithReuse(true)
-            .Build();
+        private readonly IDatabaseContainer _postgres = CreateTestPostgeSqlContaner();//CreatePostgreSqlContainer();
+
         private DbContextOptions<AppDbContext>? _options;
 
         internal AppDbContext CreateContext()
@@ -49,6 +48,7 @@ namespace Learning.IntegrationTests.Helpers
             await using var context = CreateContextInternal();
             await context.Database.ExecuteSqlRawAsync(
                 "TRUNCATE TABLE bookings, events RESTART IDENTITY CASCADE");
+            await context.DisposeAsync();
         }
         #endregion
     }

@@ -1,19 +1,17 @@
-﻿using LearningWebApi.DataAccess;
+﻿using DotNet.Testcontainers.Containers;
+using LearningWebApi.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Testcontainers.PostgreSql;
+using static Learning.IntegrationTests.Helpers.DatabaseContainerFactory;
 
 namespace Learning.IntegrationTests.Helpers
 {
     public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
-        private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder("postgres:16-alpine")
-            .WithName("test-postgres-reuse")
-            .WithReuse(true)
-            .Build();
+        private readonly IDatabaseContainer _postgres = CreateTestPostgeSqlContaner();//CreatePostgreSqlContainer();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
