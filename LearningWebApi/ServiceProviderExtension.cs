@@ -1,5 +1,6 @@
-﻿using LearningWebApi.Services.BookingService;
-using LearningWebApi.Services.EventService;
+﻿using Application.Services.BookingService;
+using Application.Services.EventService;
+using LearningWebApi.Services.BookingService;
 using NLog.Web;
 using System.Reflection;
 

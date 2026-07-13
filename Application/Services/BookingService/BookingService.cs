@@ -5,7 +5,7 @@ using NLog;
 
 namespace Application.Services.BookingService
 {
-    internal class BookingService(IEventService eventService, IBookingRepository bookingRepository) : IBookingService
+    public class BookingService(IEventService eventService, IBookingRepository bookingRepository) : IBookingService
     {
         private readonly IEventService _eventService = eventService;
         private readonly IBookingRepository _repository = bookingRepository;

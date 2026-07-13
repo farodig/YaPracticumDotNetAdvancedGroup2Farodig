@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.Entities
+namespace Application.Services.EventService
 {
     internal static class EventReservationLogic
     {

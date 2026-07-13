@@ -1,5 +1,6 @@
-﻿using Domain.Entities;
-using LearningWebApi.Services.EventService;
+﻿using Application.Services.BookingService;
+using Application.Services.EventService;
+using Domain.Entities;
 using NLog;
 
 namespace LearningWebApi.Services.BookingService

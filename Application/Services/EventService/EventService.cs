@@ -1,11 +1,10 @@
-﻿using Application.Entities;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
 
 namespace Application.Services.EventService
 {
-    internal class EventService(IEventRepository repository) : IEventService
+    public class EventService(IEventRepository repository) : IEventService
     {
         private readonly IEventRepository _repository = repository;
 

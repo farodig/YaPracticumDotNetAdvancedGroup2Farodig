@@ -1,15 +1,15 @@
 ﻿using Domain.Entities;
-using LearningWebApi.Models.Requests;
-using LearningWebApi.Models.Responses;
+using Application.Models.Requests;
+using Application.Models.Responses;
 
-namespace LearningWebApi.Entities.Factories
+namespace Application.Models.Factories
 {
     /// <summary>
     /// Вспомогательная фабрика для конвертации dto из сервиса в rest и обратно
     /// </summary>
-    internal static class EventFactory
+    public static class EventFactory
     {
-        internal static Event CreateEvent(this UpdateEventRequest data, Guid id) => new()
+        public static Event CreateEvent(this UpdateEventRequest data, Guid id) => new()
         {
             Id = id,
             Title = data.Title,
@@ -20,7 +20,7 @@ namespace LearningWebApi.Entities.Factories
             AvailableSeats = data.AvailableSeats,
         };
 
-        internal static EventResponse ToEventRespose(this Event data) => new()
+        public static EventResponse ToEventRespose(this Event data) => new()
         {
             Id = data.Id,
             Title = data.Title,

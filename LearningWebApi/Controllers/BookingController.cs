@@ -1,7 +1,7 @@
-﻿using Domain.Entities;
-using LearningWebApi.Entities.Factories;
-using LearningWebApi.Models.Responses;
-using LearningWebApi.Services.BookingService;
+﻿using Application.Models.Factories;
+using Application.Models.Responses;
+using Application.Services.BookingService;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningWebApi.Controllers

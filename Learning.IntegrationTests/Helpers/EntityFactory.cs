@@ -1,6 +1,6 @@
-﻿using Domain.Entities;
+﻿using Application.Repositories;
+using Domain.Entities;
 using Infrastructure.DataAccess;
-using LearningWebApi.Repositories;
 
 namespace Learning.IntegrationTests.Helpers
 {
