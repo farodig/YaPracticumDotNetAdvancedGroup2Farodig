@@ -1,4 +1,4 @@
-﻿namespace LearningWebApi.Models.Responses
+﻿namespace Application.Models.Responses
 {
     /// <summary>
     /// Постраничный вывод событий

@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace LearningWebApi.Services.BookingService
+namespace Application.Services.BookingService
 {
     /// <summary>
     /// Сервис бронирования

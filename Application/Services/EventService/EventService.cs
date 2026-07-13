@@ -1,9 +1,9 @@
-﻿using Application.Repositories;
+﻿using Application.Entities;
+using Application.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
-using LearningWebApi.Entities;
 
-namespace LearningWebApi.Services.EventService
+namespace Application.Services.EventService
 {
     internal class EventService(IEventRepository repository) : IEventService
     {

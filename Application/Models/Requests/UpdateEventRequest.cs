@@ -1,7 +1,7 @@
-﻿using LearningWebApi.Models.Validation;
+﻿using Application.Models.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace LearningWebApi.Models.Requests
+namespace Application.Models.Requests
 {
     /// <summary>
     /// Модель данных изменения события

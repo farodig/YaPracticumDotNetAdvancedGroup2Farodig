@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace LearningWebApi.Entities
+namespace Application.Entities
 {
     internal static class EventReservationLogic
     {

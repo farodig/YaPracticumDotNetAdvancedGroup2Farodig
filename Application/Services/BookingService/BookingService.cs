@@ -1,9 +1,9 @@
 ﻿using Application.Repositories;
+using Application.Services.EventService;
 using Domain.Entities;
-using LearningWebApi.Services.EventService;
 using NLog;
 
-namespace LearningWebApi.Services.BookingService
+namespace Application.Services.BookingService
 {
     internal class BookingService(IEventService eventService, IBookingRepository bookingRepository) : IBookingService
     {

@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace LearningWebApi.Services.EventService
+namespace Application.Services.EventService
 {
     /// <summary>
     /// Сервис событий

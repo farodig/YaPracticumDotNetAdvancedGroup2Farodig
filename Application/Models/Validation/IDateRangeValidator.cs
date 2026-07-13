@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LearningWebApi.Models.Validation
+namespace Application.Models.Validation
 {
     internal interface IDateRangeValidator
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace LearningWebApi.Models.Responses
+namespace Application.Models.Responses
 {
     /// <summary>
     /// Бронирование
