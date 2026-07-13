@@ -1,5 +1,4 @@
 using LearningWebApi;
-using LearningWebApi.DataAccess;
 using LearningWebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);

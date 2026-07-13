@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
-namespace LearningWebApi.DataAccess
+namespace LearningWebApi
 {
     internal static class AppDbProviderExtension
     {

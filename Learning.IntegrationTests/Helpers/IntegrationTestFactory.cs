@@ -1,5 +1,5 @@
 ﻿using DotNet.Testcontainers.Containers;
-using LearningWebApi.DataAccess;
+using Infrastructure.DataAccess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

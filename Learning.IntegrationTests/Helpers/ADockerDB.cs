@@ -1,5 +1,5 @@
 ﻿using DotNet.Testcontainers.Containers;
-using LearningWebApi.DataAccess;
+using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using static Learning.IntegrationTests.Helpers.DatabaseContainerFactory;
 

@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace LearningWebApi.DataAccess
+namespace Infrastructure.DataAccess
 {
-    internal sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<Event> Events => Set<Event>();
         public DbSet<Booking> Bookings => Set<Booking>();

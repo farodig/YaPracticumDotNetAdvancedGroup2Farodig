@@ -1,5 +1,5 @@
 ﻿using Domain.Entities;
-using LearningWebApi.DataAccess;
+using Infrastructure.DataAccess;
 using LearningWebApi.Repositories;
 
 namespace Learning.IntegrationTests.Helpers
