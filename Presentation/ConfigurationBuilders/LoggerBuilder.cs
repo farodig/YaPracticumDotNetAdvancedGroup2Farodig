@@ -1,6 +1,6 @@
 ﻿using NLog.Web;
 
-namespace LearningWebApi.ConfigurationBuilders
+namespace Presentation.ConfigurationBuilders
 {
     internal static class LoggerBuilder
     {

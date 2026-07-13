@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 using Learning.UnitTests.Helpers;
-using LearningWebApi.Services.EventService;
+using Presentation.Services.EventService;
 using static Learning.UnitTests.Helpers.EntityFactory;
 
 namespace Learning.UnitTests.EventServiceTests

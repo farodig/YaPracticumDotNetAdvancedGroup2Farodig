@@ -1,6 +1,6 @@
 ﻿using Learning.IntegrationTests.Helpers;
-using LearningWebApi.Models.Requests;
-using LearningWebApi.Models.Responses;
+using Presentation.Models.Requests;
+using Presentation.Models.Responses;
 using System.Net;
 
 namespace Learning.UnitTests.IntegrationTests

@@ -4,7 +4,7 @@ using Application.Services.BookingService;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LearningWebApi.Controllers
+namespace Presentation.Controllers
 {
     /// <summary>
     /// Конечная точка доступа сервиса событий

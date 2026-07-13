@@ -1,7 +1,7 @@
 ﻿using Application;
 using Infrastructure;
 
-namespace LearningWebApi.ConfigurationBuilders
+namespace Presentation.ConfigurationBuilders
 {
     internal static class ApplicationBuilder
     {

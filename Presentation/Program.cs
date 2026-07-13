@@ -1,5 +1,5 @@
-using LearningWebApi.Middlewares;
-using LearningWebApi.ConfigurationBuilders;
+using Presentation.Middlewares;
+using Presentation.ConfigurationBuilders;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();

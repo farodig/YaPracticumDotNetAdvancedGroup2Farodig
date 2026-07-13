@@ -20,7 +20,7 @@
 
 ⚠️ **Важно:** Для запуска итеграционных тестов на компьютере должен быть установлен Docker
 
-8. Зайти в подпапку скачанного репозитория LearningWebApi/
+8. Зайти в подпапку скачанного репозитория Presentation/
 9. Выполнить команду dotnet run
 10. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
 

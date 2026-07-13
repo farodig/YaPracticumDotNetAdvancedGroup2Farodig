@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LearningWebApi.ConfigurationBuilders
+namespace Presentation.ConfigurationBuilders
 {
     internal static class SwaggerBuilder
     {

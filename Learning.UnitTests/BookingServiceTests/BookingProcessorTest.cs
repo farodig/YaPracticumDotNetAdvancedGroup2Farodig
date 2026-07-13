@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Learning.UnitTests.Helpers;
-using LearningWebApi.Services.BookingService;
-using LearningWebApi.Services.EventService;
+using Presentation.Services.BookingService;
+using Presentation.Services.EventService;
 using static Learning.UnitTests.Helpers.EntityFactory;
 
 namespace Learning.UnitTests.BookingServiceTests
