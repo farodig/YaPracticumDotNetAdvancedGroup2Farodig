@@ -1,8 +1,8 @@
 ﻿using Application.Services.EventService;
 using Domain.Entities;
-using Learning.UnitTests.Helpers;
+using UnitTests.Helpers;
 
-namespace Learning.UnitTests.EventServiceTests
+namespace UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventServicePaginationTest : AServiceCollection
@@ -41,7 +41,7 @@ namespace Learning.UnitTests.EventServiceTests
         {
             var pageSize = 10;
             var actual = (await _eventService.GetEventsAsync(pageNumber, pageSize))
-                .Count();
+                .Items.Count;
 
             Assert.True(actual <= pageSize);
             Assert.True(actual >= 0);
@@ -64,7 +64,7 @@ namespace Learning.UnitTests.EventServiceTests
         public async Task PaginationPageSizeTest(int pageSize)
         {
             var actual = (await _eventService.GetEventsAsync(page: 1, pageSize))
-                .Count();
+                .Items.Count;
 
             Assert.True(actual <= pageSize);
             Assert.True(actual >= 0);
@@ -92,7 +92,7 @@ namespace Learning.UnitTests.EventServiceTests
                 .Select(a => a.Id);
 
             var actual = (await _eventService.GetEventsAsync(pageNumber, pageSize))
-                .Select(a => a.Id);
+                .Items.Select(a => a.Id);
 
             Assert.Equal(expected, actual);
         }

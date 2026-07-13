@@ -1,8 +1,8 @@
 ﻿using Domain.Entities;
-using Learning.IntegrationTests.Helpers;
-using static Learning.IntegrationTests.Helpers.EntityFactory;
+using IntegrationTests.Helpers;
+using static IntegrationTests.Helpers.EntityFactory;
 
-namespace Learning.IntegrationTests.RepositoriesTests
+namespace IntegrationTests.RepositoriesTests
 {
     /// <summary>
     /// Пагинация в методе репозитория получения списка событий

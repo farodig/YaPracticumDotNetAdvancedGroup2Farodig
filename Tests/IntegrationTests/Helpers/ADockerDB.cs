@@ -2,7 +2,7 @@
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace Learning.IntegrationTests.Helpers
+namespace IntegrationTests.Helpers
 {
     public abstract class ADockerDB : IAsyncLifetime
     {

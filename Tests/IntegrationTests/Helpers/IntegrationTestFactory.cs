@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Learning.IntegrationTests.Helpers
+namespace IntegrationTests.Helpers
 {
     public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {

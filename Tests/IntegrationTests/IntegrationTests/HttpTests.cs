@@ -1,10 +1,10 @@
 ﻿using Application.Models.Requests;
 using Application.Models.Responses;
 using Domain.Entities;
-using Learning.IntegrationTests.Helpers;
+using IntegrationTests.Helpers;
 using System.Net;
 
-namespace Learning.IntegrationTests.IntegrationTests
+namespace IntegrationTests.IntegrationTests
 {
     [Trait("Category", "Integration")]
     [Collection("SequentialTests")]

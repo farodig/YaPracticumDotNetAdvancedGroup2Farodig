@@ -1,9 +1,9 @@
 ﻿using Application.Services.EventService;
 using Domain.Entities;
-using Learning.UnitTests.Helpers;
-using static Learning.UnitTests.Helpers.EntityFactory;
+using UnitTests.Helpers;
+using static UnitTests.Helpers.EntityFactory;
 
-namespace Learning.UnitTests.EventServiceTests
+namespace UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventServiceFilterTest : AServiceCollection
@@ -27,7 +27,7 @@ namespace Learning.UnitTests.EventServiceTests
             async Task<(IEnumerable<DateTime>, IEnumerable<DateTime>)> FilterByFrom(IEnumerable<Event> collection, DateTime? from)
             {
                 return (collection.OrderBy(a => a.StartAt).Select(a => a.StartAt),
-                    (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), from: from)).OrderBy(a => a.StartAt).Select(a => a.StartAt));
+                    (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), from: from)).Items.OrderBy(a => a.StartAt).Select(a => a.StartAt));
             }
 
             // Assert
@@ -72,7 +72,7 @@ namespace Learning.UnitTests.EventServiceTests
             async Task<(IEnumerable<Guid>, IEnumerable<Guid>)> FilterByTo(IEnumerable<Event> collection, DateTime? to)
             {
                 return (collection.OrderBy(a => a.EndAt).Select(a => a.Id), (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), to: to))
-                    .Select(a => a.BuildEvent()).OrderBy(a => a.EndAt).Select(a => a.Id));
+                    .Items.Select(a => a.BuildEvent()).OrderBy(a => a.EndAt).Select(a => a.Id));
             }
 
             var (expected, actual) = await FilterByTo(all, null);
@@ -124,7 +124,7 @@ namespace Learning.UnitTests.EventServiceTests
             var actual = (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(),
                 title: title,
                 from: diffStartAt.HasValue ? now.AddHours(diffStartAt.Value) : null,
-                to:  diffEndAt.HasValue? now.AddHours(diffEndAt.Value) : null)).Count();
+                to:  diffEndAt.HasValue? now.AddHours(diffEndAt.Value) : null)).Items.Count;
 
             Assert.Equal(expected, actual);
         }

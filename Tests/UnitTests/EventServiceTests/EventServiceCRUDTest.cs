@@ -1,9 +1,9 @@
 ﻿using Application.Services.EventService;
 using Domain.Entities;
-using Learning.UnitTests.Helpers;
-using static Learning.UnitTests.Helpers.EntityFactory;
+using UnitTests.Helpers;
+using static UnitTests.Helpers.EntityFactory;
 
-namespace Learning.UnitTests.EventServiceTests
+namespace UnitTests.EventServiceTests
 {
     [Trait("Category", "Unit")]
     public class EventServiceCRUDTest : AServiceCollection
@@ -34,6 +34,7 @@ namespace Learning.UnitTests.EventServiceTests
             var service = GetInitializedService<IEventService, Event>(data);
             
             var actual = (await service.GetEventsAsync(1, 3))
+                .Items
                 .Select(a => a.Id);
 
             Assert.Equal(expected, actual);

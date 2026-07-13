@@ -11,7 +11,7 @@ namespace Application.Services.EventService
         /// <summary>
         /// Получить все события постранично и с фильтрами
         /// </summary>
-        Task<IEnumerable<EventResponse>> GetEventsAsync(
+        Task<PaginatedResult> GetEventsAsync(
             int page,
             int pageSize,
             string? title = null, 

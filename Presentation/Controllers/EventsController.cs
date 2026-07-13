@@ -33,13 +33,7 @@ namespace Presentation.Controllers
             [FromQuery] int pageSize = 10)
         {
             var filteredEvents = await _eventService.GetEventsAsync(page, pageSize, title, from, to, HttpContext.RequestAborted);
-            
-            return Ok(new PaginatedResult
-            {
-                Items = [.. filteredEvents],
-                PageNumber = page,
-                TotalCount = filteredEvents.Count(),
-            });
+            return Ok(filteredEvents);
         }
 
         /// <summary>

@@ -2,7 +2,7 @@
 using Application.Models.Responses;
 using Domain.Entities;
 
-namespace Learning.UnitTests.Helpers
+namespace UnitTests.Helpers
 {
     internal static class EntityFactory
     {

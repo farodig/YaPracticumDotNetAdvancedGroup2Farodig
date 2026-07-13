@@ -4,7 +4,7 @@ using DotNet.Testcontainers.Images;
 using DotNet.Testcontainers.Networks;
 using Microsoft.Extensions.Logging;
 
-namespace Learning.IntegrationTests.Helpers
+namespace IntegrationTests.Helpers
 {
     /// <summary>
     /// Реализация контейнера postgresql без докера,

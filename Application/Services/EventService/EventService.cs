@@ -11,7 +11,7 @@ namespace Application.Services.EventService
     {
         private readonly IEventRepository _repository = repository;
 
-        public async Task<IEnumerable<EventResponse>> GetEventsAsync(
+        public async Task<PaginatedResult> GetEventsAsync(
             int page,
             int pageSize,
             string? title = null, 
@@ -20,7 +20,13 @@ namespace Application.Services.EventService
             CancellationToken cts = default)
         {
             var collection = await _repository.GetEventsAsync(page, pageSize, title, from, to, cts);
-            return collection.Select(a => a.BuildEventRespose());
+
+            return new PaginatedResult
+            {
+                Items = [.. collection.Select(a => a.BuildEventRespose())],
+                PageNumber = page,
+                TotalCount = collection.Count(),
+            };
         }
 
         public async Task<EventResponse?> GetEventAsync(Guid id, CancellationToken cts = default)

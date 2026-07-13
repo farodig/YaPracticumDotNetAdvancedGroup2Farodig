@@ -1,9 +1,9 @@
 ﻿using Domain.Entities;
-using Learning.IntegrationTests.Helpers;
+using IntegrationTests.Helpers;
 using Microsoft.EntityFrameworkCore;
-using static Learning.IntegrationTests.Helpers.EntityFactory;
+using static IntegrationTests.Helpers.EntityFactory;
 
-namespace Learning.IntegrationTests.RepositoriesTests
+namespace IntegrationTests.RepositoriesTests
 {
     /// <summary>
     /// Все методы репозитория бронирований

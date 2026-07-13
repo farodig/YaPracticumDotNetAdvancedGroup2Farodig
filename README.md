@@ -266,11 +266,11 @@ Cхема управляется миграциями EF Core
 
 Изменения в структуру базы вносятся через код. После внесения изменений необходимо выполнить команду add добавления миграции
 
-> dotnet ef migrations add [ИмяМиграции]
+> dotnet ef migrations add [ИмяМиграции] --project Infrastructure --startup-project Presentation
 
 После того как миграция будет создана и код миграции проверен, можно внести изменения командой update
 
-> dotnet ef database update
+> dotnet ef database update --project Infrastructure --startup-project Presentation
 
 #### Откат изменений
 
@@ -278,20 +278,20 @@ Cхема управляется миграциями EF Core
 
 Откатить изменения в БД последней миграции
 
-> dotnet ef database update [Имя_Предыдущей_Миграции]
+> dotnet ef database update [Имя_Предыдущей_Миграции] --project Infrastructure --startup-project Presentation
 
 Или откатить изменения всех миграций
 
-> dotnet ef database update 0
+> dotnet ef database update 0 --project Infrastructure --startup-project Presentation
 
 После отката изменений в БД можно удалить саму миграцию
 
-> dotnet ef migrations remove
+> dotnet ef migrations remove --project Infrastructure --startup-project Presentation
 
 ## Тестирование
 
 Решение содержит два проекта
-- Learning.UnitTests - юнит тесты
+- UnitTests - юнит тесты
 
 ```markdown
 Запустить только юнит тесты:
@@ -299,7 +299,7 @@ dotnet test --filter "Category=Unit"
 ```
 ⚠️ **Важно:** В юнит тестах используется БД InMemory-провайдер
 
-- Learning.IntegrationTests интеграционные тесты
+- IntegrationTests интеграционные тесты
 
 ```markdown
 Запустить только интеграционные тесты:

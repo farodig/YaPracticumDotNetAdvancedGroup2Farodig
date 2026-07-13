@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Learning.UnitTests.Helpers
+namespace UnitTests.Helpers
 {
     public abstract class AServiceCollection : IDisposable
     {

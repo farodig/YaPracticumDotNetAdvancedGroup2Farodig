@@ -1,10 +1,10 @@
 ﻿using Application.Services.BookingService;
 using Application.Services.EventService;
 using Domain.Entities;
-using Learning.UnitTests.Helpers;
-using static Learning.UnitTests.Helpers.EntityFactory;
+using UnitTests.Helpers;
+using static UnitTests.Helpers.EntityFactory;
 
-namespace Learning.UnitTests.BookingServiceTests
+namespace UnitTests.BookingServiceTests
 {
     [Trait("Category", "Unit")]
     public class BookingProcessorTest : AServiceCollection

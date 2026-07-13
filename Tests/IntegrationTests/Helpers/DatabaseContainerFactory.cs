@@ -1,7 +1,7 @@
 ﻿using DotNet.Testcontainers.Containers;
 using Testcontainers.PostgreSql;
 
-namespace Learning.IntegrationTests.Helpers
+namespace IntegrationTests.Helpers
 {
     internal static class DatabaseContainerFactory
     {

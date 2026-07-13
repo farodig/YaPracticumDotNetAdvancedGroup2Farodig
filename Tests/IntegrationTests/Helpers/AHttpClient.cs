@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace Learning.IntegrationTests.Helpers
+namespace IntegrationTests.Helpers
 {
     [CollectionDefinition("SequentialTests", DisableParallelization = true)]
     public abstract class AHttpClient(IntegrationTestFactory factory) : IClassFixture<IntegrationTestFactory>

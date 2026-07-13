@@ -3,7 +3,7 @@ using Domain.Entities;
 using Infrastructure.DataAccess;
 using Infrastructure.Repositories;
 
-namespace Learning.IntegrationTests.Helpers
+namespace IntegrationTests.Helpers
 {
     internal static class EntityFactory
     {
