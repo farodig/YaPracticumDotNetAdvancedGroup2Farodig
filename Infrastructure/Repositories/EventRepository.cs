@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    internal class EventRepository(AppDbContext dbContext) : IEventRepository
+    public class EventRepository(AppDbContext dbContext) : IEventRepository
     {
         private readonly AppDbContext _dbContext = dbContext;
 

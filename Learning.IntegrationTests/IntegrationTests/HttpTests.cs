@@ -1,9 +1,9 @@
-﻿using Learning.IntegrationTests.Helpers;
-using Presentation.Models.Requests;
-using Presentation.Models.Responses;
+﻿using Application.Models.Requests;
+using Application.Models.Responses;
+using Learning.IntegrationTests.Helpers;
 using System.Net;
 
-namespace Learning.UnitTests.IntegrationTests
+namespace Learning.IntegrationTests.IntegrationTests
 {
     [Trait("Category", "Integration")]
     [Collection("SequentialTests")]

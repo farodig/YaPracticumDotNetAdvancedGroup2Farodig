@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
-    internal class BookingRepository(AppDbContext dbContext) : IBookingRepository
+    public class BookingRepository(AppDbContext dbContext) : IBookingRepository
     {
         private readonly AppDbContext _dbContext = dbContext;
 

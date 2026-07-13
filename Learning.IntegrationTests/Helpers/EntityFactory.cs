@@ -1,6 +1,7 @@
 ﻿using Application.Repositories;
 using Domain.Entities;
 using Infrastructure.DataAccess;
+using Infrastructure.Repositories;
 
 namespace Learning.IntegrationTests.Helpers
 {
