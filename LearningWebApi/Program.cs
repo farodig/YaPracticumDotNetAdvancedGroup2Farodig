@@ -1,10 +1,12 @@
+
+using Application;
 using LearningWebApi;
 using LearningWebApi.Middlewares;
 using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.AppDbConfigure();
+builder.ConfigureInfrastructure();
 builder.Services.AddRepositories();
 builder.Services.AddEventService();
 builder.Services.AddBookingService();
@@ -25,6 +27,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
-app.AppDbInitialize();
+app.Services.InitializeInfrastructure();
 
 app.Run();

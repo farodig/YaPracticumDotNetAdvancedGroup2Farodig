@@ -1,6 +1,4 @@
-﻿using Application.Services.BookingService;
-using Application.Services.EventService;
-using LearningWebApi.Services.BookingService;
+﻿using Infrastructure;
 using NLog.Web;
 using System.Reflection;
 
@@ -12,21 +10,14 @@ namespace LearningWebApi
     internal static class ServiceProviderExtension
     {
         /// <summary>
-        /// Добавить сервис событий
+        /// Конфигурирование бд
         /// </summary>
-        public static void AddEventService(this IServiceCollection services)
+        public static void ConfigureInfrastructure(this WebApplicationBuilder builder)
         {
-            services.AddScoped<IEventService, EventService>();
-        }
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        /// <summary>
-        /// Добавить сервис бронирований
-        /// </summary>
-        /// <param name="services"></param>
-        public static void AddBookingService(this IServiceCollection services)
-        {
-            services.AddScoped<IBookingService, BookingService>();
-            services.AddHostedService<BookingProcessor>();
+            builder.Services.AddInrfastructureDB(connectionString);
         }
 
         /// <summary>

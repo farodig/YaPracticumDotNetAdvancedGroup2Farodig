@@ -24,5 +24,13 @@ namespace Infrastructure
                 options.UseNpgsql(connectionString);
             });
         }
+
+        public static void InitializeInfrastructure(this IServiceProvider services)
+        {
+            using var scope = services.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            context.Database.Migrate();
+        }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Application.Services.BookingService;
 using Application.Services.EventService;
 using Domain.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
+using Microsoft.Extensions.Hosting;
 
 namespace LearningWebApi.Services.BookingService
 {
