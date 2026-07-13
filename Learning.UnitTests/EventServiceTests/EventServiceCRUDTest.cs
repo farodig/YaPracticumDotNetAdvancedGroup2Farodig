@@ -29,10 +29,12 @@ namespace Learning.UnitTests.EventServiceTests
         [Fact(DisplayName = "02. Получение всех событий")]
         public async Task GetEventsTest()
         {
-            var expected = Enumerable.Range(1, 3).Select(a => CreateEvent()).ToArray();
-            var service = GetInitializedService<IEventService, Event>(expected);
+            var data = Enumerable.Range(1, 3).Select(a => CreateEvent()).ToArray();
+            var expected = data.Select(a => a.Id);
+            var service = GetInitializedService<IEventService, Event>(data);
             
-            var actual = await service.GetEventsAsync(1, 3);
+            var actual = (await service.GetEventsAsync(1, 3))
+                .Select(a => a.Id);
 
             Assert.Equal(expected, actual);
         }
@@ -40,19 +42,23 @@ namespace Learning.UnitTests.EventServiceTests
         [Fact(DisplayName = "03. Получение события по ID")]
         public async Task GetEventTest()
         {
-            var expected = new Event
-            {
-                Id = Guid.NewGuid(),
-                Title = "GetEventTitle",
-                StartAt = DateTime.Now,
-                EndAt = DateTime.Now,
-                Description = "GetEventDescription",
-            };
+            var expected = CreateEvent
+            (
+                title: "GetEventTitle",
+                description: "GetEventDescription"
+            );
             var service = GetInitializedService<IEventService, Event>(expected);
 
             var actual = await service.GetEventAsync(expected.Id);
 
-            Assert.Equal(expected, actual);
+            Assert.NotNull(actual);
+            Assert.Equal(expected.Title, actual.Title);
+            Assert.Equal(expected.StartAt, actual.StartAt);
+            Assert.Equal(expected.EndAt, actual.EndAt);
+            Assert.Equal(expected.Description, actual.Description);
+            Assert.Equal(expected.TotalSeats, actual.TotalSeats);
+            Assert.Equal(expected.AvailableSeats, actual.AvailableSeats);
+            Assert.Equal(actual.TotalSeats, actual.AvailableSeats);
         }
 
         [Theory(DisplayName = "04. Попытка получить событие с несуществующим ID")]
@@ -71,7 +77,7 @@ namespace Learning.UnitTests.EventServiceTests
         public async Task TryUpdateEventNotExistIdFailTest(Guid id)
         {
             var service = GetService<IEventService>();
-            Assert.False(await service.TryUpdateEventAsync(CreateEvent(eventId: id)));
+            Assert.False(await service.TryUpdateEventAsync(id, CreateEvent(eventId: id).BuildUpdateEventRequest()));
         }
 
         [Fact(DisplayName = "06. Обновление существующего события")]
@@ -99,7 +105,7 @@ namespace Learning.UnitTests.EventServiceTests
             };
             var service = GetInitializedService<IEventService, Event>(toUpdate);
 
-            Assert.True(await service.TryUpdateEventAsync(expected));
+            Assert.True(await service.TryUpdateEventAsync(expected.Id, expected.BuildUpdateEventRequest()));
             var actual = await service.GetEventAsync(expected.Id);
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);

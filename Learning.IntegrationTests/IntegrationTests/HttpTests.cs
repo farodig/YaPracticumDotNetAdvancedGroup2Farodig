@@ -1,5 +1,6 @@
 ﻿using Application.Models.Requests;
 using Application.Models.Responses;
+using Domain.Entities;
 using Learning.IntegrationTests.Helpers;
 using System.Net;
 

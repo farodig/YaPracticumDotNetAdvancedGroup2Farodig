@@ -1,4 +1,6 @@
-﻿using Application.Repositories;
+﻿using Application.Models.Builders;
+using Application.Models.Responses;
+using Application.Repositories;
 using Application.Services.EventService;
 using Domain.Entities;
 using NLog;
@@ -12,7 +14,7 @@ namespace Application.Services.BookingService
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
 
-        public async Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken cts = default)
+        public async Task<BookingResponse> CreateBookingAsync(Guid eventId, CancellationToken cts = default)
         {
             await _bookingSemaphore.WaitAsync(cts);
             try
@@ -20,10 +22,10 @@ namespace Application.Services.BookingService
                 await _eventService.ReserveSeatAsync(eventId, cts);
 
                 // Создать бронь
-                var booking = CreateBooking(eventId);
+                var booking = eventId.BuildBooking();
                 await _repository.CreateAsync(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
-                return booking;
+                return booking.BuildBookingResponse();
             }
             finally
             {
@@ -31,17 +33,10 @@ namespace Application.Services.BookingService
             }
         }
 
-        internal static Booking CreateBooking(Guid eventId) => new()
+        public async Task<BookingResponse?> GetBookingByIdAsync(Guid id, CancellationToken cts = default)
         {
-            Id = Guid.NewGuid(),
-            EventId = eventId,
-            Status = BookingStatus.Pending,
-            CreatedAt = DateTime.Now,
-        };
-
-        public async Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken cts = default)
-        {
-            return await _repository.GetAsync(id, cts);
+            var item = await _repository.GetAsync(id, cts);
+            return item?.BuildBookingResponse();
         }
 
         public async Task CancelBookingAsync(Booking data, CancellationToken cts = default)
@@ -52,7 +47,7 @@ namespace Application.Services.BookingService
 
         public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)
         {
-            return (await _repository.GetBookingsByStatus(BookingStatus.Pending, cts))
+            return (await _repository.GetBookingsByStatus(Domain.Entities.BookingStatus.Pending, cts))
                 .OrderBy(a => a.CreatedAt);
         }
 

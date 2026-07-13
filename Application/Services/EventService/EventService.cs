@@ -1,4 +1,7 @@
-﻿using Application.Repositories;
+﻿using Application.Models.Builders;
+using Application.Models.Requests;
+using Application.Models.Responses;
+using Application.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -8,7 +11,7 @@ namespace Application.Services.EventService
     {
         private readonly IEventRepository _repository = repository;
 
-        public async Task<IEnumerable<Event>> GetEventsAsync(
+        public async Task<IEnumerable<EventResponse>> GetEventsAsync(
             int page,
             int pageSize,
             string? title = null, 
@@ -16,15 +19,17 @@ namespace Application.Services.EventService
             DateTime? to = null,
             CancellationToken cts = default)
         {
-            return await _repository.GetEventsAsync(page, pageSize, title, from, to, cts);
+            var collection = await _repository.GetEventsAsync(page, pageSize, title, from, to, cts);
+            return collection.Select(a => a.BuildEventRespose());
         }
 
-        public async Task<Event?> GetEventAsync(Guid id, CancellationToken cts = default)
+        public async Task<EventResponse?> GetEventAsync(Guid id, CancellationToken cts = default)
         {
-            return await _repository.GetAsync(id, cts);
+            var item = await _repository.GetAsync(id, cts);
+            return item?.BuildEventRespose();
         }
 
-        public async Task<Event> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken cts = default)
+        public async Task<EventResponse> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken cts = default)
         {
             var item = new Event()
             {
@@ -39,12 +44,14 @@ namespace Application.Services.EventService
 
             await _repository.CreateAsync(item, cts);
 
-            return item;
+            return item.BuildEventRespose();
         }
 
-        public async Task<bool> TryUpdateEventAsync(Event item, CancellationToken cts = default)
+        public async Task<bool> TryUpdateEventAsync(Guid id, UpdateEventRequest item, CancellationToken cts = default)
         {
-            return await _repository.TryUpdateAsync(item, cts) > 0;
+            var toUpdate = item.BuildEvent(id);
+
+            return await _repository.TryUpdateAsync(toUpdate, cts) > 0;
         }
 
         public async Task<bool> TryDeleteEventAsync(Guid id, CancellationToken cts = default)

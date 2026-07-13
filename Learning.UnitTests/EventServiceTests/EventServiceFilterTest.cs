@@ -69,9 +69,10 @@ namespace Learning.UnitTests.EventServiceTests
             IEnumerable<Event> all = [min, more, max];
             var eventService = GetInitializedService<IEventService, Event>(all);
 
-            async Task<(IEnumerable<Event>, IEnumerable<Event>)> FilterByTo(IEnumerable<Event> collection, DateTime? to)
+            async Task<(IEnumerable<Guid>, IEnumerable<Guid>)> FilterByTo(IEnumerable<Event> collection, DateTime? to)
             {
-                return (collection.OrderBy(a => a.EndAt), (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), to: to)).OrderBy(a => a.EndAt));
+                return (collection.OrderBy(a => a.EndAt).Select(a => a.Id), (await eventService.GetEventsAsync(page: 1, pageSize: all.Count(), to: to))
+                    .Select(a => a.BuildEvent()).OrderBy(a => a.EndAt).Select(a => a.Id));
             }
 
             var (expected, actual) = await FilterByTo(all, null);

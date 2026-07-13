@@ -1,8 +1,6 @@
-﻿using Application.Models.Factories;
-using Application.Models.Requests;
+﻿using Application.Models.Requests;
 using Application.Models.Responses;
 using Application.Services.EventService;
-using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -38,7 +36,7 @@ namespace Presentation.Controllers
             
             return Ok(new PaginatedResult
             {
-                Items = [.. filteredEvents.Select(EventFactory.ToEventRespose)],
+                Items = [.. filteredEvents],
                 PageNumber = page,
                 TotalCount = filteredEvents.Count(),
             });
@@ -54,12 +52,12 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK, "application/json")]
         public async Task<IActionResult> GetEvent(Guid id)
         {
-            if (await _eventService.GetEventAsync(id, HttpContext.RequestAborted) is not Event item)
+            if (await _eventService.GetEventAsync(id, HttpContext.RequestAborted) is not EventResponse item)
             {
                 return NotFound();
             }
 
-            return Ok(item.ToEventRespose());
+            return Ok(item);
         }
 
         /// <summary>
@@ -78,8 +76,7 @@ namespace Presentation.Controllers
                 data.EndAt!.Value,
                 data.TotalSeats,
                 data.Description,
-                HttpContext.RequestAborted))
-                .ToEventRespose();
+                HttpContext.RequestAborted));
 
             return CreatedAtAction(
                 actionName: nameof(GetEvent),
@@ -98,9 +95,7 @@ namespace Presentation.Controllers
         [Consumes("application/json")]
         public async Task<IActionResult> UpdateEvent([FromRoute] Guid id, [FromBody] UpdateEventRequest data)
         {
-            var toUpdate = data.CreateEvent(id);
-
-            if (!await _eventService.TryUpdateEventAsync(toUpdate, HttpContext.RequestAborted))
+            if (!await _eventService.TryUpdateEventAsync(id, data, HttpContext.RequestAborted))
             {
                 return NotFound();
             }

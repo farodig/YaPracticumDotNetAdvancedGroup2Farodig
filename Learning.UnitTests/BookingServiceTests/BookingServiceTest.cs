@@ -106,7 +106,8 @@ namespace Learning.UnitTests.BookingServiceTests
             var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
-            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            var booking = (await bookingService.CreateBookingAsync(@event.Id))
+                .BuildBooking();
             await bookingService.ConfirmBookingAsync(booking);
 
             Assert.NotNull(booking.ProcessedAt);
@@ -119,7 +120,8 @@ namespace Learning.UnitTests.BookingServiceTests
             var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
-            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            var booking = (await bookingService.CreateBookingAsync(@event.Id))
+                .BuildBooking();
             await bookingService.RejectBookingAsync(booking);
 
             Assert.NotNull(booking.ProcessedAt);
@@ -138,7 +140,7 @@ namespace Learning.UnitTests.BookingServiceTests
             var booking = await bookingService.CreateBookingAsync(@event.Id);
             Assert.Equal(expectedModifySeats, @event.AvailableSeats);
 
-            await bookingService.RejectBookingAsync(booking);
+            await bookingService.RejectBookingAsync(booking.BuildBooking());
             Assert.Equal(expectedAvailableSeats, @event.AvailableSeats);
         }
 
@@ -149,7 +151,7 @@ namespace Learning.UnitTests.BookingServiceTests
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             var booking = await bookingService.CreateBookingAsync(@event.Id);
-            await bookingService.RejectBookingAsync(booking);
+            await bookingService.RejectBookingAsync(booking.BuildBooking());
             await bookingService.CreateBookingAsync(@event.Id);
         }
 

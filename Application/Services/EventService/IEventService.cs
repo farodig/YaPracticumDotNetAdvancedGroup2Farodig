@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Models.Requests;
+using Application.Models.Responses;
 
 namespace Application.Services.EventService
 {
@@ -10,7 +11,7 @@ namespace Application.Services.EventService
         /// <summary>
         /// Получить все события постранично и с фильтрами
         /// </summary>
-        Task<IEnumerable<Event>> GetEventsAsync(
+        Task<IEnumerable<EventResponse>> GetEventsAsync(
             int page,
             int pageSize,
             string? title = null, 
@@ -23,7 +24,7 @@ namespace Application.Services.EventService
         /// </summary>
         /// <param name="id">Идентификатор события</param>
         /// <param name="cts">Токен отмены</param>
-        Task<Event?> GetEventAsync(Guid id, CancellationToken cts = default);
+        Task<EventResponse?> GetEventAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Создать событие
@@ -34,7 +35,7 @@ namespace Application.Services.EventService
         /// <param name="description">Описание события</param>
         /// <param name="cts">Токен отмены</param>
         /// <param name="totalSeats">Общее количество мест на событии</param>
-        Task<Event> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken cts = default);
+        Task<EventResponse> CreateEventAsync(string title, DateTime startAt, DateTime endAt, int totalSeats, string? description = null, CancellationToken cts = default);
 
         /// <summary>
         /// Обновить существующее событие
@@ -42,7 +43,7 @@ namespace Application.Services.EventService
         /// <param name="item">Событие</param>
         /// <param name="cts">Токен отмены</param>
         /// <returns>true если удалось совершить действие над событием, false если событие не найдено</returns>
-        Task<bool> TryUpdateEventAsync(Event item, CancellationToken cts = default);
+        Task<bool> TryUpdateEventAsync(Guid id, UpdateEventRequest item, CancellationToken cts = default);
 
         /// <summary>
         /// Удалить существующее событие

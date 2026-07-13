@@ -88,9 +88,11 @@ namespace Learning.UnitTests.EventServiceTests
         {
             var expected = _randomData.OrderBy(c => c.StartAt)
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize)
+                .Select(a => a.Id);
 
-            var actual = await _eventService.GetEventsAsync(pageNumber, pageSize);
+            var actual = (await _eventService.GetEventsAsync(pageNumber, pageSize))
+                .Select(a => a.Id);
 
             Assert.Equal(expected, actual);
         }

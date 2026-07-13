@@ -1,7 +1,5 @@
-﻿using Application.Models.Factories;
-using Application.Models.Responses;
+﻿using Application.Models.Responses;
 using Application.Services.BookingService;
-using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -27,7 +25,7 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
-            if (await _bookingService.CreateBookingAsync(id, HttpContext.RequestAborted) is not Booking item)
+            if (await _bookingService.CreateBookingAsync(id, HttpContext.RequestAborted) is not BookingResponse item)
             {
                 return NotFound();
             }
@@ -35,7 +33,7 @@ namespace Presentation.Controllers
             return AcceptedAtAction(
                 actionName: nameof(GetBooking),
                 routeValues: new { id = item.Id },
-                value: item.ToBookingResponse());
+                value: item);
         }
 
         /// <summary>
@@ -48,12 +46,12 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<BookingResponse>> GetBooking(Guid id)
         {
-            if (await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted) is not Booking item)
+            if (await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted) is not BookingResponse item)
             {
                 return NotFound();
             }
 
-            return Ok(item.ToBookingResponse());
+            return Ok(item);
         }
     }
 }

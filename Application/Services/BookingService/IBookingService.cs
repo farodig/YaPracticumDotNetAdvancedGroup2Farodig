@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Models.Responses;
+using Domain.Entities;
 
 namespace Application.Services.BookingService
 {
@@ -10,12 +11,12 @@ namespace Application.Services.BookingService
         /// <summary>
         /// Создание брони для указанного события
         /// </summary>
-        Task<Booking> CreateBookingAsync(Guid eventId, CancellationToken cts = default);
+        Task<BookingResponse> CreateBookingAsync(Guid eventId, CancellationToken cts = default);
 
         /// <summary>
         /// Получение брони по идентификатору
         /// </summary>
-        Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken cts = default);
+        Task<BookingResponse?> GetBookingByIdAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Отменить бронирование
