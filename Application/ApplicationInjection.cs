@@ -1,6 +1,5 @@
 ﻿using Application.Services.BookingService;
 using Application.Services.EventService;
-using LearningWebApi.Services.BookingService;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application

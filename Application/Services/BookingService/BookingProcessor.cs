@@ -1,11 +1,10 @@
-﻿using Application.Services.BookingService;
-using Application.Services.EventService;
+﻿using Application.Services.EventService;
 using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using Microsoft.Extensions.Hosting;
 
-namespace LearningWebApi.Services.BookingService
+namespace Application.Services.BookingService
 {
     internal class BookingProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
     {

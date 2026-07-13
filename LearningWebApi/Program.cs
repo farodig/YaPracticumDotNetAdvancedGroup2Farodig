@@ -1,32 +1,20 @@
-
-using Application;
-using LearningWebApi;
 using LearningWebApi.Middlewares;
-using Infrastructure;
+using LearningWebApi.ConfigurationBuilders;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.ConfigureInfrastructure();
-builder.Services.AddRepositories();
-builder.Services.AddEventService();
-builder.Services.AddBookingService();
-builder.AddSwaggerService();
+builder.ConfigureApplication();
+builder.ConfigureSwaggerService();
 
 builder.AddNlog();
 
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("AllowSwagger");
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.InitializeSwagger();
 app.UseHttpsRedirection();
 app.MapControllers();
-app.Services.InitializeInfrastructure();
+app.InitializeInfrastructure();
 
 app.Run();

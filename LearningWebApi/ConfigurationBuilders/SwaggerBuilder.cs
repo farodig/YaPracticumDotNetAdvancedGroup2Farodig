@@ -1,29 +1,13 @@
-﻿using Infrastructure;
-using NLog.Web;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace LearningWebApi
+namespace LearningWebApi.ConfigurationBuilders
 {
-    /// <summary>
-    /// Расширения для добавления сервисов
-    /// </summary>
-    internal static class ServiceProviderExtension
+    internal static class SwaggerBuilder
     {
-        /// <summary>
-        /// Конфигурирование бд
-        /// </summary>
-        public static void ConfigureInfrastructure(this WebApplicationBuilder builder)
-        {
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-            builder.Services.AddInrfastructureDB(connectionString);
-        }
-
         /// <summary>
         /// Добавить swagger
         /// </summary>
-        public static void AddSwaggerService(this WebApplicationBuilder builder)
+        public static void ConfigureSwaggerService(this WebApplicationBuilder builder)
         {
             builder.Services.AddSwaggerGen(options =>
             {
@@ -49,13 +33,14 @@ namespace LearningWebApi
             });
         }
 
-        /// <summary>
-        /// Добавить Nlog
-        /// </summary>
-        public static void AddNlog(this WebApplicationBuilder builder)
+        public static void InitializeSwagger(this WebApplication app)
         {
-            builder.Logging.ClearProviders();
-            builder.Host.UseNLog();
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseCors("AllowSwagger");
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
         }
     }
 }
