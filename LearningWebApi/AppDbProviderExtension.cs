@@ -1,5 +1,6 @@
 ﻿using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure;
 
 namespace LearningWebApi
 {
@@ -13,10 +14,7 @@ namespace LearningWebApi
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseNpgsql(connectionString);
-            });
+            builder.Services.AddInrfastructureDB(connectionString);
         }
 
         /// <summary>

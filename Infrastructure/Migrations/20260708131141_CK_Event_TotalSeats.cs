@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace LearningWebApi.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class CK_Event_TotalSeats : Migration

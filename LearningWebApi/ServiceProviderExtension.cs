@@ -1,5 +1,4 @@
-﻿using LearningWebApi.Repositories;
-using LearningWebApi.Services.BookingService;
+﻿using LearningWebApi.Services.BookingService;
 using LearningWebApi.Services.EventService;
 using NLog.Web;
 using System.Reflection;
@@ -16,7 +15,6 @@ namespace LearningWebApi
         /// </summary>
         public static void AddEventService(this IServiceCollection services)
         {
-            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IEventService, EventService>();
         }
 
@@ -26,7 +24,6 @@ namespace LearningWebApi
         /// <param name="services"></param>
         public static void AddBookingService(this IServiceCollection services)
         {
-            services.AddScoped<IBookingRepository, BookingRepository>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddHostedService<BookingProcessor>();
         }

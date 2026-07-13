@@ -1,9 +1,11 @@
 using LearningWebApi;
 using LearningWebApi.Middlewares;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.AppDbConfigure();
+builder.Services.AddRepositories();
 builder.Services.AddEventService();
 builder.Services.AddBookingService();
 builder.AddSwaggerService();
