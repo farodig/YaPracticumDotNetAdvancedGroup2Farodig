@@ -1,4 +1,4 @@
-﻿using Presentation.Models.Requests;
+﻿using Application.Models.Requests;
 using System.ComponentModel.DataAnnotations;
 
 namespace Learning.UnitTests.EventServiceTests

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Application.Services.BookingService
 {
-    internal class BookingProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
+    public class BookingProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();

@@ -1,9 +1,9 @@
-﻿using Domain.Entities;
+﻿using Application.Repositories;
+using Application.Services.BookingService;
+using Application.Services.EventService;
+using Domain.Entities;
 using Domain.Exceptions;
 using Learning.UnitTests.Helpers;
-using Presentation.Repositories;
-using Presentation.Services.BookingService;
-using Presentation.Services.EventService;
 using static Learning.UnitTests.Helpers.EntityFactory;
 
 namespace Learning.UnitTests.BookingServiceTests

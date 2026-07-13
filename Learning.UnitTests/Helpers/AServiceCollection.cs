@@ -1,4 +1,5 @@
-﻿using Presentation;
+﻿using Application;
+using Infrastructure;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace Learning.UnitTests.Helpers
 
             var dbName = Guid.NewGuid().ToString();
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(dbName));
+            services.AddRepositories();
             services.AddEventService();
             services.AddBookingService();
 
