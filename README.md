@@ -20,9 +20,34 @@
 
 ⚠️ **Важно:** Для запуска итеграционных тестов на компьютере должен быть установлен Docker
 
-8. Зайти в подпапку скачанного репозитория LearningWebApi/
+8. Зайти в подпапку скачанного репозитория Presentation/
+
+📝 **Примечание:** См. [структуру проектов](#структура-проектов)
+
 9. Выполнить команду dotnet run
 10. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
+
+## Структура проектов
+
+1. Domain - всё, что описывает предметную область и не зависит от технологий
+    - доменные сущности и перечисления;
+    - доменные исключения
+          
+2. Application - бизнес-логика и абстракции
+    - интерфейсы сервисов и их реализации
+    - интерфейсы портов — абстракции для доступа к данным (репозитории) и внешним сервисам
+    - объекты передачи данных между слоями
+    - фоновые сервисы
+  
+3. Infrastructure - реализации, которые зависят от внешних технологий
+    - реализации интерфейсов репозиториев с использованием DbContext
+    - сам DbContext, конфигурации маппинга сущностей, миграции
+    - любые другие адаптеры к внешним системам
+
+4. Presentation
+    - эндпоинты/контроллеры
+    - обработчики глобальных исключений с маппингом доменных исключений в HTTP-статусы
+    - регистрация всех зависимостей
 
 ## API
 
@@ -223,7 +248,6 @@ Status code 200
   "processedAt": "2026-05-15T23:06:46.3624755+03:00"
 }
 
-
 ## БД PostgreSQL
 
 ### Строка подключения
@@ -242,11 +266,11 @@ Cхема управляется миграциями EF Core
 
 Изменения в структуру базы вносятся через код. После внесения изменений необходимо выполнить команду add добавления миграции
 
-> dotnet ef migrations add [ИмяМиграции]
+> dotnet ef migrations add [ИмяМиграции] --project Infrastructure --startup-project Presentation
 
 После того как миграция будет создана и код миграции проверен, можно внести изменения командой update
 
-> dotnet ef database update
+> dotnet ef database update --project Infrastructure --startup-project Presentation
 
 #### Откат изменений
 
@@ -254,20 +278,20 @@ Cхема управляется миграциями EF Core
 
 Откатить изменения в БД последней миграции
 
-> dotnet ef database update [Имя_Предыдущей_Миграции]
+> dotnet ef database update [Имя_Предыдущей_Миграции] --project Infrastructure --startup-project Presentation
 
 Или откатить изменения всех миграций
 
-> dotnet ef database update 0
+> dotnet ef database update 0 --project Infrastructure --startup-project Presentation
 
 После отката изменений в БД можно удалить саму миграцию
 
-> dotnet ef migrations remove
+> dotnet ef migrations remove --project Infrastructure --startup-project Presentation
 
 ## Тестирование
 
 Решение содержит два проекта
-- Learning.UnitTests - юнит тесты
+- UnitTests - юнит тесты
 
 ```markdown
 Запустить только юнит тесты:
@@ -275,7 +299,7 @@ dotnet test --filter "Category=Unit"
 ```
 ⚠️ **Важно:** В юнит тестах используется БД InMemory-провайдер
 
-- Learning.IntegrationTests интеграционные тесты
+- IntegrationTests интеграционные тесты
 
 ```markdown
 Запустить только интеграционные тесты:
