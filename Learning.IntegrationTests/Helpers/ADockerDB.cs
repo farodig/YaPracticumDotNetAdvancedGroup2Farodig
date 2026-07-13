@@ -1,13 +1,12 @@
 ﻿using DotNet.Testcontainers.Containers;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using static Learning.IntegrationTests.Helpers.DatabaseContainerFactory;
 
 namespace Learning.IntegrationTests.Helpers
 {
     public abstract class ADockerDB : IAsyncLifetime
     {
-        private readonly IDatabaseContainer _postgres = CreateTestPostgeSqlContaner();//CreatePostgreSqlContainer();
+        private readonly IDatabaseContainer _postgres = DatabaseContainerFactory.CreatePostgreSqlContainer();
 
         private DbContextOptions<AppDbContext>? _options;
 
