@@ -16,8 +16,7 @@ namespace Learning.UnitTests.Helpers
             var dbName = Guid.NewGuid().ToString();
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(dbName));
             services.AddRepositories();
-            services.AddEventService();
-            services.AddBookingService();
+            services.AddApplicationServices();
 
             ServiceProvider = services.BuildServiceProvider();
             Scope = ServiceProvider.CreateScope();

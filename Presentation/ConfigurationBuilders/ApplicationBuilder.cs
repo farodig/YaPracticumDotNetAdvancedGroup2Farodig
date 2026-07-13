@@ -8,8 +8,7 @@ namespace Presentation.ConfigurationBuilders
         public static void ConfigureApplication(this WebApplicationBuilder builder)
         {
             builder.Services.AddRepositories();
-            builder.Services.AddEventService();
-            builder.Services.AddBookingService();
+            builder.Services.AddApplicationServices();
         }
     }
 }
