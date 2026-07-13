@@ -1,7 +1,7 @@
-﻿using Domain.Entities;
+﻿using Application.Repositories;
+using Domain.Entities;
 using Domain.Exceptions;
 using LearningWebApi.Entities;
-using LearningWebApi.Repositories;
 
 namespace LearningWebApi.Services.EventService
 {

@@ -1,6 +1,5 @@
-﻿using Domain.Entities;
-using LearningWebApi.Entities.Factories;
-using LearningWebApi.Repositories;
+﻿using Application.Repositories;
+using Domain.Entities;
 using LearningWebApi.Services.EventService;
 using NLog;
 
@@ -21,7 +20,7 @@ namespace LearningWebApi.Services.BookingService
                 await _eventService.ReserveSeatAsync(eventId, cts);
 
                 // Создать бронь
-                var booking = BookingFactory.CreateBooking(eventId);
+                var booking = CreateBooking(eventId);
                 await _repository.CreateAsync(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking;
@@ -31,6 +30,14 @@ namespace LearningWebApi.Services.BookingService
                 _bookingSemaphore.Release();
             }
         }
+
+        internal static Booking CreateBooking(Guid eventId) => new()
+        {
+            Id = Guid.NewGuid(),
+            EventId = eventId,
+            Status = BookingStatus.Pending,
+            CreatedAt = DateTime.Now,
+        };
 
         public async Task<Booking?> GetBookingByIdAsync(Guid id, CancellationToken cts = default)
         {
