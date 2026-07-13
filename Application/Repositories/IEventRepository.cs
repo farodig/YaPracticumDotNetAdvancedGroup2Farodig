@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace LearningWebApi.Repositories
+namespace Application.Repositories
 {
     /// <summary>
     /// Репозиторий событий

@@ -1,8 +1,9 @@
-﻿using Domain.Entities;
+﻿using Application.Repositories;
+using Domain.Entities;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
-namespace LearningWebApi.Repositories
+namespace Infrastructure.Repositories
 {
     internal class BookingRepository(AppDbContext dbContext) : IBookingRepository
     {

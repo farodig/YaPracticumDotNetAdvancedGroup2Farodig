@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LearningWebApi.Repositories
+namespace Infrastructure.Repositories
 {
     /// <summary>
     /// Фильтрация событий Расширение для постраничного вывода событий
