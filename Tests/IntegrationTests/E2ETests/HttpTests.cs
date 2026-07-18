@@ -4,7 +4,7 @@ using Domain.Entities;
 using IntegrationTests.Helpers;
 using System.Net;
 
-namespace IntegrationTests.IntegrationTests
+namespace IntegrationTests.E2ETests
 {
     [Trait("Category", "Integration")]
     [Collection("SequentialTests")]
