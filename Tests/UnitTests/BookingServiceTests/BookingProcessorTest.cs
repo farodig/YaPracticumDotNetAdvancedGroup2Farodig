@@ -12,11 +12,12 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "01. Проверка корректной отмены обработчика BookingProcessor")]
         public async Task CancelBookingProcessTest()
         {
+            var personId = Guid.NewGuid();
             var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создали бронь
-            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id, personId);
 
             using var cts = new CancellationTokenSource();
             using var bookingProcessor = GetHostedService<BookingProcessor>()!;
@@ -36,11 +37,12 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "02. Проверка успешной обработки бронирования события")]
         public async Task ProcessSuccessBookingEventTest()
         {
+            var personId = Guid.NewGuid();
             var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создать бронь
-            var booking = (await bookingService.CreateBookingAsync(@event.Id))
+            var booking = (await bookingService.CreateBookingAsync(@event.Id, personId))
                 .BuildBooking();
 
             using var bookingProcessor = GetHostedService<BookingProcessor>()!;
@@ -52,11 +54,12 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "03. Проверка обработки бронирования события которое было удалено")]
         public async Task ProcessBookingNotExistedEventTest()
         {
+            var personId = Guid.NewGuid();
             var @event = CreateEvent(totalSeats: 1);
             var (eventService, bookingService) = GetInitializedServices<IEventService, IBookingService, Event>(@event);
 
             // Создать бронь
-            var booking = (await bookingService.CreateBookingAsync(@event.Id))
+            var booking = (await bookingService.CreateBookingAsync(@event.Id, personId))
                 .BuildBooking();
             // Удалить бронь
             await eventService.TryDeleteEventAsync(@event.Id);

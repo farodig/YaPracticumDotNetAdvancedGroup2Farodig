@@ -25,7 +25,8 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
-            if (await _bookingService.CreateBookingAsync(id, HttpContext.RequestAborted) is not BookingResponse item)
+            var personId = Guid.NewGuid(); // TODO: получить person
+            if (await _bookingService.CreateBookingAsync(id, personId, HttpContext.RequestAborted) is not BookingResponse item)
             {
                 return NotFound();
             }

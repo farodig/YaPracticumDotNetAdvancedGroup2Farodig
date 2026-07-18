@@ -11,7 +11,7 @@ namespace Application.Services.BookingService
         /// <summary>
         /// Создание брони для указанного события
         /// </summary>
-        Task<BookingResponse> CreateBookingAsync(Guid eventId, CancellationToken cts = default);
+        Task<BookingResponse> CreateBookingAsync(Guid eventId, Guid personId, CancellationToken cts = default);
 
         /// <summary>
         /// Получение брони по идентификатору

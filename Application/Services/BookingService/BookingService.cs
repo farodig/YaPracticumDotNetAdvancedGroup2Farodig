@@ -14,7 +14,7 @@ namespace Application.Services.BookingService
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
 
-        public async Task<BookingResponse> CreateBookingAsync(Guid eventId, CancellationToken cts = default)
+        public async Task<BookingResponse> CreateBookingAsync(Guid eventId, Guid personId, CancellationToken cts = default)
         {
             await _bookingSemaphore.WaitAsync(cts);
             try
@@ -22,7 +22,7 @@ namespace Application.Services.BookingService
                 await _eventService.ReserveSeatAsync(eventId, cts);
 
                 // Создать бронь
-                var booking = eventId.BuildBooking();
+                var booking = eventId.BuildBooking(); // TODO: Передать personId в БД
                 await _repository.CreateAsync(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking.BuildBookingResponse();

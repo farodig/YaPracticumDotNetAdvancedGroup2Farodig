@@ -3,7 +3,7 @@
     /// <summary>
     /// Исключение о неуспешном поиске
     /// </summary>
-    public class NotFoundException(string? message) : Exception(message)
+    public class ANotFoundException(string? message) : Exception(message)
     {
     }
 }
