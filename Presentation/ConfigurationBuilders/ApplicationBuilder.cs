@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.Services.TokenService;
 using Infrastructure;
 
 namespace Presentation.ConfigurationBuilders
@@ -9,6 +10,13 @@ namespace Presentation.ConfigurationBuilders
         {
             builder.Services.AddRepositories();
             builder.Services.AddApplicationServices();
+
+            // TODO: по хорошему следует вынести в AddApplicationServices, однако это потребует подключения библиотек
+            builder.Services.Configure<TokenSettings>(
+                builder.Configuration.GetSection("TokenSettings"));
+            builder.Services.AddOptions<TokenSettings>()
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
         }
     }
 }
