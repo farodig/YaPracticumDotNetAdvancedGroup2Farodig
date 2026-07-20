@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System.Security.Claims;
 
 namespace Application.Services.TokenService
 {
@@ -11,5 +12,15 @@ namespace Application.Services.TokenService
         /// Сгенерировать токен по данным пользователя
         /// </summary>
         string CreateToken(Person person);
+
+        /// <summary>
+        /// Получить идентификатор пользователя
+        /// </summary>
+        Guid GetPersonId(ClaimsPrincipal user);
+
+        /// <summary>
+        /// Получить роль пользователя
+        /// </summary>
+        PersonRole GetRole(ClaimsPrincipal user);
     }
 }

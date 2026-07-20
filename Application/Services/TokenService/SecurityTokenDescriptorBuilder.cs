@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Application.Services.TokenService
 {
-    internal static class SecurityTokenDescriptorBuilder
+    public static class SecurityTokenDescriptorBuilder
     {
         public static SecurityTokenDescriptor Create(TokenSettings settings) => new()
         {
@@ -22,7 +22,7 @@ namespace Application.Services.TokenService
             descriptor.Subject = new ClaimsIdentity(
             [
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, person.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, person.Id.ToString()),
                 new Claim(ClaimTypes.Role, person.Role.ToString()),
             ]);
             return descriptor;
@@ -30,9 +30,11 @@ namespace Application.Services.TokenService
 
         public static SecurityTokenDescriptor BuildCredential(this SecurityTokenDescriptor descriptor, TokenSettings settings)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Secret));
+            var key = CreateSymmetricSecurityKey(settings.Secret);
             descriptor.SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             return descriptor;
         }
+
+        public static SymmetricSecurityKey CreateSymmetricSecurityKey(string secret) => new(Encoding.UTF8.GetBytes(secret));
     }
 }

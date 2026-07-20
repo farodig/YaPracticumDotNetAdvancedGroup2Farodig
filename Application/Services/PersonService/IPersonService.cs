@@ -1,5 +1,4 @@
-﻿using Application.Models.Responses;
-using Domain.Entities;
+﻿using Domain.Entities;
 
 namespace Application.Services.PersonService
 {
@@ -11,11 +10,11 @@ namespace Application.Services.PersonService
         /// <summary>
         /// Авторизация пользователя
         /// </summary>
-        Task<PersonResponse> LoginAsync(string login, string password, CancellationToken cts);
+        Task<string> LoginAsync(string login, string password, CancellationToken cts);
 
         /// <summary>
         /// Регистрация пользователя
         /// </summary>
-        Task<PersonResponse> RegisterAsync(string login, string password, PersonRole role, CancellationToken cts);
+        Task<string> RegisterAsync(string login, string password, PersonRole role, CancellationToken cts);
     }
 }

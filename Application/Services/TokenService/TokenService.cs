@@ -1,6 +1,8 @@
 ﻿using Domain.Entities;
+using Domain.Exceptions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 namespace Application.Services.TokenService
 {
@@ -16,6 +18,22 @@ namespace Application.Services.TokenService
                 .BuildCredential(_tokenSettings);
 
             return new JsonWebTokenHandler().CreateToken(descriptor);
+        }
+
+        public Guid GetPersonId(ClaimsPrincipal user)
+        {
+            string claim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? throw new UnauthorizedBookingOperationException();
+
+            return Guid.Parse(claim);
+        }
+
+        public PersonRole GetRole(ClaimsPrincipal user)
+        {
+            string claim = user.FindFirst(ClaimTypes.Role)?.Value
+                ?? throw new UnauthorizedBookingOperationException();
+
+            return Enum.Parse<PersonRole>(claim);
         }
     }
 }

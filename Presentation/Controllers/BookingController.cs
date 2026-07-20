@@ -1,6 +1,7 @@
 ﻿using Application.Models.Responses;
 using Application.Services.BookingService;
-using Domain.Entities;
+using Application.Services.TokenService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -9,10 +10,12 @@ namespace Presentation.Controllers
     /// Конечная точка доступа сервиса событий
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
-    public class BookingController(IBookingService bookingService) : ControllerBase
+    public class BookingController(IBookingService bookingService, ITokenService tokenService) : ControllerBase
     {
         private readonly IBookingService _bookingService = bookingService;
+        private readonly ITokenService _tokenService = tokenService;
 
         /// <summary>
         /// Забронировать
@@ -26,7 +29,7 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
-            var personId = Guid.NewGuid(); // TODO: получить person
+            var personId = _tokenService.GetPersonId(User);
             var item = await _bookingService.CreateBookingAsync(id, personId, HttpContext.RequestAborted);
 
             return AcceptedAtAction(
@@ -59,10 +62,10 @@ namespace Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
-            var personId = Guid.NewGuid(); // TODO: получить person
-            PersonRole role = PersonRole.User; // TODO: плучить права пользователя
-            await _bookingService.CancelBookingAsync(id, personId, role, HttpContext.RequestAborted);
+            var personId = _tokenService.GetPersonId(User);
+            var role = _tokenService.GetRole(User);
 
+            await _bookingService.CancelBookingAsync(id, personId, role, HttpContext.RequestAborted);
             return Ok();
         }
     }
