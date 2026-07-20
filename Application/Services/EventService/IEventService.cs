@@ -52,15 +52,5 @@ namespace Application.Services.EventService
         /// <param name="cts">Токен отмены</param>
         /// <returns>true если удалось совершить действие над событием, false если событие не найдено</returns>
         Task<bool> TryDeleteEventAsync(Guid id, CancellationToken cts = default);
-
-        /// <summary>
-        /// Зарезерировать место на событии
-        /// </summary>
-        Task ReserveSeatAsync(Guid id, CancellationToken cts = default);
-
-        /// <summary>
-        /// Освободить место на событии
-        /// </summary>
-        Task ReleaseSeatAsync(Guid id, CancellationToken cts = default);
     }
 }

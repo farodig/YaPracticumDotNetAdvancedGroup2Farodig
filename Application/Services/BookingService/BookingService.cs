@@ -1,15 +1,15 @@
 ﻿using Application.Models.Builders;
 using Application.Models.Responses;
 using Application.Repositories;
-using Application.Services.EventService;
+using Application.Services.ReservationService;
 using Domain.Entities;
 using NLog;
 
 namespace Application.Services.BookingService
 {
-    public class BookingService(IEventService eventService, IBookingRepository bookingRepository) : IBookingService
+    public class BookingService(IReservationService reservationService, IBookingRepository bookingRepository) : IBookingService
     {
-        private readonly IEventService _eventService = eventService;
+        private readonly IReservationService _reservationService = reservationService;
         private readonly IBookingRepository _repository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
@@ -19,7 +19,7 @@ namespace Application.Services.BookingService
             await _bookingSemaphore.WaitAsync(cts);
             try
             {
-                await _eventService.ReserveSeatAsync(eventId, cts);
+                await _reservationService.ReserveSeatAsync(eventId, cts);
 
                 // Создать бронь
                 var booking = BookingBuilder.CreateBooking(eventId, personId);
@@ -63,7 +63,7 @@ namespace Application.Services.BookingService
         {
             data.Status = BookingStatus.Rejected;
             data.ProcessedAt = DateTime.Now;
-            await _eventService.ReleaseSeatAsync(data.EventId, cts);
+            await _reservationService.ReleaseSeatAsync(data.EventId, cts);
             await _repository.TryUpdateAsync(data, cts);
             _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
         }

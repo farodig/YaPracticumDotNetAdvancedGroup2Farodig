@@ -3,7 +3,6 @@ using Application.Models.Requests;
 using Application.Models.Responses;
 using Application.Repositories;
 using Domain.Entities;
-using Domain.Exceptions;
 
 namespace Application.Services.EventService
 {
@@ -63,34 +62,6 @@ namespace Application.Services.EventService
         public async Task<bool> TryDeleteEventAsync(Guid id, CancellationToken cts = default)
         {
             return await _repository.TryRemoveAsync(id, cts) > 0;
-        }
-
-        public async Task ReserveSeatAsync(Guid id, CancellationToken cts = default)
-        {
-            // Получить событие из хранилища
-            if (await _repository.GetAsync(id, cts) is not Event @event) throw new EventNotFoundException();
-
-            // Запрет на бронирование события, которое уже началось
-            if (@event.StartAt <= DateTime.Now) throw new PastEventBookingException();
-
-            // Попытка зарезервировать свободное место
-            if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
-
-            await _repository.TryUpdateContextAsync(@event, cts);
-        }
-
-        public async Task ReleaseSeatAsync(Guid id, CancellationToken cts = default)
-        {
-            if (await _repository.GetAsync(id, cts) is not Event @event)
-            {
-                // Событие может быть удалено
-                return;
-            }
-
-            // Освободить зарезервированное место
-            @event.ReleaseSeats();
-
-            await _repository.TryUpdateContextAsync(@event, cts);
         }
     }
 }
