@@ -3,7 +3,7 @@
     /// <summary>
     /// Компонент хеширования и проверки пароля
     /// </summary>
-    internal interface IPasswordHasher
+    public interface IPasswordHasher
     {
         /// <summary>
         /// Генерация хеша по паролю

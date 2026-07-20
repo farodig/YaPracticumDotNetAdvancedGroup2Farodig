@@ -55,6 +55,12 @@ namespace Presentation.Middlewares
                     problemDetails.Title = "Invalid Operation";
                     problemDetails.Detail = ex.Message;
                     break;
+                case WrongLoginOrPasswordException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2";
+                    problemDetails.Status = StatusCodes.Status401Unauthorized;
+                    problemDetails.Title = "Unauthorized Operation";
+                    problemDetails.Detail = ex.Message;
+                    break;
                 case UnauthorizedBookingOperationException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4";
                     problemDetails.Status = StatusCodes.Status403Forbidden;

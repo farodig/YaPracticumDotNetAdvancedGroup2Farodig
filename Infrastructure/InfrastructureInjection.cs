@@ -15,6 +15,7 @@ namespace Infrastructure
         {
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
         }
 
         public static void AddInrfastructureDB(this IServiceCollection services, string connectionString)
