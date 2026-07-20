@@ -22,7 +22,7 @@ namespace Application.Services.BookingService
                 await _eventService.ReserveSeatAsync(eventId, cts);
 
                 // Создать бронь
-                var booking = eventId.BuildBooking(); // TODO: Передать personId в БД
+                var booking = BookingBuilder.CreateBooking(eventId, personId);
                 await _repository.CreateAsync(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking.BuildBookingResponse();
