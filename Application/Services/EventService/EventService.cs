@@ -70,6 +70,9 @@ namespace Application.Services.EventService
             // Получить событие из хранилища
             if (await _repository.GetAsync(id, cts) is not Event @event) throw new EventNotFoundException();
 
+            // Запрет на бронирование события, которое уже началось
+            if (@event.StartAt <= DateTime.Now) throw new PastEventBookingException();
+
             // Попытка зарезервировать свободное место
             if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
 

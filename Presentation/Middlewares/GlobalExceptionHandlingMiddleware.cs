@@ -49,6 +49,7 @@ namespace Presentation.Middlewares
                     break;
 
                 case InvalidOperationException:
+                case PastEventBookingException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
                     problemDetails.Status = StatusCodes.Status400BadRequest;
                     problemDetails.Title = "Invalid Operation";
