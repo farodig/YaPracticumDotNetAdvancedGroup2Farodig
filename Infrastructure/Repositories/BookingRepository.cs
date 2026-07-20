@@ -21,6 +21,13 @@ namespace Infrastructure.Repositories
             return await _dbContext.Bookings.FirstOrDefaultAsync(e => e.Id == id, cts);
         }
 
+        public async Task<Booking?> GetWithPersonAsync(Guid id, CancellationToken cts = default)
+        {
+            return await _dbContext.Bookings
+                .Include(a => a.Person)
+                .FirstOrDefaultAsync(e => e.Id == id, cts);
+        }
+
         public async Task<int> GetBookingCountAsync(Guid personId, CancellationToken cts = default)
         {
             var currnetDateTime = DateTime.Now;

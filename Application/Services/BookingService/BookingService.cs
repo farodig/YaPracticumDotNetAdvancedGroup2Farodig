@@ -3,6 +3,7 @@ using Application.Models.Responses;
 using Application.Repositories;
 using Application.Services.ReservationService;
 using Domain.Entities;
+using Domain.Exceptions;
 using NLog;
 
 namespace Application.Services.BookingService
@@ -33,10 +34,10 @@ namespace Application.Services.BookingService
             }
         }
 
-        public async Task<BookingResponse?> GetBookingByIdAsync(Guid id, CancellationToken cts = default)
+        public async Task<BookingResponse> GetBookingByIdAsync(Guid id, CancellationToken cts = default)
         {
-            var item = await _repository.GetAsync(id, cts);
-            return item?.BuildBookingResponse();
+            var item = await _repository.GetAsync(id, cts) ?? throw new BookingNotFoundException();
+            return item.BuildBookingResponse();
         }
 
         public async Task CancelBookingAsync(Booking data, CancellationToken cts = default)
@@ -45,9 +46,19 @@ namespace Application.Services.BookingService
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
+        public async Task CancelBookingAsync(Guid bookingId, Guid personId, PersonRole role, CancellationToken cts = default)
+        {
+            var booking = await _repository.GetWithPersonAsync(bookingId, cts) ?? throw new BookingNotFoundException();
+
+            if (role != PersonRole.Admin && booking.Person?.Id != personId) throw new UnauthorizedBookingOperationException();
+
+            await _repository.TryRemoveAsync(bookingId, cts);
+            _logger.Warn($"Booking operation was cancelled by the '{role}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+        }
+
         public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)
         {
-            return (await _repository.GetBookingsByStatus(Domain.Entities.BookingStatus.Pending, cts))
+            return (await _repository.GetBookingsByStatus(BookingStatus.Pending, cts))
                 .OrderBy(a => a.CreatedAt);
         }
 

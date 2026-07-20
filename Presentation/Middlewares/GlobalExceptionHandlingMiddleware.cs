@@ -55,7 +55,12 @@ namespace Presentation.Middlewares
                     problemDetails.Title = "Invalid Operation";
                     problemDetails.Detail = ex.Message;
                     break;
-
+                case UnauthorizedBookingOperationException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4";
+                    problemDetails.Status = StatusCodes.Status403Forbidden;
+                    problemDetails.Title = "Forbid Operation";
+                    problemDetails.Detail = ex.Message;
+                    break;
                 case KeyNotFoundException:
                 case ANotFoundException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5";

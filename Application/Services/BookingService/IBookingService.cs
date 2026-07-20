@@ -16,12 +16,17 @@ namespace Application.Services.BookingService
         /// <summary>
         /// Получение брони по идентификатору
         /// </summary>
-        Task<BookingResponse?> GetBookingByIdAsync(Guid id, CancellationToken cts = default);
+        Task<BookingResponse> GetBookingByIdAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
         /// Отменить бронирование
         /// </summary>
         Task CancelBookingAsync(Booking data, CancellationToken cts = default);
+
+        /// <summary>
+        /// Отменить бронирование
+        /// </summary>
+        Task CancelBookingAsync(Guid bookingId, Guid personId, PersonRole role, CancellationToken cts = default);
 
         /// <summary>
         /// Получить необработанные бронирования

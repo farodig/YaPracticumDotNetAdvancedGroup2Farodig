@@ -1,5 +1,6 @@
 ﻿using Application.Models.Responses;
 using Application.Services.BookingService;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -26,10 +27,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
             var personId = Guid.NewGuid(); // TODO: получить person
-            if (await _bookingService.CreateBookingAsync(id, personId, HttpContext.RequestAborted) is not BookingResponse item)
-            {
-                return NotFound();
-            }
+            var item = await _bookingService.CreateBookingAsync(id, personId, HttpContext.RequestAborted);
 
             return AcceptedAtAction(
                 actionName: nameof(GetBooking),
@@ -47,12 +45,25 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<BookingResponse>> GetBooking(Guid id)
         {
-            if (await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted) is not BookingResponse item)
-            {
-                return NotFound();
-            }
-
+            var item = await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted);
             return Ok(item);
+        }
+
+        /// <summary>
+        /// Удалить бронирование
+        /// </summary>
+        /// <param name="id">Идентификатор брони</param>
+        /// <response code="200">Бронирование успешно удалено</response>
+        /// <response code="403">Нет прав на удаление брони</response>
+        /// <response code="404">Бронирование не найдено</response>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEvent(Guid id)
+        {
+            var personId = Guid.NewGuid(); // TODO: получить person
+            PersonRole role = PersonRole.User; // TODO: плучить права пользователя
+            await _bookingService.CancelBookingAsync(id, personId, role, HttpContext.RequestAborted);
+
+            return Ok();
         }
     }
 }
