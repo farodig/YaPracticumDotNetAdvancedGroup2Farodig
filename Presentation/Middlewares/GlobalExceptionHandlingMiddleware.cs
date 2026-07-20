@@ -65,6 +65,7 @@ namespace Presentation.Middlewares
                     break;
 
                 case NoAvailableSeatsException:
+                case ActiveBookingLimitException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.10";
                     problemDetails.Status = StatusCodes.Status409Conflict;
                     problemDetails.Title = "Booking conflict";

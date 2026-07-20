@@ -21,6 +21,17 @@ namespace Infrastructure.Repositories
             return await _dbContext.Bookings.FirstOrDefaultAsync(e => e.Id == id, cts);
         }
 
+        public async Task<int> GetBookingCountAsync(Guid personId, CancellationToken cts = default)
+        {
+            var currnetDateTime = DateTime.Now;
+
+            return await _dbContext.Bookings
+                .Include(b => b.Event)
+                .Where(p => p.PersonId == personId)
+                .Where(p => p.Event.EndAt <= currnetDateTime)
+                .CountAsync(cts);
+        }
+
         public async Task CreateAsync(Booking item, CancellationToken cts = default)
         {
             await _dbContext.Bookings.AddAsync(item, cts);

@@ -19,7 +19,7 @@ namespace Application.Services.BookingService
             await _bookingSemaphore.WaitAsync(cts);
             try
             {
-                await _reservationService.ReserveSeatAsync(eventId, cts);
+                await _reservationService.ReserveSeatAsync(eventId, personId, cts);
 
                 // Создать бронь
                 var booking = BookingBuilder.CreateBooking(eventId, personId);

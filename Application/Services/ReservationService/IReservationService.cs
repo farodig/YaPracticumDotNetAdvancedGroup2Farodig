@@ -8,7 +8,7 @@
         /// <summary>
         /// Зарезерировать место на событии
         /// </summary>
-        Task ReserveSeatAsync(Guid id, CancellationToken cts = default);
+        Task ReserveSeatAsync(Guid eventId, Guid personId, CancellationToken cts = default);
 
         /// <summary>
         /// Освободить место на событии

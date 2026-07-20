@@ -18,6 +18,11 @@ namespace Application.Repositories
         Task<IEnumerable<Booking>> GetBookingsByStatus(BookingStatus status, CancellationToken cts = default);
 
         /// <summary>
+        /// Получить количество активных бронирований у пользователя
+        /// </summary>
+        Task<int> GetBookingCountAsync(Guid personId, CancellationToken cts = default);
+
+        /// <summary>
         /// Создать бронь события
         /// </summary>
         Task CreateAsync(Booking item, CancellationToken cts = default);
