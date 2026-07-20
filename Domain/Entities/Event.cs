@@ -41,7 +41,7 @@
         public int? AvailableSeats { get; set; }
 
         /// <summary>
-        /// бронирования
+        /// Бронирования события
         /// </summary>
         public List<Booking> Bookings { get; set; } = [];
     }

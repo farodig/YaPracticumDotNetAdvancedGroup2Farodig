@@ -18,11 +18,16 @@
         /// <summary>
         /// Хеш пароля
         /// </summary>
-        public byte[] PasswordHash { get; set; } = [];
+        public string PasswordHash { get; set; } = string.Empty;
 
         /// <summary>
         /// Роль
         /// </summary>
         public PersonRole Role { get; set; }
+
+        /// <summary>
+        /// Бронирования события
+        /// </summary>
+        public List<Booking> Bookings { get; set; } = [];
     }
 }
