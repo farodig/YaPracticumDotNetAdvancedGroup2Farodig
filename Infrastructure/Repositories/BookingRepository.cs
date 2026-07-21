@@ -31,11 +31,10 @@ namespace Infrastructure.Repositories
         public async Task<int> GetBookingCountAsync(Guid personId, CancellationToken cts = default)
         {
             var currnetDateTime = DateTime.Now;
-
             return await _dbContext.Bookings
                 .Include(b => b.Event)
                 .Where(p => p.PersonId == personId)
-                .Where(p => p.Event.EndAt <= currnetDateTime)
+                .Where(p => currnetDateTime <= p.Event.EndAt)
                 .CountAsync(cts);
         }
 

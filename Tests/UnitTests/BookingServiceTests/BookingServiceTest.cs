@@ -1,6 +1,7 @@
 ﻿using Application.Repositories;
 using Application.Services.BookingService;
 using Application.Services.EventService;
+using Application.Services.ReservationService;
 using Domain.Entities;
 using Domain.Exceptions;
 using UnitTests.Helpers;
@@ -223,6 +224,78 @@ namespace UnitTests.BookingServiceTests
                 .Count;
 
             Assert.Equal(expected, actual);
+        }
+
+
+        [Fact(DisplayName = "15. Попытка забронировать прошедшее событие приводит к ошибке")]
+        public async Task CreateExpiredBookingTest()
+        {
+            var personId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            var @event = CreateEvent(
+                eventId: eventId,
+                startAt: DateTime.Now.AddHours(-2),
+                endAt: DateTime.Now.AddHours(-1));
+
+            var bookingService = GetInitializedService<IBookingService, Event>(@event);
+
+            await Assert.ThrowsAsync<PastEventBookingException>(async () => await bookingService.CreateBookingAsync(eventId, personId));
+        }
+
+        [Fact(DisplayName = "16. При достижении лимита активных броней новая бронь не создаётся")]
+        public async Task CreateOverLimitBookingTest()
+        {
+            var personId = Guid.NewGuid();
+            var eventId = Guid.NewGuid();
+            Initialize(CreatePerson(personId: personId));
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 11));
+            foreach (var _ in Enumerable.Range(1, IReservationService.PersonMaxBookingCount))
+            {
+                Initialize(CreateBooking(eventId: eventId, personId: personId));
+            }
+            var bookingService = GetInitializedService<IBookingService, Event>();
+
+            await Assert.ThrowsAsync<ActiveBookingLimitException>(async () => await bookingService.CreateBookingAsync(eventId, personId));
+        }
+
+        [Fact(DisplayName = "17. Лимиты разных пользователей не влияют друг на друга")]
+        public async Task CreateDiffPersonLimitBookingTest()
+        {
+            var personId1 = Guid.NewGuid();
+            var personId2 = Guid.NewGuid();
+            var personId3 = Guid.NewGuid();
+            Initialize(
+                CreatePerson(personId: personId1),
+                CreatePerson(personId: personId2),
+                CreatePerson(personId: personId3));
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 31));
+
+            var bookingService = GetInitializedService<IBookingService, Event>();
+
+            // Person 1
+            foreach (var _ in Enumerable.Range(1, IReservationService.PersonMaxBookingCount))
+            {
+                await bookingService.CreateBookingAsync(eventId, personId1);
+            }
+
+            await Assert.ThrowsAsync<ActiveBookingLimitException>(async () => await bookingService.CreateBookingAsync(eventId, personId1));
+
+            // Person 2
+            foreach (var _ in Enumerable.Range(1, IReservationService.PersonMaxBookingCount))
+            {
+                await bookingService.CreateBookingAsync(eventId, personId2);
+            }
+
+            await Assert.ThrowsAsync<ActiveBookingLimitException>(async () => await bookingService.CreateBookingAsync(eventId, personId2));
+
+            // Person 3
+            foreach (var _ in Enumerable.Range(1, IReservationService.PersonMaxBookingCount))
+            {
+                await bookingService.CreateBookingAsync(eventId, personId3);
+            }
+
+            await Assert.ThrowsAsync<ActiveBookingLimitException>(async () => await bookingService.CreateBookingAsync(eventId, personId3));
         }
     }
 }

@@ -6,11 +6,6 @@ namespace Application.Services.ReservationService
 {
     public class ReservationService(IEventRepository eventRepository, IBookingRepository bookingRepository) : IReservationService
     {
-        /// <summary>
-        /// Максимальное допустимое количество активных бронирований у пользователя
-        /// </summary>
-        private const int PersonMaxBookingCount = 10;
-
         private readonly IEventRepository _eventRepository = eventRepository;
         private readonly IBookingRepository _bookingRepository = bookingRepository;
 
@@ -23,7 +18,7 @@ namespace Application.Services.ReservationService
             if (@event.StartAt <= DateTime.Now) throw new PastEventBookingException();
 
             // Пользователь достиг лимита на количество активных броней
-            if (PersonMaxBookingCount <= await _bookingRepository.GetBookingCountAsync(personId, cts)) throw new ActiveBookingLimitException();
+            if (IReservationService.PersonMaxBookingCount <= await _bookingRepository.GetBookingCountAsync(personId, cts)) throw new ActiveBookingLimitException();
 
             // Попытка зарезервировать свободное место
             if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();
