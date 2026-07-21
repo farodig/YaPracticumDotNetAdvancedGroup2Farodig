@@ -1,4 +1,4 @@
-﻿using Application.Repositories;
+﻿using Application.Abstractions;
 using Infrastructure.DataAccess;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +8,11 @@ namespace Infrastructure
 {
     public static class InfrastructureInjection
     {
+        public static void AddExternalServices(this IServiceCollection services)
+        {
+            services.AddSingleton<ITokenService, TokenService.TokenService>();
+        }
+
         /// <summary>
         /// Добавить сервис событий
         /// </summary>

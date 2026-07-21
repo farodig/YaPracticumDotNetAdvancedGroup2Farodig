@@ -1,5 +1,5 @@
-﻿using Application.Components;
-using Application.Repositories;
+﻿using Application.Abstractions;
+using Application.Components;
 using Domain.Entities;
 using Infrastructure.DataAccess;
 using Infrastructure.Repositories;

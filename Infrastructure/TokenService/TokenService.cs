@@ -1,10 +1,12 @@
-﻿using Domain.Entities;
+﻿using Application.Abstractions;
+using Application.Services.TokenService;
+using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 
-namespace Application.Services.TokenService
+namespace Infrastructure.TokenService
 {
     public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
     {

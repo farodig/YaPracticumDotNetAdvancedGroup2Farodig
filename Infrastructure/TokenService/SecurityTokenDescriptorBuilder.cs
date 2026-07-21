@@ -1,10 +1,11 @@
-﻿using Domain.Entities;
+﻿using Application.Services.TokenService;
+using Domain.Entities;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-namespace Application.Services.TokenService
+namespace Infrastructure.TokenService
 {
     public static class SecurityTokenDescriptorBuilder
     {

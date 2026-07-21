@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.Repositories
+namespace Application.Abstractions
 {
     /// <summary>
     /// Репозиторий пользователей

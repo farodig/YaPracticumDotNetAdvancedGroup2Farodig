@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using System.Security.Claims;
 
-namespace Application.Services.TokenService
+namespace Application.Abstractions
 {
     /// <summary>
     /// Сервис генерации токена

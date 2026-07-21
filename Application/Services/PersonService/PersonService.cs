@@ -1,6 +1,5 @@
-﻿using Application.Components;
-using Application.Repositories;
-using Application.Services.TokenService;
+﻿using Application.Abstractions;
+using Application.Components;
 using Domain.Entities;
 using Domain.Exceptions;
 using NLog;

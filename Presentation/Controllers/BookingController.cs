@@ -1,6 +1,6 @@
-﻿using Application.Models.Responses;
+﻿using Application.Abstractions;
+using Application.Models.Responses;
 using Application.Services.BookingService;
-using Application.Services.TokenService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

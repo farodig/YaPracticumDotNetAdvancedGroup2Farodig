@@ -1,7 +1,7 @@
-﻿using Application.Models.Builders;
+﻿using Application.Abstractions;
+using Application.Models.Builders;
 using Application.Models.Requests;
 using Application.Models.Responses;
-using Application.Repositories;
 using Domain.Entities;
 
 namespace Application.Services.EventService

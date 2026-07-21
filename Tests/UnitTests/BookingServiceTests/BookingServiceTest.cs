@@ -1,4 +1,4 @@
-﻿using Application.Repositories;
+﻿using Application.Abstractions;
 using Application.Services.BookingService;
 using Application.Services.EventService;
 using Application.Services.ReservationService;
