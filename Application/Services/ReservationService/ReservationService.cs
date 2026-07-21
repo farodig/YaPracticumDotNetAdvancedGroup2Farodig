@@ -18,7 +18,8 @@ namespace Application.Services.ReservationService
             if (@event.StartAt <= DateTime.Now) throw new PastEventBookingException();
 
             // Пользователь достиг лимита на количество активных броней
-            if (IReservationService.PersonMaxBookingCount <= await _bookingRepository.GetBookingCountAsync(personId, cts)) throw new ActiveBookingLimitException();
+            if (IReservationService.PersonMaxBookingCount <= await _bookingRepository.GetBookingCountAsync(personId, cts))
+                throw new ActiveBookingLimitException(limit: IReservationService.PersonMaxBookingCount);
 
             // Попытка зарезервировать свободное место
             if (!@event.TryReserveSeats()) throw new NoAvailableSeatsException();

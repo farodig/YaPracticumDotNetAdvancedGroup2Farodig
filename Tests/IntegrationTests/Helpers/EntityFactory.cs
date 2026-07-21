@@ -47,5 +47,10 @@ namespace IntegrationTests.Helpers
         {
             return new BookingRepository(context);
         }
+
+        public static IPersonRepository CreatePersonRepository(AppDbContext context)
+        {
+            return new PersonRepository(context);
+        }
     }
 }
