@@ -8,6 +8,7 @@ namespace Infrastructure.DataAccess
     {
         public DbSet<Event> Events => Set<Event>();
         public DbSet<Booking> Bookings => Set<Booking>();
+        public DbSet<Person> Persons => Set<Person>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +36,9 @@ namespace Infrastructure.DataAccess
                     }
                 }
             }
+
+            modelBuilder.Entity<Booking>()
+                .HasQueryFilter(e => e.Status != BookingStatus.Cancelled);
         }
     }
 }

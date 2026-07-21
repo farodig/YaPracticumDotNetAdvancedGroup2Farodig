@@ -49,14 +49,26 @@ namespace Presentation.Middlewares
                     break;
 
                 case InvalidOperationException:
+                case PastEventBookingException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
                     problemDetails.Status = StatusCodes.Status400BadRequest;
                     problemDetails.Title = "Invalid Operation";
                     problemDetails.Detail = ex.Message;
                     break;
-
+                case WrongLoginOrPasswordException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2";
+                    problemDetails.Status = StatusCodes.Status401Unauthorized;
+                    problemDetails.Title = "Unauthorized Operation";
+                    problemDetails.Detail = ex.Message;
+                    break;
+                case UnauthorizedBookingOperationException:
+                    problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4";
+                    problemDetails.Status = StatusCodes.Status403Forbidden;
+                    problemDetails.Title = "Forbid Operation";
+                    problemDetails.Detail = ex.Message;
+                    break;
                 case KeyNotFoundException:
-                case NotFoundException:
+                case ANotFoundException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5";
                     problemDetails.Status = StatusCodes.Status404NotFound;
                     problemDetails.Title = "Resource Not Found";
@@ -64,6 +76,7 @@ namespace Presentation.Middlewares
                     break;
 
                 case NoAvailableSeatsException:
+                case ActiveBookingLimitException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.10";
                     problemDetails.Status = StatusCodes.Status409Conflict;
                     problemDetails.Title = "Booking conflict";

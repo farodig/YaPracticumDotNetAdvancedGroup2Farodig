@@ -1,6 +1,7 @@
 ﻿using Application.Models.Requests;
 using Application.Models.Responses;
 using Application.Services.EventService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -60,6 +61,7 @@ namespace Presentation.Controllers
         /// <param name="data">Тело запроса</param>
         /// <response code="201">Событие успешно создано</response>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(EventResponse), StatusCodes.Status201Created, "application/json")]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest data)
@@ -86,6 +88,7 @@ namespace Presentation.Controllers
         /// <response code="200">Событие успешно обновлено</response>
         /// <response code="404">Событие не найдено</response>
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [Consumes("application/json")]
         public async Task<IActionResult> UpdateEvent([FromRoute] Guid id, [FromBody] UpdateEventRequest data)
         {
@@ -104,6 +107,7 @@ namespace Presentation.Controllers
         /// <response code="200">Событие успешно удалено</response>
         /// <response code="404">Событие не найдено</response>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             if (!await _eventService.TryDeleteEventAsync(id, HttpContext.RequestAborted))

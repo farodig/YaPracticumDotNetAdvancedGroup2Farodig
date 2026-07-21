@@ -1,6 +1,7 @@
 ﻿using Application.Services.BookingService;
 using Application.Services.EventService;
 using Domain.Entities;
+using Domain.Exceptions;
 using UnitTests.Helpers;
 using static UnitTests.Helpers.EntityFactory;
 
@@ -12,11 +13,12 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "01. Проверка корректной отмены обработчика BookingProcessor")]
         public async Task CancelBookingProcessTest()
         {
+            var personId = Guid.NewGuid();
             var @event = CreateEvent(totalSeats: 1);
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
             // Создали бронь
-            var booking = await bookingService.CreateBookingAsync(@event.Id);
+            var booking = await bookingService.CreateBookingAsync(@event.Id, personId);
 
             using var cts = new CancellationTokenSource();
             using var bookingProcessor = GetHostedService<BookingProcessor>()!;
@@ -30,18 +32,17 @@ namespace UnitTests.BookingServiceTests
             await process;
 
             // Убедились что созданной брони не существует
-            Assert.Null(await bookingService.GetBookingByIdAsync(booking.Id));
+
+            await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(booking.Id));
         }
 
         [Fact(DisplayName = "02. Проверка успешной обработки бронирования события")]
         public async Task ProcessSuccessBookingEventTest()
         {
-            var @event = CreateEvent(totalSeats: 1);
-            var bookingService = GetInitializedService<IBookingService, Event>(@event);
-
-            // Создать бронь
-            var booking = (await bookingService.CreateBookingAsync(@event.Id))
-                .BuildBooking();
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 1));
+            var booking = CreateBooking(eventId: eventId);
+            Initialize(booking);
 
             using var bookingProcessor = GetHostedService<BookingProcessor>()!;
             await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
@@ -52,19 +53,21 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "03. Проверка обработки бронирования события которое было удалено")]
         public async Task ProcessBookingNotExistedEventTest()
         {
-            var @event = CreateEvent(totalSeats: 1);
-            var (eventService, bookingService) = GetInitializedServices<IEventService, IBookingService, Event>(@event);
+            // Arrange
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 1));
+            var bookingId = Guid.NewGuid();
+            Initialize(CreateBooking(bookingId: bookingId, eventId: eventId));
+            var eventService = GetService<IEventService>();
+            var bookingService = GetService<IBookingService>();
 
-            // Создать бронь
-            var booking = (await bookingService.CreateBookingAsync(@event.Id))
-                .BuildBooking();
-            // Удалить бронь
-            await eventService.TryDeleteEventAsync(@event.Id);
-
-            using var bookingProcessor = GetHostedService<BookingProcessor>()!;
-            await bookingProcessor.ProcessBookingAsync(booking, CancellationToken.None);
-
-            Assert.Equal(BookingStatus.Rejected, booking.Status);
+            // Act
+            // Удалить событие
+            await eventService.TryDeleteEventAsync(eventId);
+            
+            // Assert
+            // т. к. событие удалено, то и брони удаляются каскадно, следовательно безвозвратно, а не просто меняют статус
+            await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(bookingId));
         }
     }
 }

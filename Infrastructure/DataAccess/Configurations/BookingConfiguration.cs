@@ -26,6 +26,11 @@ namespace Infrastructure.DataAccess.Configurations
             builder.HasOne(b => b.Event)
                 .WithMany(e => e.Bookings)
                 .HasForeignKey(b => b.EventId);
+
+            // Связь с Person
+            builder.HasOne(b => b.Person)
+                .WithMany(e => e.Bookings)
+                .HasForeignKey(b => b.PersonId);
         }
     }
 }

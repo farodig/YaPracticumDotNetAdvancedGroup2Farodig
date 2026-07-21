@@ -19,6 +19,11 @@ namespace Application.Models.Responses
         public Guid EventId { get; set; }
 
         /// <summary>
+        /// Идентификатор пользователя на которого создана бронь
+        /// </summary>
+        public Guid PersonId { get; set; }
+
+        /// <summary>
         /// Текущий статус брони
         /// </summary>
         public BookingStatus Status { get; set; }

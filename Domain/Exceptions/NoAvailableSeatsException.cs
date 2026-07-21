@@ -3,13 +3,7 @@
     /// <summary>
     /// Недостаточное количество мест
     /// </summary>
-    public class NoAvailableSeatsException : Exception
+    public class NoAvailableSeatsException() : ABookingException("No available seats for this event")
     {
-        /// <summary>
-        /// Вызывать исключение с текстом по умолчанию
-        /// </summary>
-        public NoAvailableSeatsException() : base("No available seats for this event")
-        {
-        }
     }
 }

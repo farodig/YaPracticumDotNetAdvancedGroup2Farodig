@@ -1,0 +1,40 @@
+﻿using Domain.Entities;
+
+namespace Application.Abstractions
+{
+    /// <summary>
+    /// Репозиторий бронирований
+    /// </summary>
+    public interface IBookingRepository
+    {
+        /// <summary>
+        /// Получить бронь по идентификатору
+        /// </summary>
+        Task<Booking?> GetAsync(Guid id, CancellationToken cts = default);
+
+        /// <summary>
+        /// Получить бронь по идентификатору с добавленной информацией о пользователе
+        /// </summary>
+        Task<Booking?> GetWithPersonAsync(Guid id, CancellationToken cts = default);
+
+        /// <summary>
+        /// Получить все бронирования
+        /// </summary>
+        Task<IEnumerable<Booking>> GetBookingsByStatus(BookingStatus status, CancellationToken cts = default);
+
+        /// <summary>
+        /// Получить количество активных бронирований у пользователя
+        /// </summary>
+        Task<int> GetBookingCountAsync(Guid personId, CancellationToken cts = default);
+
+        /// <summary>
+        /// Создать бронь события
+        /// </summary>
+        Task CreateAsync(Booking item, CancellationToken cts = default);
+
+        /// <summary>
+        /// Обновить статус бронирования
+        /// </summary>
+        Task<int> TryUpdateStatusAsync(Booking item, BookingStatus status, CancellationToken cts = default);
+    }
+}

@@ -1,5 +1,7 @@
-﻿using Application.Models.Responses;
+﻿using Application.Abstractions;
+using Application.Models.Responses;
 using Application.Services.BookingService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -8,10 +10,12 @@ namespace Presentation.Controllers
     /// Конечная точка доступа сервиса событий
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
-    public class BookingController(IBookingService bookingService) : ControllerBase
+    public class BookingsController(IBookingService bookingService, ITokenService tokenService) : ControllerBase
     {
         private readonly IBookingService _bookingService = bookingService;
+        private readonly ITokenService _tokenService = tokenService;
 
         /// <summary>
         /// Забронировать
@@ -25,10 +29,8 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict, "application/json")]
         public async Task<ActionResult<BookingResponse>> CreateBooking(Guid id)
         {
-            if (await _bookingService.CreateBookingAsync(id, HttpContext.RequestAborted) is not BookingResponse item)
-            {
-                return NotFound();
-            }
+            var personId = _tokenService.GetPersonId(User);
+            var item = await _bookingService.CreateBookingAsync(id, personId, HttpContext.RequestAborted);
 
             return AcceptedAtAction(
                 actionName: nameof(GetBooking),
@@ -46,12 +48,25 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(BookingResponse), StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<BookingResponse>> GetBooking(Guid id)
         {
-            if (await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted) is not BookingResponse item)
-            {
-                return NotFound();
-            }
-
+            var item = await _bookingService.GetBookingByIdAsync(id, HttpContext.RequestAborted);
             return Ok(item);
+        }
+
+        /// <summary>
+        /// Удалить бронирование
+        /// </summary>
+        /// <param name="id">Идентификатор брони</param>
+        /// <response code="200">Бронирование успешно удалено</response>
+        /// <response code="403">Нет прав на удаление брони</response>
+        /// <response code="404">Бронирование не найдено</response>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBooking(Guid id)
+        {
+            var personId = _tokenService.GetPersonId(User);
+            var role = _tokenService.GetRole(User);
+
+            await _bookingService.CancelBookingAsync(id, personId, role, HttpContext.RequestAborted);
+            return NoContent();
         }
     }
 }

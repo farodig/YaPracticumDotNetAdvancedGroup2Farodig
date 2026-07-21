@@ -46,7 +46,7 @@ namespace IntegrationTests.Helpers
         {
             await using var context = CreateContextInternal();
             await context.Database.ExecuteSqlRawAsync(
-                "TRUNCATE TABLE bookings, events RESTART IDENTITY CASCADE");
+                "TRUNCATE TABLE bookings, events, persons RESTART IDENTITY CASCADE");
             await context.DisposeAsync();
         }
         #endregion

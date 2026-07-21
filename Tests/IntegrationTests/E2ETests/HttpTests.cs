@@ -4,7 +4,7 @@ using Domain.Entities;
 using IntegrationTests.Helpers;
 using System.Net;
 
-namespace IntegrationTests.IntegrationTests
+namespace IntegrationTests.E2ETests
 {
     [Trait("Category", "Integration")]
     [Collection("SequentialTests")]
@@ -13,6 +13,18 @@ namespace IntegrationTests.IntegrationTests
         [Fact(DisplayName = "01. Создание объекта")]
         public async Task CreateEventTest()
         {
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+                Role = PersonRole.Admin,
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
+
             var request = new CreateEventRequest
             {
                 Title = "CreateEventTest",
@@ -21,7 +33,7 @@ namespace IntegrationTests.IntegrationTests
                 EndAt = DateTime.Now.AddHours(1).AddSeconds(1),
                 TotalSeats = 3,
             };
-            var response = await PostAsync<EventResponse>("/events", request);
+            var response = await PostAsync<EventResponse>("/events", request, token: token);
 
             Assert.NotNull(response);
             Assert.Equal(request.Title, response.Title);
@@ -29,13 +41,24 @@ namespace IntegrationTests.IntegrationTests
             Assert.Equal(request.StartAt, response.StartAt);
             Assert.Equal(request.EndAt, response.EndAt);
             Assert.Equal(request.TotalSeats, response.TotalSeats);
-
             Assert.Equal(response.TotalSeats, response.AvailableSeats);
         }
 
         [Fact(DisplayName = "02. Создание брони")]
         public async Task CreateBookingTest()
         {
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+                Role = PersonRole.Admin,
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
+
             var toCreateEvent = new CreateEventRequest
             {
                 Title = "CreateBookingTest",
@@ -44,10 +67,11 @@ namespace IntegrationTests.IntegrationTests
                 EndAt = DateTime.Now.AddHours(1).AddSeconds(1),
                 TotalSeats = 3,
             };
-            var createdEvent = await PostAsync<EventResponse>("/events", toCreateEvent);
+
+            var createdEvent = await PostAsync<EventResponse>("/events", toCreateEvent, token: token);
             Assert.NotNull(createdEvent);
 
-            var createdBooking = await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book");
+            var createdBooking = await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book", token: token);
             Assert.NotNull(createdBooking);
             Assert.Equal(createdEvent.Id, createdBooking.EventId);
             Assert.Equal(BookingStatus.Pending, createdBooking.Status);
@@ -57,6 +81,18 @@ namespace IntegrationTests.IntegrationTests
         [Fact(DisplayName = "03. Нельзя создать больше бронирований чем доступно в событии")]
         public async Task CreateOverflowBookingTest()
         {
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+                Role = PersonRole.Admin,
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
+
             var toCreateEvent = new CreateEventRequest
             {
                 Title = "CreateOverflowBookingTest",
@@ -65,20 +101,32 @@ namespace IntegrationTests.IntegrationTests
                 EndAt = DateTime.Now.AddHours(1).AddSeconds(1),
                 TotalSeats = 1,
             };
-            var createdEvent = await PostAsync<EventResponse>("/events", toCreateEvent);
+            var createdEvent = await PostAsync<EventResponse>("/events", toCreateEvent, token: token);
             Assert.NotNull(createdEvent);
 
-            var createdBooking = await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book");
+            var createdBooking = await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book", token: token);
             Assert.NotNull(createdBooking);
             Assert.Equal(BookingStatus.Pending, createdBooking.Status);
 
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(async () => await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book"));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(async () => await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book", token: token));
             Assert.Equal(HttpStatusCode.Conflict, exception.StatusCode);
         }
 
         [Fact(DisplayName = "04. Проверка успешной обработки бронирования")]
         public async Task ProcessBookingTest()
         {
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+                Role = PersonRole.Admin,
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
+
             var toCreateEvent = new CreateEventRequest
             {
                 Title = "ProcessBookingTest",
@@ -87,16 +135,16 @@ namespace IntegrationTests.IntegrationTests
                 EndAt = DateTime.Now.AddHours(1).AddSeconds(1),
                 TotalSeats = 1,
             };
-            var createdEvent = await PostAsync<EventResponse>("/events", toCreateEvent);
+            var createdEvent = await PostAsync<EventResponse>("/events", toCreateEvent, token: token);
             Assert.NotNull(createdEvent);
 
-            var createdBooking = await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book");
+            var createdBooking = await PostAsync<BookingResponse>($"/events/{createdEvent.Id}/book", token: token);
             Assert.NotNull(createdBooking);
             Assert.Equal(BookingStatus.Pending, createdBooking.Status);
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            var processedBooking = await GetAsync<BookingResponse>($"/booking/{createdBooking.Id}");
+            var processedBooking = await GetAsync<BookingResponse>($"/bookings/{createdBooking.Id}", token: token);
             Assert.NotNull(processedBooking);
             Assert.Equal(BookingStatus.Confirmed, processedBooking.Status);
         }

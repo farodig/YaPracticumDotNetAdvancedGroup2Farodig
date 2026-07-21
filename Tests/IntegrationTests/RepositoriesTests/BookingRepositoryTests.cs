@@ -19,10 +19,13 @@ namespace IntegrationTests.RepositoriesTests
             var eventId = Guid.NewGuid();
             var @event = CreateEvent(eventId);
             context.Events.Add(@event);
+            var personId = Guid.NewGuid();
+            var person = CreatePerson(personId);
+            context.Persons.Add(person);
             await context.SaveChangesAsync();
 
             var bookingId = Guid.NewGuid();
-            var expected = CreateBooking(id: bookingId, eventId: @event.Id);
+            var expected = CreateBooking(id: bookingId, eventId: @event.Id, personId: personId);
             var repository = CreateBookingRepository(context);
 
             // Act
@@ -35,6 +38,7 @@ namespace IntegrationTests.RepositoriesTests
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.EventId, actual.EventId);
+            Assert.Equal(expected.PersonId, actual.PersonId);
             Assert.Equal(expected.Status, actual.Status);
             Assert.Equal(expected.CreatedAt, actual.CreatedAt, TimeSpan.FromMilliseconds(1));
             Assert.Null(actual.ProcessedAt);
@@ -48,8 +52,11 @@ namespace IntegrationTests.RepositoriesTests
             var eventId = Guid.NewGuid();
             var @event = CreateEvent(eventId);
             context.Events.Add(@event);
+            var personId = Guid.NewGuid();
+            var person = CreatePerson(personId);
+            context.Persons.Add(person);
             var bookingId = Guid.NewGuid();
-            var expected = CreateBooking(id: bookingId, eventId: @event.Id, processedAt: DateTime.Now.AddHours(1));
+            var expected = CreateBooking(id: bookingId, eventId: @event.Id, personId: personId, processedAt: DateTime.Now.AddHours(1));
             context.Bookings.Add(expected);
             await context.SaveChangesAsync();
 
@@ -63,6 +70,7 @@ namespace IntegrationTests.RepositoriesTests
             Assert.NotNull(actual);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.EventId, actual.EventId);
+            Assert.Equal(expected.PersonId, actual.PersonId);
             Assert.Equal(expected.Status, actual.Status);
             Assert.Equal(expected.CreatedAt, actual.CreatedAt, TimeSpan.FromMilliseconds(1));
             Assert.Equal(expected.ProcessedAt!.Value, actual.ProcessedAt!.Value, TimeSpan.FromMilliseconds(1));
@@ -79,12 +87,15 @@ namespace IntegrationTests.RepositoriesTests
             var eventId = Guid.NewGuid();
             var @event = CreateEvent(eventId, totalSeats: 5);
             context.Events.Add(@event);
+            var personId = Guid.NewGuid();
+            var person = CreatePerson(personId);
+            context.Persons.Add(person);
             var bookingId = Guid.NewGuid();
-            var expectedItem = CreateBooking(id: bookingId, eventId: @event.Id, status);
+            var expectedItem = CreateBooking(id: bookingId, eventId: @event.Id, personId: personId, status: status);
             context.Bookings.Add(expectedItem);
-            context.Bookings.Add(CreateBooking(eventId: eventId, status: BookingStatus.Pending));
-            context.Bookings.Add(CreateBooking(eventId: eventId, status: BookingStatus.Confirmed));
-            context.Bookings.Add(CreateBooking(eventId: eventId, status: BookingStatus.Rejected));
+            context.Bookings.Add(CreateBooking(eventId: eventId, personId: personId, status: BookingStatus.Pending));
+            context.Bookings.Add(CreateBooking(eventId: eventId, personId: personId, status: BookingStatus.Confirmed));
+            context.Bookings.Add(CreateBooking(eventId: eventId, personId: personId, status: BookingStatus.Rejected));
             await context.SaveChangesAsync();
 
             await using var verifyContext = CreateContext();
@@ -99,39 +110,38 @@ namespace IntegrationTests.RepositoriesTests
         }
 
 
-        [Fact]
-        public async Task TryUpdateAsyncTest()
+        [Theory(DisplayName = "04. Обновление статуса")]
+        [InlineData(BookingStatus.Confirmed)]
+        [InlineData(BookingStatus.Rejected)]
+        [InlineData(BookingStatus.Cancelled)]
+        public async Task TryUpdateStatusAsyncTest(BookingStatus status)
         {
             // Arrange
             await using var context = CreateContext();
             var eventId = Guid.NewGuid();
-            var @event = CreateEvent(eventId);
-            context.Events.Add(@event);
+            context.Events.Add(CreateEvent(eventId));
+            var personId = Guid.NewGuid();
+            context.Persons.Add(CreatePerson(personId));
             var bookingId = Guid.NewGuid();
-            var booking = CreateBooking(id: bookingId,
-                eventId: @event.Id,
-                status: BookingStatus.Pending,
-                createdAt: DateTime.Now);
-            context.Bookings.Add(booking);
+            var expected = CreateBooking(id: bookingId, eventId: eventId, personId: personId);
+            context.Bookings.Add(expected);
             await context.SaveChangesAsync();
 
             await using var updateContext = CreateContext();
             var repository = CreateBookingRepository(updateContext);
-            var expected = CreateBooking(id: bookingId,
-                eventId: @event.Id,
-                status: BookingStatus.Confirmed,
-                createdAt: DateTime.Now,
-                processedAt: DateTime.Now);
 
             // Act
-            var actualCollection = await repository.TryUpdateAsync(expected);
+            var actualCollection = await repository.TryUpdateStatusAsync(expected, status);
 
             // Assert
             await using var verifyContext = CreateContext();
-            var actual = verifyContext.Bookings.Single(a => a.Id == bookingId);
+            var actual = verifyContext.Bookings.IgnoreQueryFilters().Single(a => a.Id == bookingId);
 
+            Assert.NotNull(expected.ProcessedAt);
+            Assert.Equal(status, expected.Status);
             Assert.Equal(expected.Id, actual.Id);
             Assert.Equal(expected.EventId, actual.EventId);
+            Assert.Equal(expected.PersonId, actual.PersonId);
             Assert.Equal(expected.Status, actual.Status);
             Assert.Equal(expected.CreatedAt, actual.CreatedAt, TimeSpan.FromMilliseconds(1));
             Assert.Equal(expected.ProcessedAt!.Value, actual.ProcessedAt!.Value, TimeSpan.FromMilliseconds(1));
@@ -145,8 +155,11 @@ namespace IntegrationTests.RepositoriesTests
             var eventId = Guid.NewGuid();
             var @event = CreateEvent(eventId);
             context.Events.Add(@event);
+            var personId = Guid.NewGuid();
+            var person = CreatePerson(personId);
+            context.Persons.Add(person);
             var bookingId = Guid.NewGuid();
-            var booking = CreateBooking(id: bookingId, eventId: @event.Id);
+            var booking = CreateBooking(id: bookingId, eventId: @event.Id, personId: personId);
             context.Bookings.Add(booking);
             context.SaveChanges();
 
@@ -154,7 +167,7 @@ namespace IntegrationTests.RepositoriesTests
             var repository = CreateBookingRepository(deleteContext);
 
             // Act
-            var deletedCount = await repository.TryRemoveAsync(bookingId);
+            var deletedCount = await repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled);
 
             // Assert
             Assert.Equal(1, deletedCount);
