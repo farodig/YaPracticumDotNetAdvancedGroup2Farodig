@@ -33,13 +33,8 @@ namespace Application.Abstractions
         Task CreateAsync(Booking item, CancellationToken cts = default);
 
         /// <summary>
-        /// Обновить бронь события
+        /// Обновить статус бронирования
         /// </summary>
-        Task<int> TryUpdateAsync(Booking item, CancellationToken cts = default);
-
-        /// <summary>
-        /// Удалить бронирование
-        /// </summary>
-        Task<int> TryRemoveAsync(Booking data, CancellationToken cts = default);
+        Task<int> TryUpdateStatusAsync(Booking item, BookingStatus status, CancellationToken cts = default);
     }
 }

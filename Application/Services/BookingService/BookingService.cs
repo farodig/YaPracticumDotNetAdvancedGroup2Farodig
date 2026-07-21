@@ -40,9 +40,27 @@ namespace Application.Services.BookingService
             return item.BuildBookingResponse();
         }
 
+        public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)
+        {
+            return (await _repository.GetBookingsByStatus(BookingStatus.Pending, cts))
+                .OrderBy(a => a.CreatedAt);
+        }
+
+        public async Task ConfirmBookingAsync(Booking data, CancellationToken cts = default)
+        {
+            await _repository.TryUpdateStatusAsync(data, BookingStatus.Confirmed, cts);
+            _logger.Info($"Booking operation was confirmed. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+        }
+
+        public async Task RejectBookingAsync(Booking data, CancellationToken cts = default)
+        {
+            await _reservationService.ReleaseSeatAsync(data, BookingStatus.Rejected, cts);
+            _logger.Info($"Booking operation was rejected'. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+        }
+
         public async Task CancelBookingAsync(Booking data, CancellationToken cts = default)
         {
-            await CancelBookingInternalAsync(data, cts);
+            await _reservationService.ReleaseSeatAsync(data, BookingStatus.Cancelled, cts);
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
@@ -52,37 +70,8 @@ namespace Application.Services.BookingService
 
             if (role != PersonRole.Admin && booking.Person?.Id != personId) throw new UnauthorizedBookingOperationException();
 
-            await CancelBookingInternalAsync(booking, cts);
+            await _reservationService.ReleaseSeatAsync(booking, BookingStatus.Cancelled, cts);
             _logger.Warn($"Booking operation was cancelled by the '{role}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
-        }
-
-        private async Task CancelBookingInternalAsync(Booking data, CancellationToken cts = default)
-        {
-            await _reservationService.ReleaseSeatAsync(data.EventId, cts);
-            await _repository.TryRemoveAsync(data, cts);
-        }
-
-        public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)
-        {
-            return (await _repository.GetBookingsByStatus(BookingStatus.Pending, cts))
-                .OrderBy(a => a.CreatedAt);
-        }
-
-        public async Task ConfirmBookingAsync(Booking data, CancellationToken cts = default)
-        {
-            data.Status = BookingStatus.Confirmed;
-            data.ProcessedAt = DateTime.Now;
-            await _repository.TryUpdateAsync(data, cts);
-            _logger.Info($"Booking #{data.Id} changed status to '{data.Status}'");
-        }
-
-        public async Task RejectBookingAsync(Booking data, CancellationToken cts = default)
-        {
-            data.Status = BookingStatus.Rejected;
-            data.ProcessedAt = DateTime.Now;
-            await _reservationService.ReleaseSeatAsync(data.EventId, cts);
-            await _repository.TryUpdateAsync(data, cts);
-            _logger.Warn($"Booking #{data.Id} changed status to '{data.Status}'");
         }
     }
 }

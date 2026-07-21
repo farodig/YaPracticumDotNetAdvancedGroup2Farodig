@@ -111,14 +111,17 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "09. После подтверждения бронь возвращает статус Confirmed и заполненный ProcessedAt")]
         public async Task BookingServiceConfirmBookingTest()
         {
-            var personId = Guid.NewGuid();
-            var @event = CreateEvent(totalSeats: 1);
-            var bookingService = GetInitializedService<IBookingService, Event>(@event);
+            // Arrange
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 1));
+            var booking = CreateBooking(eventId: eventId);
+            Initialize(booking);
+            var bookingService = GetService<IBookingService>();
 
-            var booking = (await bookingService.CreateBookingAsync(@event.Id, personId))
-                .BuildBooking();
+            // Act
             await bookingService.ConfirmBookingAsync(booking);
 
+            // Assert
             Assert.NotNull(booking.ProcessedAt);
             Assert.Equal(BookingStatus.Confirmed, booking.Status);
         }
@@ -126,14 +129,17 @@ namespace UnitTests.BookingServiceTests
         [Fact(DisplayName = "10. После отклонения бронь возвращает статус Rejected и заполненный ProcessedAt")]
         public async Task BookingServiceRejectBookingTest()
         {
-            var personId = Guid.NewGuid();
-            var @event = CreateEvent(totalSeats: 1);
-            var bookingService = GetInitializedService<IBookingService, Event>(@event);
+            // Arrange
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 1));
+            var booking = CreateBooking(eventId: eventId);
+            Initialize(booking);
+            var bookingService = GetService<IBookingService>();
 
-            var booking = (await bookingService.CreateBookingAsync(@event.Id, personId))
-                .BuildBooking();
+            // Act
             await bookingService.RejectBookingAsync(booking);
 
+            // Assert
             Assert.NotNull(booking.ProcessedAt);
             Assert.Equal(BookingStatus.Rejected, booking.Status);
         }

@@ -44,19 +44,19 @@ namespace Infrastructure.Repositories
             await _dbContext.SaveChangesAsync(cts);
         }
 
-        public async Task<int> TryUpdateAsync(Booking item, CancellationToken cts = default)
+        public async Task<int> TryUpdateStatusAsync(Booking item, BookingStatus status, CancellationToken cts = default)
         {
+            if (item.Status == status) return 0;
+
             var existing = await _dbContext.Bookings.FindAsync([item.Id], cts);
             if (existing == null) return 0;
 
-            _dbContext.Entry(existing).CurrentValues.SetValues(item);
-            return await _dbContext.SaveChangesAsync(cts);
-        }
+            item.Status = status;
+            item.ProcessedAt = DateTime.Now;
 
-        public async Task<int> TryRemoveAsync(Booking data, CancellationToken cts = default)
-        {
-            data.Status = BookingStatus.Cancelled;
-            return await TryUpdateAsync(data, cts);
+            _dbContext.Entry(existing).CurrentValues.SetValues(item);
+
+            return await _dbContext.SaveChangesAsync(cts);
         }
     }
 }

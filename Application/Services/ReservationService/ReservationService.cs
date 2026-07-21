@@ -27,9 +27,9 @@ namespace Application.Services.ReservationService
             await _eventRepository.TryUpdateContextAsync(@event, cts);
         }
 
-        public async Task ReleaseSeatAsync(Guid id, CancellationToken cts = default)
+        public async Task ReleaseSeatAsync(Booking data, BookingStatus status, CancellationToken cts = default)
         {
-            if (await _eventRepository.GetAsync(id, cts) is not Event @event)
+            if (await _eventRepository.GetAsync(data.EventId, cts) is not Event @event)
             {
                 // Событие может быть удалено
                 return;
@@ -39,6 +39,8 @@ namespace Application.Services.ReservationService
             @event.ReleaseSeats();
 
             await _eventRepository.TryUpdateContextAsync(@event, cts);
+
+            await _bookingRepository.TryUpdateStatusAsync(data, status, cts);
         }
     }
 }

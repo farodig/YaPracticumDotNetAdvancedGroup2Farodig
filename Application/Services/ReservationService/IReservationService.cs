@@ -1,4 +1,6 @@
-﻿namespace Application.Services.ReservationService
+﻿using Domain.Entities;
+
+namespace Application.Services.ReservationService
 {
     /// <summary>
     /// Сервис резервирования (или валидации) мест на событии
@@ -18,6 +20,6 @@
         /// <summary>
         /// Освободить место на событии
         /// </summary>
-        Task ReleaseSeatAsync(Guid id, CancellationToken cts = default);
+        Task ReleaseSeatAsync(Booking data, BookingStatus status, CancellationToken cts = default);
     }
 }
