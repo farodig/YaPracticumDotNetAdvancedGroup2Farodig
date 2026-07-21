@@ -78,7 +78,7 @@ namespace UnitTests.BookingServiceTests
         {
             var bookingService = GetService<IBookingService>();
 
-            Assert.Null(await bookingService.GetBookingByIdAsync(Guid.NewGuid()));
+            await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(Guid.NewGuid()));
         }
 
         [Fact(DisplayName = "07. Создание брони уменьшает AvailableSeats на 1")]

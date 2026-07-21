@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Helpers
 {
-    public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
+    public class IntegrationTestFactory : WebApplicationFactory<Program>
     {
-        private readonly IDatabaseContainer _postgres = DatabaseContainerFactory.CreatePostgreSqlContainer();
+        public readonly IDatabaseContainer _postgres = DatabaseContainerFactory.CreatePostgreSqlContainer();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -24,6 +24,7 @@ namespace IntegrationTests.Helpers
                     options.UseNpgsql(_postgres.GetConnectionString()));
             });
         }
+
 
         /// <summary>
         /// Удаляем все регистрации DbContext
@@ -47,18 +48,5 @@ namespace IntegrationTests.Helpers
                 services.Remove(descriptor);
             }
         }
-
-        #region IAsyncLifetime
-        public async Task InitializeAsync()
-        {
-            await _postgres.StartAsync();
-        }
-
-        new public async Task DisposeAsync()
-        {
-            await _postgres.DisposeAsync();
-            await base.DisposeAsync();
-        }
-        #endregion IAsyncLifetime
     }
 }

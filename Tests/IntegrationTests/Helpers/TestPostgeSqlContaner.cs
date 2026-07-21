@@ -2,6 +2,8 @@
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 using DotNet.Testcontainers.Networks;
+using Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace IntegrationTests.Helpers
@@ -20,10 +22,29 @@ namespace IntegrationTests.Helpers
         {
             return connectionString;
         }
+        #region Вспомогательные методы
+        private AppDbContext CreateContextInternal()
+        {
+            var _options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseNpgsql(connectionString)
+                .Options;
+            var context = new AppDbContext(_options!);
+            context.Database.Migrate();
+            return context;
+        }
+
+        private async Task ClearDatabaseAsync()
+        {
+            await using var context = CreateContextInternal();
+            await context.Database.ExecuteSqlRawAsync(
+                "TRUNCATE TABLE bookings, events, persons RESTART IDENTITY CASCADE");
+            await context.DisposeAsync();
+        }
+        #endregion
 
         public async Task StartAsync(CancellationToken ct = default)
         {
-            await new ValueTask();
+            await ClearDatabaseAsync();
         }
 
         public async ValueTask DisposeAsync()

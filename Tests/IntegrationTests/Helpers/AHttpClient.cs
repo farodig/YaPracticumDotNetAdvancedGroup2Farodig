@@ -1,20 +1,26 @@
 ﻿using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace IntegrationTests.Helpers
 {
     [CollectionDefinition("SequentialTests", DisableParallelization = true)]
-    public abstract class AHttpClient(IntegrationTestFactory factory) : IClassFixture<IntegrationTestFactory>
+    public abstract class AHttpClient(IntegrationTestFactory factory) : IClassFixture<IntegrationTestFactory>, IAsyncLifetime
     {
+        private readonly IntegrationTestFactory _factory = factory;
         private readonly HttpClient _client = factory.CreateClient();
 
         /// <summary>
         /// Get запрос
         /// </summary>
-        protected async Task<Tout?> GetAsync<Tout>(string path)
+        protected async Task<Tout?> GetAsync<Tout>(string path, string? token = null)
         {
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Accept", "application/json");
+            if (!string.IsNullOrEmpty(token))
+            {
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
 
             using var response = await _client.GetAsync(path);
 
@@ -26,11 +32,17 @@ namespace IntegrationTests.Helpers
         /// <summary>
         /// Post запрос
         /// </summary>
-        protected async Task<Tout?> PostAsync<Tout>(string path, object? requestData = null)
+        protected async Task<Tout?> PostAsync<Tout>(string path, object? requestData = null, string? token = null)
         {
             var content = SerializeContent(requestData);
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Accept", "application/json");
+            if (!string.IsNullOrEmpty(token))
+            {
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+
             using var response = await _client.PostAsync(path, content);
 
             response.EnsureSuccessStatusCode(); // Проверяет, что статус 200-299
@@ -73,5 +85,18 @@ namespace IntegrationTests.Helpers
 
             return result;
         }
+
+        #region IAsyncLifetime
+        public async Task InitializeAsync()
+        {
+            await _factory._postgres.StartAsync();
+        }
+
+        public async Task DisposeAsync()
+        {
+            await _factory._postgres.DisposeAsync();
+            //await _factory.DisposeAsync();
+        }
+        #endregion IAsyncLifetime
     }
 }

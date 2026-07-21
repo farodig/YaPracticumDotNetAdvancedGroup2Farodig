@@ -1,6 +1,7 @@
 ﻿using Application.Services.BookingService;
 using Application.Services.EventService;
 using Domain.Entities;
+using Domain.Exceptions;
 using UnitTests.Helpers;
 using static UnitTests.Helpers.EntityFactory;
 
@@ -31,7 +32,8 @@ namespace UnitTests.BookingServiceTests
             await process;
 
             // Убедились что созданной брони не существует
-            Assert.Null(await bookingService.GetBookingByIdAsync(booking.Id));
+
+            await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(booking.Id));
         }
 
         [Fact(DisplayName = "02. Проверка успешной обработки бронирования события")]
