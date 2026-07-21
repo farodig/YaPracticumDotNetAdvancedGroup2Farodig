@@ -13,13 +13,17 @@ namespace IntegrationTests.E2ETests
         [Fact(DisplayName = "01. Создание объекта")]
         public async Task CreateEventTest()
         {
-            var toRegister = new RegisterPersonRequest
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
             {
                 Login = "Login",
                 Password = "Password",
                 Role = PersonRole.Admin,
-            };
-            var token = await PostAsync<string>("/auth/register", toRegister);
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
 
             var request = new CreateEventRequest
             {
@@ -43,13 +47,17 @@ namespace IntegrationTests.E2ETests
         [Fact(DisplayName = "02. Создание брони")]
         public async Task CreateBookingTest()
         {
-            var toRegister = new RegisterPersonRequest
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
             {
                 Login = "Login",
                 Password = "Password",
                 Role = PersonRole.Admin,
-            };
-            var token = await PostAsync<string>("/auth/register", toRegister);
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
 
             var toCreateEvent = new CreateEventRequest
             {
@@ -73,13 +81,17 @@ namespace IntegrationTests.E2ETests
         [Fact(DisplayName = "03. Нельзя создать больше бронирований чем доступно в событии")]
         public async Task CreateOverflowBookingTest()
         {
-            var toRegister = new RegisterPersonRequest
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
             {
                 Login = "Login",
                 Password = "Password",
                 Role = PersonRole.Admin,
-            };
-            var token = await PostAsync<string>("/auth/register", toRegister);
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
 
             var toCreateEvent = new CreateEventRequest
             {
@@ -103,13 +115,17 @@ namespace IntegrationTests.E2ETests
         [Fact(DisplayName = "04. Проверка успешной обработки бронирования")]
         public async Task ProcessBookingTest()
         {
-            var toRegister = new RegisterPersonRequest
+            await PostAsync<string>("/auth/register", new RegisterPersonRequest
             {
                 Login = "Login",
                 Password = "Password",
                 Role = PersonRole.Admin,
-            };
-            var token = await PostAsync<string>("/auth/register", toRegister);
+            });
+            var token = await PostAsync<string>("/auth/login", new LoginPersonRequest
+            {
+                Login = "Login",
+                Password = "Password",
+            });
 
             var toCreateEvent = new CreateEventRequest
             {
@@ -128,7 +144,7 @@ namespace IntegrationTests.E2ETests
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            var processedBooking = await GetAsync<BookingResponse>($"/booking/{createdBooking.Id}", token: token);
+            var processedBooking = await GetAsync<BookingResponse>($"/bookings/{createdBooking.Id}", token: token);
             Assert.NotNull(processedBooking);
             Assert.Equal(BookingStatus.Confirmed, processedBooking.Status);
         }

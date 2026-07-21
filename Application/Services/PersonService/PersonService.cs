@@ -26,7 +26,7 @@ namespace Application.Services.PersonService
             return token;
         }
 
-        public async Task<string> RegisterAsync(string login, string password, PersonRole role = PersonRole.User, CancellationToken cts = default)
+        public async Task RegisterAsync(string login, string password, PersonRole role = PersonRole.User, CancellationToken cts = default)
         {
             var person = new Person
             {
@@ -41,8 +41,6 @@ namespace Application.Services.PersonService
             var token = _tokenService.CreateToken(person);
 
             _logger.Info($"Person #{person.Id} created with role '{person.Role}', token '{token}'");
-
-            return token;
         }
     }
 }

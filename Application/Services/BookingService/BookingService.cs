@@ -42,7 +42,7 @@ namespace Application.Services.BookingService
 
         public async Task CancelBookingAsync(Booking data, CancellationToken cts = default)
         {
-            await _repository.TryRemoveAsync(data.Id, cts);
+            await CancelBookingInternalAsync(data, cts);
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
@@ -52,8 +52,14 @@ namespace Application.Services.BookingService
 
             if (role != PersonRole.Admin && booking.Person?.Id != personId) throw new UnauthorizedBookingOperationException();
 
-            await _repository.TryRemoveAsync(bookingId, cts);
+            await CancelBookingInternalAsync(booking, cts);
             _logger.Warn($"Booking operation was cancelled by the '{role}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+        }
+
+        private async Task CancelBookingInternalAsync(Booking data, CancellationToken cts = default)
+        {
+            await _reservationService.ReleaseSeatAsync(data.EventId, cts);
+            await _repository.TryRemoveAsync(data, cts);
         }
 
         public async Task<IEnumerable<Booking>> GetPendingByCreatedAsync(CancellationToken cts = default)

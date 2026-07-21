@@ -36,6 +36,9 @@ namespace Infrastructure.DataAccess
                     }
                 }
             }
+
+            modelBuilder.Entity<Booking>()
+                .HasQueryFilter(e => e.Status != BookingStatus.Cancelled);
         }
     }
 }

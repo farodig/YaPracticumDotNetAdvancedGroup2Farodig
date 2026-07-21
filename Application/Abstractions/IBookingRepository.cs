@@ -40,6 +40,6 @@ namespace Application.Abstractions
         /// <summary>
         /// Удалить бронирование
         /// </summary>
-        Task<int> TryRemoveAsync(Guid id, CancellationToken cts = default);
+        Task<int> TryRemoveAsync(Booking data, CancellationToken cts = default);
     }
 }

@@ -53,15 +53,10 @@ namespace Infrastructure.Repositories
             return await _dbContext.SaveChangesAsync(cts);
         }
 
-        public async Task<int> TryRemoveAsync(Guid id, CancellationToken cts = default)
+        public async Task<int> TryRemoveAsync(Booking data, CancellationToken cts = default)
         {
-            var toDelete = await _dbContext.Bookings
-                .Where(a => a.Id == id)
-                .ToArrayAsync(cts);
-            if (toDelete.Length == 0) return 0;
-
-            _dbContext.Bookings.RemoveRange(toDelete);
-            return await _dbContext.SaveChangesAsync(cts);
+            data.Status = BookingStatus.Cancelled;
+            return await TryUpdateAsync(data, cts);
         }
     }
 }

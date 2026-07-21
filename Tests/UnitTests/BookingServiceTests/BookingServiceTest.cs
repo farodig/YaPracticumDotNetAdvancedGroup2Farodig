@@ -271,7 +271,7 @@ namespace UnitTests.BookingServiceTests
             var eventId = Guid.NewGuid();
             Initialize(CreateEvent(eventId: eventId, totalSeats: 31));
 
-            var bookingService = GetInitializedService<IBookingService, Event>();
+            var bookingService = GetService<IBookingService>();
 
             // Person 1
             foreach (var _ in Enumerable.Range(1, IReservationService.PersonMaxBookingCount))
@@ -296,6 +296,66 @@ namespace UnitTests.BookingServiceTests
             }
 
             await Assert.ThrowsAsync<ActiveBookingLimitException>(async () => await bookingService.CreateBookingAsync(eventId, personId3));
+        }
+
+        [Fact(DisplayName = "18. Dладелец может отменить свою бронь")]
+        public async Task CancelBookingWithOwnerTest()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+            Initialize(CreatePerson(personId: personId));
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 3));
+            var bookingId = Guid.NewGuid();
+            Initialize(CreateBooking(bookingId: bookingId, eventId: eventId, personId: personId));
+            var bookingService = GetService<IBookingService>();
+
+            // Action
+            await bookingService.CancelBookingAsync(bookingId, personId, PersonRole.User);
+
+            // Assert
+            await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(bookingId));
+        }
+
+        [Fact(DisplayName = "19. Администратор может отменить любую бронь")]
+        public async Task CancelBookingWithAdministratorTest()
+        {
+            // Arrange
+            var personId1 = Guid.NewGuid();
+            var personId2 = Guid.NewGuid();
+            Initialize(
+                CreatePerson(personId: personId1),
+                CreatePerson(personId: personId2));
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 3));
+            var bookingId = Guid.NewGuid();
+            Initialize(CreateBooking(bookingId: bookingId, eventId: eventId, personId: personId1));
+            var bookingService = GetService<IBookingService>();
+
+            // Action
+            await bookingService.CancelBookingAsync(bookingId, personId2, PersonRole.Admin);
+
+            // Assert
+            await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(bookingId));
+        }
+
+        [Fact(DisplayName = "20. Обычный пользователь не может отменить чужую")]
+        public async Task CancelBookingWithUnauthorizedBookingOperationExceptionTest()
+        {
+            var personId1 = Guid.NewGuid();
+            var personId2 = Guid.NewGuid();
+            Initialize(
+                CreatePerson(personId: personId1),
+                CreatePerson(personId: personId2));
+            var eventId = Guid.NewGuid();
+            Initialize(CreateEvent(eventId: eventId, totalSeats: 3));
+            var bookingId = Guid.NewGuid();
+
+            Initialize(CreateBooking(bookingId: bookingId, eventId: eventId, personId: personId1));
+
+            var bookingService = GetService<IBookingService>();
+
+            await Assert.ThrowsAsync<UnauthorizedBookingOperationException>(async () => await bookingService.CancelBookingAsync(bookingId, personId2, PersonRole.User));
         }
     }
 }

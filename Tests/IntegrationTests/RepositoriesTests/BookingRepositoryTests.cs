@@ -174,7 +174,7 @@ namespace IntegrationTests.RepositoriesTests
             var repository = CreateBookingRepository(deleteContext);
 
             // Act
-            var deletedCount = await repository.TryRemoveAsync(bookingId);
+            var deletedCount = await repository.TryRemoveAsync(booking);
 
             // Assert
             Assert.Equal(1, deletedCount);

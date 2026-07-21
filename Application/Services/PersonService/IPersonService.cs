@@ -15,6 +15,6 @@ namespace Application.Services.PersonService
         /// <summary>
         /// Регистрация пользователя
         /// </summary>
-        Task<string> RegisterAsync(string login, string password, PersonRole role, CancellationToken cts);
+        Task RegisterAsync(string login, string password, PersonRole role, CancellationToken cts);
     }
 }

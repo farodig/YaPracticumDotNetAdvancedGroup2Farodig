@@ -24,8 +24,8 @@ namespace Presentation.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK, "application/json")]
         public async Task<ActionResult<string>> Register([FromBody] RegisterPersonRequest data)
         {
-            var token = await _personService.RegisterAsync(data.Login, data.Password, data.Role, HttpContext.RequestAborted);
-            return Ok(token);
+            await _personService.RegisterAsync(data.Login, data.Password, data.Role, HttpContext.RequestAborted);
+            return NoContent();
         }
 
         /// <summary>

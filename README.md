@@ -28,7 +28,7 @@
 
 9. Выполнить команду dotnet run
 10. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
-11. Некоторые команды API требуют авторизации. Для авторизации пользователя необходимо выполнить [вход или регистрацию](#авторизация) пользователя, после чего ввести токен в поле после нажатия кнопки [Authorize]
+11. Некоторые команды API требуют авторизации. Для авторизации пользователя необходимо выполнить [вход](#авторизация) пользователя, после чего ввести токен в поле после нажатия кнопки [Authorize]
 
 ## Структура проектов
 
@@ -56,7 +56,7 @@
 
 |Метод |Адрес            |Запрос                                         |Ответ                              |Описание                           |Доступ (Роль)|
 |------|-----------------|-----------------------------------------------|-----------------------------------|-----------------------------------|-------------|
-|POST  |/auth/register   |[RegisterPersonRequest](#registerpersonrequest)|string (токен авторизации)         |Регистрирует пользователя,         |Аноним       |
+|POST  |/auth/register   |[RegisterPersonRequest](#registerpersonrequest)|                                   |Регистрирует пользователя,         |Аноним       |
 |POST  |/auth/login      |[LoginPersonRequest](#loginpersonrequest)      |string (токен авторизации)         |Авторизует пользователя,           |Аноним       |
 |GET   |/events          |                                               |[PaginatedResult](#paginatedresult)|Получить список всех событий       |Аноним       |
 |GET   |/events/{id}     |                                               |[EventResponse](#eventresponse)    |Получить событие по идентификатору |Аноним       |
@@ -64,7 +64,8 @@
 |PUT   |/events/{id}     |[UpdateEventRequest](#updateeventrequest)      |                                   |Изменить событие                   |Admin        |
 |DELETE|/events/{id}     |                                               |                                   |Удалить событие                    |Admin        |
 |POST  |/events/{id}/book|                                               |[BookingResponse](#bookingresponse)|Забронировать событие              |User         |
-|Get   |/booking/{id}    |                                               |[BookingResponse](#bookingresponse)|Получить информацию о бронировании |Admin, User  |
+|Get   |/bookings/{id}   |                                               |[BookingResponse](#bookingresponse)|Получить информацию о бронировании |Admin, User  |
+|DELETE|/bookings/{id}   |                                               |                                   |Удалить бронирование               |User         |
 
 
 ## Авторизация
@@ -224,8 +225,7 @@ POST /auth/register
 }
 
 #### Ответ
-Status code 200
-<token> - строка токен для авторизации
+Status code 204
 
 ### Пример запроса с авторизацией пользователя
 #### Запрос
@@ -301,7 +301,7 @@ Status code 200
 2. сервис периодически опрашивает хранилище на наличие бронирований в статусе Pending;
 3. для каждой необработанной брони бронь переводится в статус Confirmed и заполняется поле ProcessedAt
 4. обновлённая бронь сохраняется в хранилище.
-5. проверить состояние бронирования можно запросом GET /booking/{id}
+5. проверить состояние бронирования можно запросом GET /bookings/{id}
 
 ### Пример запроса бронирования события
 POST /events/0e50af9a-a09a-473a-95df-f2c187d5c2cb/book
@@ -317,7 +317,7 @@ Status code 202
 }
 
 ### Пример запроса проверки бронирования
-GET /booking/52c5779f-d4a6-4600-aef4-1670bae62207
+GET /bookings/52c5779f-d4a6-4600-aef4-1670bae62207
 
 #### Ответ ожидания обработки
 Status code 200

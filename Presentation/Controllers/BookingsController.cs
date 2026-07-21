@@ -12,7 +12,7 @@ namespace Presentation.Controllers
     [ApiController]
     [Authorize]
     [Route("[controller]")]
-    public class BookingController(IBookingService bookingService, ITokenService tokenService) : ControllerBase
+    public class BookingsController(IBookingService bookingService, ITokenService tokenService) : ControllerBase
     {
         private readonly IBookingService _bookingService = bookingService;
         private readonly ITokenService _tokenService = tokenService;
@@ -60,13 +60,13 @@ namespace Presentation.Controllers
         /// <response code="403">Нет прав на удаление брони</response>
         /// <response code="404">Бронирование не найдено</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteBooking(Guid id)
         {
             var personId = _tokenService.GetPersonId(User);
             var role = _tokenService.GetRole(User);
 
             await _bookingService.CancelBookingAsync(id, personId, role, HttpContext.RequestAborted);
-            return Ok();
+            return NoContent();
         }
     }
 }
