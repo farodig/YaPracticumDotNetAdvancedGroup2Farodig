@@ -1,6 +1,7 @@
 ﻿using Application.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace Presentation.ConfigurationBuilders
 {
@@ -37,10 +38,12 @@ namespace Presentation.ConfigurationBuilders
                     ValidAudience = tokenSettings.Audience,
 
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
+                    ClockSkew = TimeSpan.FromMinutes(5),
 
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = SecurityTokenDescriptorBuilder.CreateSymmetricSecurityKey(tokenSettings.Secret),
+
+                    RoleClaimType = ClaimTypes.Role,
                 };
             });
         }

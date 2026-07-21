@@ -12,9 +12,9 @@ namespace Application.Services.TokenService
         {
             Issuer = settings.Issuer,
             Audience = settings.Audience,
-            NotBefore = DateTime.UtcNow,
-            Expires = DateTime.UtcNow.AddMinutes(settings.ExpirationMin),
-            IssuedAt = DateTime.UtcNow,
+            NotBefore = DateTime.Now,
+            Expires = DateTime.Now.AddMinutes(settings.ExpirationMin),
+            IssuedAt = DateTime.Now,
         };
 
         public static SecurityTokenDescriptor BuildClaims(this SecurityTokenDescriptor descriptor, Person person)
