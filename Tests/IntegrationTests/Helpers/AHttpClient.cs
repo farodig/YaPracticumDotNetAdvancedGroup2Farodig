@@ -5,10 +5,15 @@ using System.Text;
 namespace IntegrationTests.Helpers
 {
     [CollectionDefinition("SequentialTests", DisableParallelization = true)]
-    public abstract class AHttpClient(IntegrationTestFactory factory) : IClassFixture<IntegrationTestFactory>, IAsyncLifetime
+    public abstract class AHttpClient : IClassFixture<IntegrationTestFactory>
     {
-        private readonly IntegrationTestFactory _factory = factory;
-        private readonly HttpClient _client = factory.CreateClient();
+        private readonly HttpClient _client;
+
+        public AHttpClient(IntegrationTestFactory factory)
+        {
+            _client = factory.CreateClient();
+            factory.ClearDatabase();
+        }
 
         /// <summary>
         /// Get запрос
@@ -85,18 +90,5 @@ namespace IntegrationTests.Helpers
 
             return result;
         }
-
-        #region IAsyncLifetime
-        public async Task InitializeAsync()
-        {
-            await _factory._postgres.StartAsync();
-        }
-
-        public async Task DisposeAsync()
-        {
-            await _factory._postgres.DisposeAsync();
-            //await _factory.DisposeAsync();
-        }
-        #endregion IAsyncLifetime
     }
 }
