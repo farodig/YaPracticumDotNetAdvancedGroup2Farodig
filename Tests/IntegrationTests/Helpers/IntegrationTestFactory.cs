@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Helpers
 {
-    public class IntegrationTestFactory : WebApplicationFactory<Program>
+    public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         public readonly IDatabaseContainer _postgres = DatabaseContainerFactory.CreatePostgreSqlContainer();
 
@@ -47,6 +47,34 @@ namespace IntegrationTests.Helpers
             {
                 services.Remove(descriptor);
             }
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _postgres.StartAsync();
+        }
+
+        async Task IAsyncLifetime.DisposeAsync()
+        {
+            await _postgres.DisposeAsync();
+        }
+
+        private AppDbContext CreateContextInternal()
+        {
+            var _options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseNpgsql(_postgres.GetConnectionString())
+                .Options;
+            var context = new AppDbContext(_options!);
+            context.Database.Migrate();
+            return context;
+        }
+
+        public void ClearDatabase()
+        {
+            using var context = CreateContextInternal();
+            context.Database.ExecuteSqlRaw(
+                "TRUNCATE TABLE bookings, events, persons RESTART IDENTITY CASCADE");
+            context.Dispose();
         }
     }
 }
