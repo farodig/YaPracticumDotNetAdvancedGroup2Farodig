@@ -1,4 +1,5 @@
 ﻿using NLog;
+using PersonService.Application.Abstractions;
 using PersonService.Application.Components;
 using PersonService.Domain.Entities;
 using PersonService.Domain.Exceptions;

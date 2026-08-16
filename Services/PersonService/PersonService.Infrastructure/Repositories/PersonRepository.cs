@@ -1,7 +1,7 @@
-﻿using PersonService.Application;
-using PersonService.Domain.Entities;
+﻿using PersonService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using PersonService.Infrastructure.DataAccess;
+using PersonService.Application.Abstractions;
 
 namespace PersonService.Infrastructure.Repositories
 {

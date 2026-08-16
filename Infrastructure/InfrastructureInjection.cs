@@ -19,7 +19,6 @@ namespace Infrastructure
         /// </summary>
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
         }
 

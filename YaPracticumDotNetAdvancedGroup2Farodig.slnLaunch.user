@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Новый профиль",
+    "Projects": [
+      {
+        "Path": "Services\\PersonService\\PersonService.Presentation\\PersonService.Presentation.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Services\\EventService\\EventService.Presentation\\EventService.Presentation.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

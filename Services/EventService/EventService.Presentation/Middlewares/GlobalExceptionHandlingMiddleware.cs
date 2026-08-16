@@ -1,9 +1,9 @@
-﻿using Domain.Exceptions;
+﻿using EventService.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace Presentation.Middlewares
+namespace EventService.Presentation.Middlewares
 {
     internal class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
     {
@@ -57,7 +57,6 @@ namespace Presentation.Middlewares
                     break;
                 case KeyNotFoundException:
                 case EventNotFoundException:
-                case BookingNotFoundException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5";
                     problemDetails.Status = StatusCodes.Status404NotFound;
                     problemDetails.Title = "Resource Not Found";
@@ -65,10 +64,9 @@ namespace Presentation.Middlewares
                     break;
 
                 case NoAvailableSeatsException:
-                case ActiveBookingLimitException:
                     problemDetails.Type = "https://tools.ietf.org/html/rfc9110#section-15.5.10";
                     problemDetails.Status = StatusCodes.Status409Conflict;
-                    problemDetails.Title = "Booking conflict";
+                    problemDetails.Title = "Seats conflict";
                     problemDetails.Detail = ex.Message;
                     break;
 

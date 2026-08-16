@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using PersonService.Application.Abstractions;
 using PersonService.Application.Components;
 using TokenService;
 

@@ -15,7 +15,7 @@ namespace Application.Services.ReservationService
             if (await _eventRepository.GetAsync(eventId, cts) is not Event @event) throw new EventNotFoundException();
 
             // Запрет на бронирование события, которое уже началось
-            if (@event.StartAt <= DateTime.Now) throw new PastEventBookingException();
+            if (@event.StartAt <= DateTime.Now) throw new PastEventReserveException();
 
             // Пользователь достиг лимита на количество активных броней
             if (IReservationService.PersonMaxBookingCount <= await _bookingRepository.GetBookingCountAsync(personId, cts))

@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EventService.Application.Abstractions;
+using EventService.Infrastructure.DataAccess;
+using EventService.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PersonService.Application.Abstractions;
-using PersonService.Infrastructure.DataAccess;
-using PersonService.Infrastructure.Repositories;
 
-namespace PersonService.Infrastructure
+namespace EventService.Infrastructure
 {
     public static class Injection
     {
@@ -13,12 +13,12 @@ namespace PersonService.Infrastructure
         /// </summary>
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
         }
 
         public static void AddInrfastructureDB(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<PersonDbContext>(options =>
+            services.AddDbContext<EventDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
             });
@@ -27,7 +27,7 @@ namespace PersonService.Infrastructure
         public static void InitializeInfrastructure(this IServiceProvider services)
         {
             using var scope = services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<PersonDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<EventDbContext>();
 
             context.Database.Migrate();
         }

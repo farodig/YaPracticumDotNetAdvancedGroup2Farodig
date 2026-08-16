@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonService.Application;
+using PersonService.Application.Abstractions;
 using PersonService.Application.Models.Requests;
 
 namespace PersonService.Presentation.Controllers

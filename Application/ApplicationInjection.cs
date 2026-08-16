@@ -1,5 +1,4 @@
 ﻿using Application.Services.BookingService;
-using Application.Services.EventService;
 using Application.Services.ReservationService;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +8,6 @@ namespace Application
     {
         public static void AddApplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<IEventService, EventService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IReservationService, ReservationService>();
             services.AddHostedService<BookingProcessor>();

@@ -245,7 +245,7 @@ namespace UnitTests.BookingServiceTests
 
             var bookingService = GetInitializedService<IBookingService, Event>(@event);
 
-            await Assert.ThrowsAsync<PastEventBookingException>(async () => await bookingService.CreateBookingAsync(eventId, personId));
+            await Assert.ThrowsAsync<PastEventReserveException>(async () => await bookingService.CreateBookingAsync(eventId, personId));
         }
 
         [Fact(DisplayName = "16. При достижении лимита активных броней новая бронь не создаётся")]

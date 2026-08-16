@@ -1,16 +1,16 @@
-﻿using Domain.Entities;
+﻿using EventService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.DataAccess
+namespace EventService.Infrastructure.DataAccess
 {
-    public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public sealed class EventDbContext(DbContextOptions<EventDbContext> options) : DbContext(options)
     {
-        public DbSet<Booking> Bookings => Set<Booking>();
+        public DbSet<Event> Events => Set<Event>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventDbContext).Assembly);
 
             var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
                 v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(), // При сохранении: всегда UTC
@@ -34,9 +34,6 @@ namespace Infrastructure.DataAccess
                     }
                 }
             }
-
-            modelBuilder.Entity<Booking>()
-                .HasQueryFilter(e => e.Status != BookingStatus.Cancelled);
         }
     }
 }
