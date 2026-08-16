@@ -39,10 +39,5 @@
         /// Событие к которому относится бронь
         /// </summary>
         public Event Event { get; set; } = null!;
-
-        /// <summary>
-        /// Пользователь к которому относится бронь
-        /// </summary>
-        public Person Person { get; set; } = null!;
     }
 }

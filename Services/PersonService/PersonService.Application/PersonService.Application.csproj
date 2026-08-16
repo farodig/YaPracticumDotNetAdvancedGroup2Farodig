@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+    <PackageReference Include="NLog" Version="6.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TokenService\TokenService.csproj" />
+    <ProjectReference Include="..\PersonService.Domain\PersonService.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

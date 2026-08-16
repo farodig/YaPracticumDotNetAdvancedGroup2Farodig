@@ -1,6 +1,6 @@
-﻿using Domain.Entities;
+﻿using PersonService.Domain.Entities;
 
-namespace Application.Services.PersonService
+namespace PersonService.Application
 {
     /// <summary>
     /// Сервис пользователей

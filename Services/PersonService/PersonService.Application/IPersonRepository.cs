@@ -1,6 +1,6 @@
-﻿using Domain.Entities;
+﻿using PersonService.Domain.Entities;
 
-namespace Application.Abstractions
+namespace PersonService.Application
 {
     /// <summary>
     /// Репозиторий пользователей

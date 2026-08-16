@@ -1,8 +1,8 @@
-﻿using Domain.Entities;
+﻿using PersonService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.DataAccess.Configurations
+namespace PersonService.Infrastructure.DataAccess
 {
     internal class PersonConfiguration : IEntityTypeConfiguration<Person>
     {

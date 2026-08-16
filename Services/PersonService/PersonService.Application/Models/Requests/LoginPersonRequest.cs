@@ -1,12 +1,11 @@
-﻿using Domain.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.Models.Requests
+namespace PersonService.Application.Models.Requests
 {
     /// <summary>
-    /// Регистрация пользователя
+    /// Авторизация пользователя
     /// </summary>
-    public class RegisterPersonRequest
+    public class LoginPersonRequest
     {
         /// <summary>
         /// Логин
@@ -19,10 +18,5 @@ namespace Application.Models.Requests
         /// </summary>
         [Required]
         public string Password { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Роль
-        /// </summary>
-        public PersonRole Role { get; set; } = PersonRole.User;
     }
 }

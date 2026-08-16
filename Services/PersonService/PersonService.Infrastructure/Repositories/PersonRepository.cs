@@ -1,13 +1,13 @@
-﻿using Application.Abstractions;
-using Domain.Entities;
-using Infrastructure.DataAccess;
+﻿using PersonService.Application;
+using PersonService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using PersonService.Infrastructure.DataAccess;
 
-namespace Infrastructure.Repositories
+namespace PersonService.Infrastructure.Repositories
 {
-    public class PersonRepository(AppDbContext dbContext): IPersonRepository
+    public class PersonRepository(PersonDbContext dbContext): IPersonRepository
     {
-        private readonly AppDbContext _dbContext = dbContext;
+        private readonly PersonDbContext _dbContext = dbContext;
 
         public async Task<Person?> GetByLoginAsync(string login, CancellationToken cts = default) => await _dbContext.Persons.FirstOrDefaultAsync(p => p.Login == login, cts);
 

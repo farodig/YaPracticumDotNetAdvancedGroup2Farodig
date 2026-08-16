@@ -1,10 +1,10 @@
-﻿using Application.Abstractions;
-using Application.Components;
-using Domain.Entities;
-using Domain.Exceptions;
-using NLog;
+﻿using NLog;
+using PersonService.Application.Components;
+using PersonService.Domain.Entities;
+using PersonService.Domain.Exceptions;
+using TokenService;
 
-namespace Application.Services.PersonService
+namespace PersonService.Application
 {
     public class PersonService(IPersonRepository repository, IPasswordHasher passwordHasher, ITokenService tokenService) : IPersonService
     {
@@ -19,7 +19,7 @@ namespace Application.Services.PersonService
 
             if (!_passwordHasher.Verify(password, person.PasswordHash)) throw new WrongLoginOrPasswordException();
 
-            var token = _tokenService.CreateToken(person);
+            var token = _tokenService.CreateToken(person.Id, person.Role.ToString());
 
             _logger.Info($"Person #{person.Id} logged with role '{person.Role}', token '{token}'");
 
@@ -38,7 +38,7 @@ namespace Application.Services.PersonService
 
             await _repository.CreateAsync(person, cts);
 
-            var token = _tokenService.CreateToken(person);
+            var token = _tokenService.CreateToken(person.Id, person.Role.ToString());
 
             _logger.Info($"Person #{person.Id} created with role '{person.Role}', token '{token}'");
         }

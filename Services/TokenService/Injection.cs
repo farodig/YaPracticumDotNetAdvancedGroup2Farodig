@@ -8,7 +8,7 @@ using TokenService.Builders;
 
 namespace TokenService
 {
-    public static class AuthenticationBuilder
+    public static class Injection
     {
         private static TokenSettings InitConfiguration(this WebApplicationBuilder builder)
         {

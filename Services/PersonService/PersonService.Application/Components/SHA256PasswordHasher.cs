@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Application.Components
+namespace PersonService.Application.Components
 {
     public class SHA256PasswordHasher : IPasswordHasher
     {

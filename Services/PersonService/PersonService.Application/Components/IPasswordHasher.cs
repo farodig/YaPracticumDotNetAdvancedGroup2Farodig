@@ -1,4 +1,4 @@
-﻿namespace Application.Components
+﻿namespace PersonService.Application.Components
 {
     /// <summary>
     /// Компонент хеширования и проверки пароля

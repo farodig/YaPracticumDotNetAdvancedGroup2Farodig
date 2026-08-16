@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace PersonService.Domain.Entities
 {
     /// <summary>
     /// Пользователь (человек)
@@ -24,10 +24,5 @@
         /// Роль
         /// </summary>
         public PersonRole Role { get; set; }
-
-        /// <summary>
-        /// Бронирования события
-        /// </summary>
-        public List<Booking> Bookings { get; set; } = [];
     }
 }

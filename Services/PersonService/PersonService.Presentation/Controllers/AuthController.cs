@@ -1,8 +1,8 @@
-﻿using Application.Models.Requests;
-using Application.Services.PersonService;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using PersonService.Application;
+using PersonService.Application.Models.Requests;
 
-namespace Presentation.Controllers
+namespace PersonService.Presentation.Controllers
 {
     /// <summary>
     /// Конечная точка авторизации пользователя

@@ -1,4 +1,4 @@
-﻿namespace Domain.Exceptions
+﻿namespace PersonService.Domain.Exceptions
 {
     /// <summary>
     /// Пользователь не найден или не совпадает логин и пароль
