@@ -1,8 +1,8 @@
-﻿using Application.Abstractions;
-using Application.Models.Responses;
+﻿using Application.Models.Responses;
 using Application.Services.BookingService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TokenService;
 
 namespace Presentation.Controllers
 {
@@ -62,10 +62,16 @@ namespace Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
-            var personId = _tokenService.GetPersonId(User);
-            var role = _tokenService.GetRole(User);
+            if (_tokenService.IsAdmin(User))
+            {
+                await _bookingService.CancelBookingByAdminAsync(id, HttpContext.RequestAborted);
+            }
+            else
+            {
+                var personId = _tokenService.GetPersonId(User);
 
-            await _bookingService.CancelBookingAsync(id, personId, role, HttpContext.RequestAborted);
+                await _bookingService.CancelBookingByPersonAsync(id, personId, HttpContext.RequestAborted);
+            }
             return NoContent();
         }
     }

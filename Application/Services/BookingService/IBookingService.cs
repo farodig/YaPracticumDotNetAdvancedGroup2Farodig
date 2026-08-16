@@ -24,9 +24,14 @@ namespace Application.Services.BookingService
         Task CancelBookingAsync(Booking data, CancellationToken cts = default);
 
         /// <summary>
-        /// Отменить бронирование
+        /// Администратор отменяет бронь
         /// </summary>
-        Task CancelBookingAsync(Guid bookingId, Guid personId, PersonRole role, CancellationToken cts = default);
+        Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default);
+
+        /// <summary>
+        /// Бронь отменяет пользователь
+        /// </summary>
+        Task CancelBookingByPersonAsync(Guid bookingId, Guid personId, CancellationToken cts = default);
 
         /// <summary>
         /// Получить необработанные бронирования

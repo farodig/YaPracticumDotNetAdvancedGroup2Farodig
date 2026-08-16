@@ -1,11 +1,9 @@
-﻿using Application.Services.TokenService;
-using Domain.Entities;
-using Microsoft.IdentityModel.JsonWebTokens;
+﻿using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-namespace Infrastructure.TokenService
+namespace TokenService.Builders
 {
     public static class SecurityTokenDescriptorBuilder
     {
@@ -18,13 +16,13 @@ namespace Infrastructure.TokenService
             IssuedAt = DateTime.Now,
         };
 
-        public static SecurityTokenDescriptor BuildClaims(this SecurityTokenDescriptor descriptor, Person person)
+        public static SecurityTokenDescriptor BuildClaims(this SecurityTokenDescriptor descriptor, Guid personId, string role)
         {
             descriptor.Subject = new ClaimsIdentity(
             [
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, person.Id.ToString()),
-                new Claim(ClaimTypes.Role, person.Role.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, personId.ToString()),
+                new Claim(ClaimTypes.Role, role),
             ]);
             return descriptor;
         }

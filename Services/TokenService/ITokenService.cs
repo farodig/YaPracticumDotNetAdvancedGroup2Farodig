@@ -1,7 +1,6 @@
-﻿using Domain.Entities;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
-namespace Application.Abstractions
+namespace TokenService
 {
     /// <summary>
     /// Сервис генерации токена
@@ -11,7 +10,7 @@ namespace Application.Abstractions
         /// <summary>
         /// Сгенерировать токен по данным пользователя
         /// </summary>
-        string CreateToken(Person person);
+        string CreateToken(Guid personId, string role);
 
         /// <summary>
         /// Получить идентификатор пользователя
@@ -19,8 +18,8 @@ namespace Application.Abstractions
         Guid GetPersonId(ClaimsPrincipal user);
 
         /// <summary>
-        /// Получить роль пользователя
+        /// Является ли пользователь администратором
         /// </summary>
-        PersonRole GetRole(ClaimsPrincipal user);
+        bool IsAdmin(ClaimsPrincipal user);
     }
 }

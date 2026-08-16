@@ -1,5 +1,6 @@
 using Presentation.Middlewares;
 using Presentation.ConfigurationBuilders;
+using TokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();

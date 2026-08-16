@@ -13,11 +13,6 @@ namespace Application.Abstractions
         Task<Booking?> GetAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
-        /// Получить бронь по идентификатору с добавленной информацией о пользователе
-        /// </summary>
-        Task<Booking?> GetWithPersonAsync(Guid id, CancellationToken cts = default);
-
-        /// <summary>
         /// Получить все бронирования
         /// </summary>
         Task<IEnumerable<Booking>> GetBookingsByStatus(BookingStatus status, CancellationToken cts = default);

@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventService.Presentation",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.Presentation", "Services\BookingService\BookingService.Presentation\BookingService.Presentation.csproj", "{F6EBFEAB-4085-4C07-905F-30E886A33089}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenService", "Services\TokenService\TokenService.csproj", "{4E37DD59-E742-494F-9D2C-9AC1A3B4ECEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,10 @@ Global
 		{F6EBFEAB-4085-4C07-905F-30E886A33089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6EBFEAB-4085-4C07-905F-30E886A33089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6EBFEAB-4085-4C07-905F-30E886A33089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E37DD59-E742-494F-9D2C-9AC1A3B4ECEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E37DD59-E742-494F-9D2C-9AC1A3B4ECEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E37DD59-E742-494F-9D2C-9AC1A3B4ECEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E37DD59-E742-494F-9D2C-9AC1A3B4ECEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,6 +161,7 @@ Global
 		{95393C81-0DCF-415F-A6C7-F699599B466C} = {A0D84796-605E-4CD6-9A5C-9F3D0BFD44D7}
 		{99829462-5256-45EE-A388-6C5F4B75442C} = {42709BC2-7DA8-43F3-8E16-A0E50F1DF844}
 		{F6EBFEAB-4085-4C07-905F-30E886A33089} = {A0D84796-605E-4CD6-9A5C-9F3D0BFD44D7}
+		{4E37DD59-E742-494F-9D2C-9AC1A3B4ECEF} = {10A06442-3225-4328-BEC1-767C02623D80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F1F6C6A-72C0-4B4F-B641-BA2DB4575540}

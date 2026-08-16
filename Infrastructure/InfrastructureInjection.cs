@@ -3,6 +3,7 @@ using Infrastructure.DataAccess;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TokenService;
 
 namespace Infrastructure
 {

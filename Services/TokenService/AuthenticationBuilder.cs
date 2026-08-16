@@ -1,12 +1,14 @@
-﻿using Application.Services.TokenService;
-using Infrastructure.TokenService;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using TokenService.Builders;
 
-namespace Presentation.ConfigurationBuilders
+namespace TokenService
 {
-    internal static class AuthenticationBuilder
+    public static class AuthenticationBuilder
     {
         private static TokenSettings InitConfiguration(this WebApplicationBuilder builder)
         {

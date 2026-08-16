@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.Services.TokenService
+namespace TokenService
 {
     /// <summary>
     /// Настройки генерации токена

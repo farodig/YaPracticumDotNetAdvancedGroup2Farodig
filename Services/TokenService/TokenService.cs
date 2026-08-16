@@ -1,22 +1,21 @@
-﻿using Application.Abstractions;
-using Application.Services.TokenService;
-using Domain.Entities;
-using Domain.Exceptions;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
+using PersonService.Domain.Entities;
 using System.Security.Claims;
+using TokenService.Builders;
+using TokenService.Exceptions;
 
-namespace Infrastructure.TokenService
+namespace TokenService
 {
     public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
     {
         private readonly TokenSettings _tokenSettings = tokenSettings.Value;
 
-        public string CreateToken(Person person)
+        public string CreateToken(Guid personId, string role)
         {
             var descriptor = SecurityTokenDescriptorBuilder
                 .Create(_tokenSettings)
-                .BuildClaims(person)
+                .BuildClaims(personId, role)
                 .BuildCredential(_tokenSettings);
 
             return new JsonWebTokenHandler().CreateToken(descriptor);
@@ -30,12 +29,14 @@ namespace Infrastructure.TokenService
             return Guid.Parse(claim);
         }
 
-        public PersonRole GetRole(ClaimsPrincipal user)
+        public bool IsAdmin(ClaimsPrincipal user)
         {
             string claim = user.FindFirst(ClaimTypes.Role)?.Value
                 ?? throw new UnauthorizedBookingOperationException();
+            
+            var personRole = Enum.Parse<PersonRole>(claim);
 
-            return Enum.Parse<PersonRole>(claim);
+            return personRole is PersonRole.Admin;
         }
     }
 }

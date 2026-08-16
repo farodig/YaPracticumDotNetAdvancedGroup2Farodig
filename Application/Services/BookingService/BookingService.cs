@@ -5,6 +5,8 @@ using Application.Services.ReservationService;
 using Domain.Entities;
 using Domain.Exceptions;
 using NLog;
+using System.Data;
+using TokenService.Exceptions;
 
 namespace Application.Services.BookingService
 {
@@ -64,14 +66,22 @@ namespace Application.Services.BookingService
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
-        public async Task CancelBookingAsync(Guid bookingId, Guid personId, PersonRole role, CancellationToken cts = default)
+        public async Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default)
         {
-            var booking = await _repository.GetWithPersonAsync(bookingId, cts) ?? throw new BookingNotFoundException();
-
-            if (role != PersonRole.Admin && booking.Person?.Id != personId) throw new UnauthorizedBookingOperationException();
+            var booking = await _repository.GetAsync(bookingId, cts) ?? throw new BookingNotFoundException();
 
             await _reservationService.ReleaseSeatAsync(booking, BookingStatus.Cancelled, cts);
-            _logger.Warn($"Booking operation was cancelled by the '{role}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+            _logger.Warn($"Booking operation was cancelled by the Admin. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+        }
+
+        public async Task CancelBookingByPersonAsync(Guid bookingId, Guid personId, CancellationToken cts = default)
+        {
+            var booking = await _repository.GetAsync(bookingId, cts) ?? throw new BookingNotFoundException();
+
+            if (booking.PersonId != personId) throw new UnauthorizedBookingOperationException();
+
+            await _reservationService.ReleaseSeatAsync(booking, BookingStatus.Cancelled, cts);
+            _logger.Warn($"Booking operation was cancelled by the person '{personId}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
         }
     }
 }
