@@ -1,6 +1,6 @@
 [
   {
-    "Name": "Новый профиль",
+    "Name": "Запуск микросервисов",
     "Projects": [
       {
         "Path": "Services\\PersonService\\PersonService.Presentation\\PersonService.Presentation.csproj",
@@ -8,6 +8,10 @@
       },
       {
         "Path": "Services\\EventService\\EventService.Presentation\\EventService.Presentation.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Services\\BookingService\\BookingService.Presentation\\BookingService.Presentation.csproj",
         "Action": "Start"
       }
     ]
