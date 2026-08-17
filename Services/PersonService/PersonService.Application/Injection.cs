@@ -9,7 +9,7 @@ namespace PersonService.Application
     {
         public static void AddApplicationServices(this IServiceCollection services)
         {
-            services.AddSingleton<ITokenService, TokenService.TokenService>();
+            services.AddSingleton<ITokenService, JwtTokenService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddSingleton<IPasswordHasher, SHA256PasswordHasher>();
         }

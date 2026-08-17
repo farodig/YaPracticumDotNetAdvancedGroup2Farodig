@@ -1,0 +1,27 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using PublishService.Application;
+using PublishService.Infrastructure;
+
+namespace KafkaBrokerService
+{
+    public static class Injection
+    {
+        public static void AddBroker(this WebApplicationBuilder builder)
+        {
+            var section = builder.Configuration.GetSection("Broker");
+            builder.Services.ConfigureBroker<KafkaSettings>(section);
+            builder.Services.AddSingleton<IPublishService, KafkaPublisher>();
+        }
+
+        public static void ConfigureBroker<TOptions>(this IServiceCollection services, IConfigurationSection section)
+            where TOptions : class
+        {
+            services.Configure<TOptions>(section);
+            services.AddOptions<TOptions>()
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+        }
+    }
+}

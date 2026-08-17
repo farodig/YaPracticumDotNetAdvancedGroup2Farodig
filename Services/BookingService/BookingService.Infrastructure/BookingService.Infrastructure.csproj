@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Components\Broker\PublishService.Infrastructure\PublishService.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Shared\SharedContracts\SharedContracts.csproj" />
     <ProjectReference Include="..\BookingService.Application\BookingService.Application.csproj" />
   </ItemGroup>
 

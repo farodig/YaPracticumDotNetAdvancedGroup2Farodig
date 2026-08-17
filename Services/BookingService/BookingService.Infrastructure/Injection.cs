@@ -1,6 +1,8 @@
 ﻿using BookingService.Application.Abstractions;
 using BookingService.Infrastructure.DataAccess;
 using BookingService.Infrastructure.Repositories;
+using KafkaBrokerService;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TokenService;
@@ -9,9 +11,10 @@ namespace BookingService.Infrastructure
 {
     public static class Injection
     {
-        public static void AddExternalServices(this IServiceCollection services)
+        public static void AddExternalServices(this WebApplicationBuilder builder)
         {
-            services.AddSingleton<ITokenService, TokenService.TokenService>();
+            builder.AddBroker();
+            builder.Services.AddSingleton<ITokenService, JwtTokenService>();
         }
 
         /// <summary>
