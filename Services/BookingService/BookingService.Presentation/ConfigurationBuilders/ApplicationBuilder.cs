@@ -7,7 +7,7 @@ namespace BookingService.Presentation.ConfigurationBuilders
     {
         public static void ConfigureApplication(this WebApplicationBuilder builder)
         {
-            builder.Services.AddExternalServices();
+            builder.AddExternalServices();
             builder.Services.AddRepositories();
             builder.Services.AddApplicationServices();
         }

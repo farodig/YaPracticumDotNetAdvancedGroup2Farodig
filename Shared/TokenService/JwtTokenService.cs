@@ -7,7 +7,7 @@ using TokenService.Exceptions;
 
 namespace TokenService
 {
-    public class TokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
+    public class JwtTokenService(IOptions<TokenSettings> tokenSettings) : ITokenService
     {
         private readonly TokenSettings _tokenSettings = tokenSettings.Value;
 
