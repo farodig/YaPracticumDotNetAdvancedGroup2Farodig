@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TokenService\TokenService.csproj" />
+    <ProjectReference Include="..\..\..\Shared\TokenService\TokenService.csproj" />
     <ProjectReference Include="..\EventService.Domain\EventService.Domain.csproj" />
   </ItemGroup>
 

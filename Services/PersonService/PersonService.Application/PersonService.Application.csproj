@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TokenService\TokenService.csproj" />
+    <ProjectReference Include="..\..\..\Shared\TokenService\TokenService.csproj" />
     <ProjectReference Include="..\PersonService.Domain\PersonService.Domain.csproj" />
   </ItemGroup>
 
