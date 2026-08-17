@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationService", "Share
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenService", "Shared\TokenService\TokenService.csproj", "{AADA6E2B-6875-53B3-8912-C8C45C1E2A7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedContracts", "Shared\SharedContracts\SharedContracts.csproj", "{8BA88912-3986-49B2-84A5-3E3F77BCCCE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{AADA6E2B-6875-53B3-8912-C8C45C1E2A7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AADA6E2B-6875-53B3-8912-C8C45C1E2A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AADA6E2B-6875-53B3-8912-C8C45C1E2A7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BA88912-3986-49B2-84A5-3E3F77BCCCE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BA88912-3986-49B2-84A5-3E3F77BCCCE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BA88912-3986-49B2-84A5-3E3F77BCCCE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BA88912-3986-49B2-84A5-3E3F77BCCCE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +153,7 @@ Global
 		{F6EBFEAB-4085-4C07-905F-30E886A33089} = {A0D84796-605E-4CD6-9A5C-9F3D0BFD44D7}
 		{2A9C914D-4A3C-B3C4-C732-8AC617E7D028} = {4E8158BB-BADA-4AC8-ACA6-63A197EAE4ED}
 		{AADA6E2B-6875-53B3-8912-C8C45C1E2A7E} = {4E8158BB-BADA-4AC8-ACA6-63A197EAE4ED}
+		{8BA88912-3986-49B2-84A5-3E3F77BCCCE1} = {4E8158BB-BADA-4AC8-ACA6-63A197EAE4ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F1F6C6A-72C0-4B4F-B641-BA2DB4575540}
