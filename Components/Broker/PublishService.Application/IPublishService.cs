@@ -1,4 +1,6 @@
-﻿namespace PublishService.Application
+﻿using SharedContracts.Abstractions;
+
+namespace PublishService.Application
 {
     /// <summary>
     /// Сервис публикации событий/сообщений
@@ -8,7 +10,7 @@
         /// <summary>
         /// Опубликовать событие/сообщение
         /// </summary>
-        Task PublishAsync<TEvent>(string topic, string key, TEvent message, CancellationToken ct)
-            where TEvent : class;
+        Task PublishAsync<TEvent>(TEvent message, CancellationToken ct = default)
+            where TEvent : class, IEvent;
     }
 }

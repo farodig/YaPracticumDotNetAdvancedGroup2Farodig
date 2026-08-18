@@ -1,33 +1,32 @@
-﻿namespace SharedContracts.Events
+﻿using SharedContracts.Abstractions;
+
+namespace SharedContracts.Events
 {
     /// <summary>
-    /// Событие бронирование подтверждено
+    /// Бронирование окончилось неудачей
     /// </summary>
-    public sealed record BookingConfirmedEvent
+    public sealed record BookingFailureEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования
         /// </summary>
-        public Guid BookingId { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Идентификатор события
         /// </summary>
         public Guid EventId { get; set; }
-        
+
         /// <summary>
         /// Идентификатор пользователя
         /// </summary>
         public Guid PersonId { get; set; }
-        
+
         /// <summary>
-        /// Количество забронированных мест
+        /// Время отклонения брони
         /// </summary>
-        public int SeatsCount { get; set; }
+        public DateTime ProcessedAt { get; set; }
         
-        /// <summary>
-        /// Время подтверждения брони
-        /// </summary>
-        public DateTime ConfirmedAt { get; set; }
+        // TODO: Код ошибки - можно добавить, а зачем?
     }
 }

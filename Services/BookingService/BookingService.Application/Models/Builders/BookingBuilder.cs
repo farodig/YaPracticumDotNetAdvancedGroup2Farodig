@@ -1,11 +1,12 @@
 ﻿using BookingService.Application.Models.Responses;
 using BookingService.Domain.Entities;
+using SharedContracts.Events;
 
 namespace BookingService.Application.Models.Builders
 {
     internal static class BookingBuilder
     {
-        internal static Booking CreateBooking(this Guid eventId, Guid personId) => new()
+        internal static Booking CreateBooking(Guid eventId, Guid personId) => new()
         {
             Id = Guid.NewGuid(),
             EventId = eventId,
@@ -14,7 +15,7 @@ namespace BookingService.Application.Models.Builders
             CreatedAt = DateTime.Now,
         };
 
-        internal static BookingResponse BuildBookingResponse(this Booking data) => new()
+        internal static BookingResponse ToResponse(this Booking data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,
@@ -22,6 +23,22 @@ namespace BookingService.Application.Models.Builders
             Status = data.Status,
             CreatedAt = data.CreatedAt,
             ProcessedAt = data.ProcessedAt,
+        };
+
+        internal static BookingSuccessEvent ToSuccessEvent(this Booking data) => new()
+        {
+            Id = data.Id,
+            EventId = data.EventId,
+            PersonId = data.PersonId,
+            ProcessedAt = data.ProcessedAt ?? throw new NotImplementedException(),
+        };
+
+        internal static BookingFailureEvent ToFailureEvent(this Booking data) => new()
+        {
+            Id = data.Id,
+            EventId = data.EventId,
+            PersonId = data.PersonId,
+            ProcessedAt = data.ProcessedAt ?? throw new NotImplementedException(),
         };
     }
 }

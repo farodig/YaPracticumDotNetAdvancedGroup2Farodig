@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using PublishService.Application;
+using SharedContracts.Abstractions;
 using System.Text.Json;
 
 namespace PublishService.Infrastructure
@@ -24,16 +25,16 @@ namespace PublishService.Infrastructure
                 .Build();
         }
 
-        public async Task PublishAsync<TEvent>(string topic, string key, TEvent message, CancellationToken ct = default)
-            where TEvent : class
+        public async Task PublishAsync<TEvent>(TEvent data, CancellationToken ct = default)
+            where TEvent : class, IEvent
         {
-            var kafkaMessage = new Message<string, string>
+            var message = new Message<string, string>
             {
-                Key = key,
-                Value = JsonSerializer.Serialize(message),
+                Key = data.Id.ToString(),
+                Value = JsonSerializer.Serialize(data),
             };
 
-            await _producer.ProduceAsync(topic, kafkaMessage, ct);
+            await _producer.ProduceAsync(nameof(TEvent), message, ct);
         }
 
         #region IDisposable
