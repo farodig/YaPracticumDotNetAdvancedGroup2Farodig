@@ -6,9 +6,11 @@ using System.Text.Json;
 
 namespace PublishService.Infrastructure
 {
-    public class KafkaReceiver : IReceiveService, IDisposable
+    public class KafkaReceiver : IReceiveService
     {
         private readonly IConsumer<string, string> _consumer;
+        private readonly SemaphoreSlim _stopSemaphore = new(1, 1);
+        private bool _isStarted = true;
 
         public KafkaReceiver(IOptions<KafkaSettings> settings)
         {
@@ -30,33 +32,23 @@ namespace PublishService.Infrastructure
             .Build();
         }
 
-        public async Task StartAsync<TEvent>(Func<TEvent, Task> handler, CancellationToken cts)
+        public async Task StartAsync<TEvent>(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
             where TEvent : class, IEvent
         {
+            _isStarted = true;
             _consumer.Subscribe(nameof(TEvent));
             try
             {
-                while (!cts.IsCancellationRequested)
+                while (_isStarted && !cts.IsCancellationRequested)
                 {
-                    var result = _consumer.Consume(TimeSpan.FromSeconds(5));
-
-                    if (result == null)
-                    {
-                        continue;
-                    }
-
+                    await _stopSemaphore.WaitAsync(cts);
                     try
                     {
-                        if (JsonSerializer.Deserialize<TEvent>(result.Message.Value) is not TEvent message)
-                        {
-                            continue;
-                        }
-
-                        await handler(message);
+                        await ProcessAsync(handler, cts);
                     }
                     finally
                     {
-                        _consumer.Commit(result);
+                        _stopSemaphore.Release();
                     }
                 }
             }
@@ -66,10 +58,49 @@ namespace PublishService.Infrastructure
             }
         }
 
+        private async Task ProcessAsync<TEvent>(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
+            where TEvent : class, IEvent
+        {
+            var result = _consumer.Consume(TimeSpan.FromSeconds(5));
+
+            if (result == null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (JsonSerializer.Deserialize<TEvent>(result.Message.Value) is not TEvent message)
+                {
+                    return;
+                }
+
+                await handler(message, cts);
+            }
+            finally
+            {
+                _consumer.Commit(result);
+            }
+        }
+
+        public async Task StopAsync(CancellationToken cts = default)
+        {
+            await _stopSemaphore.WaitAsync(cts);
+            try
+            {
+                _isStarted = false;
+            }
+            finally
+            {
+                _stopSemaphore.Release();
+            }
+        }
+
         #region IDisposable
         public void Dispose()
         {
             _consumer.Dispose();
+            _stopSemaphore.Dispose();
             GC.SuppressFinalize(this);
         }
         #endregion IDisposable
