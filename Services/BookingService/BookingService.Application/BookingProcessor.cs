@@ -35,15 +35,12 @@ namespace BookingService.Application
 
                 using var scope = _scopeFactory.CreateScope();
                 var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                //var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-                //var hasEvent = await eventService.GetEventAsync(data.EventId, stoppingToken) is not null;
-                var hasEvent = true;
 
                 await _processingSemaphore.WaitAsync(stoppingToken);
 
                 try
                 {
-                    if (hasEvent)
+                    if (IsSeatsReleased(data))
                     {
                         await bookingService.ConfirmBookingAsync(data, stoppingToken);
                     }
@@ -78,6 +75,12 @@ namespace BookingService.Application
                     await bookingService.CancelBookingAsync(data, CancellationToken.None);
                 }
             }
+        }
+
+        private bool IsSeatsReleased(Booking data)
+        {
+            // TODO: здесь нужно узнать пришло ли сообщение из брокера о том что было выделено количество мест для бронирования
+            return true;
         }
 
         private async Task<IEnumerable<Task>> GetBookingTasksAsync(CancellationToken cts = default)

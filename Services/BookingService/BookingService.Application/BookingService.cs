@@ -10,14 +10,10 @@ using TokenService.Exceptions;
 
 namespace BookingService.Application
 {
-    public class BookingService(/*IReservationService reservationService, */
-        IPublishService publishService,
-        IBookingRepository bookingRepository) : IBookingService
+    public class BookingService(IBookingRepository repository, IPublishService publishService) : IBookingService
     {
+        private readonly IBookingRepository _repository = repository;
         private readonly IPublishService _publishService = publishService;
-
-        //private readonly IReservationService _reservationService = reservationService;
-        private readonly IBookingRepository _repository = bookingRepository;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
 
@@ -26,9 +22,6 @@ namespace BookingService.Application
             await _bookingSemaphore.WaitAsync(cts);
             try
             {
-                //await _reservationService.ReserveSeatAsync(eventId, personId, cts);
-
-                // Создать бронь
                 var booking = BookingBuilder.CreateBooking(eventId, personId);
                 await _repository.CreateAsync(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
@@ -61,24 +54,20 @@ namespace BookingService.Application
 
         public async Task RejectBookingAsync(Booking data, CancellationToken cts = default)
         {
-            //await _reservationService.ReleaseSeatAsync(data, BookingStatus.Rejected, cts);
-            await _publishService.PublishAsync(data.ToFailureEvent(), cts);
-            _logger.Info($"Booking operation was rejected'. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+            await FailureBookingInternal(data, BookingStatus.Rejected, cts);
+            _logger.Warn($"Booking operation was rejected'. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
         public async Task CancelBookingAsync(Booking data, CancellationToken cts = default)
         {
-            //await _reservationService.ReleaseSeatAsync(data, BookingStatus.Cancelled, cts);
-            await _publishService.PublishAsync(data.ToFailureEvent(), cts);
+            await FailureBookingInternal(data, BookingStatus.Cancelled, cts);
             _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
         public async Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default)
         {
             var booking = await _repository.GetAsync(bookingId, cts) ?? throw new BookingNotFoundException();
-
-            //await _reservationService.ReleaseSeatAsync(booking, BookingStatus.Cancelled, cts);
-            await _publishService.PublishAsync(booking.ToFailureEvent(), cts);
+            await FailureBookingInternal(booking, BookingStatus.Cancelled, cts);
             _logger.Warn($"Booking operation was cancelled by the Admin. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
         }
 
@@ -88,9 +77,17 @@ namespace BookingService.Application
 
             if (booking.PersonId != personId) throw new UnauthorizedBookingOperationException();
 
-            //await _reservationService.ReleaseSeatAsync(booking, BookingStatus.Cancelled, cts);
-            await _publishService.PublishAsync(booking.ToFailureEvent(), cts);
+            await FailureBookingInternal(booking, BookingStatus.Cancelled, cts);
             _logger.Warn($"Booking operation was cancelled by the person '{personId}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+        }
+
+        /// <summary>
+        /// Неудачное бронирование
+        /// </summary>
+        private async Task FailureBookingInternal(Booking data, BookingStatus status, CancellationToken cts = default)
+        {
+            await _repository.TryUpdateStatusAsync(data, status, cts);
+            await _publishService.PublishAsync(data.ToFailureEvent(), cts);
         }
     }
 }
