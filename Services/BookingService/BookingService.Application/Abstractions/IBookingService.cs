@@ -9,6 +9,11 @@ namespace BookingService.Application.Abstractions
     public interface IBookingService
     {
         /// <summary>
+        /// Максимальное допустимое количество активных бронирований у пользователя
+        /// </summary>
+        public const int PersonMaxBookingCount = 10;
+
+        /// <summary>
         /// Создание брони для указанного события
         /// </summary>
         Task<BookingResponse> CreateBookingAsync(Guid eventId, Guid personId, CancellationToken cts = default);

@@ -43,15 +43,6 @@ namespace EventService.Infrastructure.Repositories
             return await _dbContext.SaveChangesAsync(cts);
         }
 
-        public async Task<bool> TryUpdateContextAsync(Event item, CancellationToken cts = default)
-        {
-            var existing = await _dbContext.Events.FindAsync([item.Id], cts);
-            if (existing == null) return false;
-
-            _dbContext.Entry(existing).CurrentValues.SetValues(item);
-            return true;
-        }
-
         public async Task<int> TryRemoveAsync(Guid id, CancellationToken cts = default)
         {
             var toDelete = await _dbContext.Events

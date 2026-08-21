@@ -16,16 +16,6 @@ namespace SharedContracts.Events
         /// Идентификатор события
         /// </summary>
         public Guid EventId { get; set; }
-
-        /// <summary>
-        /// Идентификатор пользователя
-        /// </summary>
-        public Guid PersonId { get; set; }
-
-        /// <summary>
-        /// Время отклонения брони
-        /// </summary>
-        public DateTime ProcessedAt { get; set; }
         
         // TODO: Код ошибки - можно добавить, а зачем?
     }

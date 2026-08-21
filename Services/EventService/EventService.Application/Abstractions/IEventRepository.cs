@@ -35,12 +35,6 @@ namespace EventService.Application.Abstractions
         Task<int> TryUpdateAsync(Event item, CancellationToken cts = default);
 
         /// <summary>
-        /// Обновить событие в локальном контексте (подготовить но не сохранять) 
-        /// </summary>
-        /// <returns>Количество удалённых из базы событий</returns>
-        Task<bool> TryUpdateContextAsync(Event item, CancellationToken cts = default);
-
-        /// <summary>
         /// Удалить событие по Id
         /// </summary>
         /// <returns>Количество удалённых из базы событий</returns>

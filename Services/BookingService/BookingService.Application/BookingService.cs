@@ -22,6 +22,10 @@ namespace BookingService.Application
             await _bookingSemaphore.WaitAsync(cts);
             try
             {
+                // Пользователь достиг лимита на количество активных броней
+                if (IBookingService.PersonMaxBookingCount <= await _repository.GetBookingCountAsync(personId, cts))
+                    throw new ActiveBookingLimitException(limit: IBookingService.PersonMaxBookingCount);
+
                 var booking = BookingBuilder.CreateBooking(eventId, personId);
                 await _repository.CreateAsync(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");

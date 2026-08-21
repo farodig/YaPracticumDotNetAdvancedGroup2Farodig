@@ -6,10 +6,5 @@
         /// Идентификатор сообщения
         /// </summary>
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Время обработки
-        /// </summary>
-        public DateTime ProcessedAt { get; set; }
     }
 }

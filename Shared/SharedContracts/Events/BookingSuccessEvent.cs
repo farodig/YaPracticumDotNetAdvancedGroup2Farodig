@@ -16,15 +16,5 @@ namespace SharedContracts.Events
         /// Идентификатор события
         /// </summary>
         public Guid EventId { get; set; }
-        
-        /// <summary>
-        /// Идентификатор пользователя
-        /// </summary>
-        public Guid PersonId { get; set; }
-        
-        /// <summary>
-        /// Время подтверждения брони
-        /// </summary>
-        public DateTime ProcessedAt { get; set; }
     }
 }

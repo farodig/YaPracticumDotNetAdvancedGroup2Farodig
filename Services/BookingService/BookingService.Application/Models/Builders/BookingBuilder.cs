@@ -29,16 +29,12 @@ namespace BookingService.Application.Models.Builders
         {
             Id = data.Id,
             EventId = data.EventId,
-            PersonId = data.PersonId,
-            ProcessedAt = data.ProcessedAt ?? throw new NotImplementedException(),
         };
 
         internal static BookingFailureEvent ToFailureEvent(this Booking data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,
-            PersonId = data.PersonId,
-            ProcessedAt = data.ProcessedAt ?? throw new NotImplementedException(),
         };
     }
 }
