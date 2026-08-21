@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Components\Broker\PublishService.Infrastructure\PublishService.Infrastructure.csproj" />
     <ProjectReference Include="..\EventService.Application\EventService.Application.csproj" />
   </ItemGroup>
 

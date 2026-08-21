@@ -7,6 +7,7 @@ namespace EventService.Presentation.ConfigurationBuilders
     {
         public static void ConfigureApplication(this WebApplicationBuilder builder)
         {
+            builder.AddExternalServices();
             builder.Services.AddRepositories();
             builder.Services.AddApplicationServices();
         }

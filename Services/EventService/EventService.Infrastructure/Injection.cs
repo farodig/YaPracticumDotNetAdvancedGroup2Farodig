@@ -1,13 +1,22 @@
 ﻿using EventService.Application.Abstractions;
 using EventService.Infrastructure.DataAccess;
 using EventService.Infrastructure.Repositories;
+using KafkaBrokerService;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TokenService;
 
 namespace EventService.Infrastructure
 {
     public static class Injection
     {
+        public static void AddExternalServices(this WebApplicationBuilder builder)
+        {
+            builder.AddReceiveService();
+            builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+        }
+
         /// <summary>
         /// Добавить сервис событий
         /// </summary>

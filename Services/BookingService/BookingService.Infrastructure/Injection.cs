@@ -13,7 +13,7 @@ namespace BookingService.Infrastructure
     {
         public static void AddExternalServices(this WebApplicationBuilder builder)
         {
-            builder.AddBroker();
+            builder.AddPublishService();
             builder.Services.AddSingleton<ITokenService, JwtTokenService>();
         }
 

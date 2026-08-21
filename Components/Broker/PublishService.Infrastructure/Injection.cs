@@ -8,11 +8,18 @@ namespace KafkaBrokerService
 {
     public static class Injection
     {
-        public static void AddBroker(this WebApplicationBuilder builder)
+        public static void AddPublishService(this WebApplicationBuilder builder)
         {
             var section = builder.Configuration.GetSection("Broker");
             builder.Services.ConfigureBroker<KafkaSettings>(section);
             builder.Services.AddSingleton<IPublishService, KafkaPublisher>();
+        }
+
+        public static void AddReceiveService(this WebApplicationBuilder builder)
+        {
+            var section = builder.Configuration.GetSection("Broker");
+            builder.Services.ConfigureBroker<KafkaSettings>(section);
+            builder.Services.AddScoped<IReceiveService, KafkaReceiver>();
         }
 
         public static void ConfigureBroker<TOptions>(this IServiceCollection services, IConfigurationSection section)
