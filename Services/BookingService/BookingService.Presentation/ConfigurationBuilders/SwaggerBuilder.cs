@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi;
+using NLog;
 using System.Reflection;
 
 namespace BookingService.Presentation.ConfigurationBuilders
@@ -56,6 +57,14 @@ namespace BookingService.Presentation.ConfigurationBuilders
                 app.UseCors("AllowSwagger");
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+                app.Lifetime.ApplicationStarted.Register(() =>
+                {
+                    var addresses = string.Join(", ", app.Urls.Select(u => $"{u}/swagger"));
+                    logger?.LogInformation("Swagger UI: {Addresses}", addresses);
+                });
             }
         }
     }
