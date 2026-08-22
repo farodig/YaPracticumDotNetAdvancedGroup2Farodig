@@ -1,16 +1,20 @@
-﻿using BookingService.Domain.Entities;
+﻿using BookingService.Application.Abstractions;
+using BookingService.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
-using NLog;
 using Microsoft.Extensions.Hosting;
-using BookingService.Application.Abstractions;
+using NLog;
+using PublishService.Application;
+using SharedContracts.Events;
 
 namespace BookingService.Application
 {
-    public class BookingProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
+    public class BookingProcessor(IReceiveService receiver, IServiceScopeFactory scopeFactory) : BackgroundService
     {
+        private readonly IReceiveService _receiver = receiver;
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
+        private readonly HashSet<Guid> seatsReservedForBooking = [];
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -40,7 +44,7 @@ namespace BookingService.Application
 
                 try
                 {
-                    if (IsSeatsReleased(data))
+                    if (IsSeatsReserved(data))
                     {
                         await bookingService.ConfirmBookingAsync(data, stoppingToken);
                     }
@@ -77,18 +81,28 @@ namespace BookingService.Application
             }
         }
 
-        private bool IsSeatsReleased(Booking data)
-        {
-            // TODO: здесь нужно узнать пришло ли сообщение из брокера о том что было выделено количество мест для бронирования
-            return true;
-        }
-
         private async Task<IEnumerable<Task>> GetBookingTasksAsync(CancellationToken cts = default)
         {
             using var scope = _scopeFactory.CreateScope();
             var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
             var orderedPendings = await bookingService.GetPendingByCreatedAsync(cts);
             return orderedPendings.Select(booking => ProcessBookingAsync(booking, cts));
+        }
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await _receiver.StartAsync<ReserveSeatsEvent>(OnReserved, cancellationToken);
+            await base.StartAsync(cancellationToken);
+        }
+
+        private async Task OnReserved(ReserveSeatsEvent @event, CancellationToken token)
+        {
+            seatsReservedForBooking.Add(@event.Id);
+        }
+
+        private bool IsSeatsReserved(Booking data)
+        {
+            return seatsReservedForBooking.Remove(data.Id);
         }
     }
 }
