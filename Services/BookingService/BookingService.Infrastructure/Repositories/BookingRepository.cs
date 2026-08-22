@@ -26,6 +26,7 @@ namespace BookingService.Infrastructure.Repositories
             var currnetDateTime = DateTime.Now;
             return await _dbContext.Bookings
                 //.Include(b => b.Event)
+                .Where(p => p.Status == BookingStatus.Confirmed)
                 .Where(p => p.PersonId == personId)
                 //.Where(p => currnetDateTime <= p.Event.EndAt)
                 // TODO: связь с датой и временем события (Пользователь достиг лимита на количество активных броней)
