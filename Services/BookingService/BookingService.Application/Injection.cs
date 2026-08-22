@@ -8,7 +8,6 @@ namespace BookingService.Application
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IBookingService, BookingService>();
-            //services.AddScoped<IReservationService, ReservationService>();
             services.AddHostedService<BookingProcessor>();
         }
     }

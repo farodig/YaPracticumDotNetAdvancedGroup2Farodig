@@ -1,8 +1,8 @@
 ﻿using EventService.Domain.Entities;
 
-namespace ReservationService
+namespace EventService.Application
 {
-    internal static class EventReservationLogic
+    internal static class ReservationLogic
     {
         /// <summary>
         /// Резервируем места на событие
