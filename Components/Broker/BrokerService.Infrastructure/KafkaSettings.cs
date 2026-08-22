@@ -9,7 +9,7 @@
         /// Адреса серверов кафки
         /// </summary>
         public string BootstrapServers { get; set; } = "localhost:9092";
-        public int SessionTimeoutSeconds { get; set; } = 60;
-        public int HeartbeatIntervalSeconds { get; set; } = 5;
+        public int SessionTimeoutMs { get; set; } = 60000;
+        public int HeartbeatIntervalMs { get; set; } = 5000;
     }
 }

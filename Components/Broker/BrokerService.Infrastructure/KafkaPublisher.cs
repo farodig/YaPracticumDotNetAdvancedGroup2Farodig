@@ -34,7 +34,7 @@ namespace BrokerService.Infrastructure
                 Value = JsonSerializer.Serialize(data),
             };
 
-            await _producer.ProduceAsync(nameof(TEvent), message, ct);
+            await _producer.ProduceAsync(typeof(TEvent).Name, message, ct);
         }
 
         #region IDisposable

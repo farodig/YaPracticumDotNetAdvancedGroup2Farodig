@@ -1,5 +1,6 @@
 ﻿using BrokerService.Application;
 using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 using Microsoft.Extensions.Options;
 using SharedContracts.Abstractions;
 using System.Text.Json;
@@ -8,6 +9,7 @@ namespace BrokerService.Infrastructure
 {
     public class KafkaReceiver : IReceiveService
     {
+        private readonly ConsumerConfig _config;
         private readonly IConsumer<string, string> _consumer;
         private readonly SemaphoreSlim _stopSemaphore = new(1, 1);
         private bool _isStarted = true;
@@ -16,27 +18,56 @@ namespace BrokerService.Infrastructure
         {
             var kafkaSettings = settings.Value;
 
-            var config = new ConsumerConfig
+            _config = new ConsumerConfig
             {
                 BootstrapServers = kafkaSettings.BootstrapServers,
-                GroupId = Guid.NewGuid().ToString(),
+                GroupId = "TestGroupId",// Guid.NewGuid().ToString(),
                 AutoOffsetReset = AutoOffsetReset.Earliest,
-                SessionTimeoutMs = kafkaSettings.SessionTimeoutSeconds,
-                HeartbeatIntervalMs = kafkaSettings.HeartbeatIntervalSeconds,
+                SessionTimeoutMs = kafkaSettings.SessionTimeoutMs,
+                HeartbeatIntervalMs = kafkaSettings.HeartbeatIntervalMs,
                 EnableAutoCommit = false,
                 EnablePartitionEof = false
             };
 
-            _consumer = new ConsumerBuilder<string, string>(config)
+            _consumer = new ConsumerBuilder<string, string>(_config)
             .SetValueDeserializer(Deserializers.Utf8)
             .Build();
+        }
+
+        private async Task CreateTopic<TEvent>(CancellationToken cts = default)
+            where TEvent : class, IEvent
+        {
+
+            // Создание топика
+            using var admin = new AdminClientBuilder(new AdminClientConfig
+            {
+                BootstrapServers = _config.BootstrapServers
+            }).Build();
+
+            var metadata = admin.GetMetadata(TimeSpan.FromSeconds(10));
+            var existingTopics = metadata.Topics.Select(t => t.Topic).ToList();
+
+            
+            if (existingTopics.Contains(typeof(TEvent).Name))
+            {
+                return;
+            }
+
+            await admin.CreateTopicsAsync(new[]
+            {
+                new TopicSpecification
+                {
+                    Name = typeof(TEvent).Name,
+                }
+            });
         }
 
         public async Task StartAsync<TEvent>(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
             where TEvent : class, IEvent
         {
             _isStarted = true;
-            _consumer.Subscribe(nameof(TEvent));
+            await CreateTopic<TEvent>(cts);
+            _consumer.Subscribe(typeof(TEvent).Name);
             try
             {
                 while (_isStarted && !cts.IsCancellationRequested)
