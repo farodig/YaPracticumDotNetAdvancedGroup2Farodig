@@ -1,7 +1,7 @@
-﻿using EventService.Application.Abstractions;
+﻿using BrokerService.Infrastructure;
+using EventService.Application.Abstractions;
 using EventService.Infrastructure.DataAccess;
 using EventService.Infrastructure.Repositories;
-using KafkaBrokerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

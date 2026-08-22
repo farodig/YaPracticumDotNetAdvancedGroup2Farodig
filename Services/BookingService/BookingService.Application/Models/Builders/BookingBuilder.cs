@@ -1,6 +1,5 @@
 ﻿using BookingService.Application.Models.Responses;
 using BookingService.Domain.Entities;
-using PublishService.Application;
 using SharedContracts.Events;
 
 namespace BookingService.Application.Models.Builders

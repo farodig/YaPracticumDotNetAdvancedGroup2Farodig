@@ -1,4 +1,4 @@
-﻿namespace PublishService.Infrastructure
+﻿namespace BrokerService.Infrastructure
 {
     /// <summary>
     /// Настройки кафки

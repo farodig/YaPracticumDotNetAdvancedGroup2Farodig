@@ -1,11 +1,11 @@
-﻿using EventService.Application.Abstractions;
+﻿using BrokerService.Application;
+using EventService.Application.Abstractions;
 using EventService.Application.Models.Builders;
 using EventService.Domain.Entities;
 using EventService.Domain.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using PublishService.Application;
 using SharedContracts.Events;
 
 namespace EventService.Application.EventProcessors

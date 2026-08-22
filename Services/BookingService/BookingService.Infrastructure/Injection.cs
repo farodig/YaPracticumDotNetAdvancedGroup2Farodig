@@ -1,7 +1,7 @@
 ﻿using BookingService.Application.Abstractions;
 using BookingService.Infrastructure.DataAccess;
 using BookingService.Infrastructure.Repositories;
-using KafkaBrokerService;
+using BrokerService.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

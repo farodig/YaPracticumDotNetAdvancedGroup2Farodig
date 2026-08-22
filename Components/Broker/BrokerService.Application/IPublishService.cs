@@ -1,6 +1,6 @@
 ﻿using SharedContracts.Abstractions;
 
-namespace PublishService.Application
+namespace BrokerService.Application
 {
     /// <summary>
     /// Сервис публикации событий/сообщений

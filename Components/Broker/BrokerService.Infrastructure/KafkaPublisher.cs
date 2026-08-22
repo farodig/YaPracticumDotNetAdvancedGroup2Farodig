@@ -1,10 +1,10 @@
-﻿using Confluent.Kafka;
+﻿using BrokerService.Application;
+using Confluent.Kafka;
 using Microsoft.Extensions.Options;
-using PublishService.Application;
 using SharedContracts.Abstractions;
 using System.Text.Json;
 
-namespace PublishService.Infrastructure
+namespace BrokerService.Infrastructure
 {
     public class KafkaPublisher : IPublishService, IDisposable
     {

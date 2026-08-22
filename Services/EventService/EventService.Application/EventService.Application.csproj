@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Components\Broker\PublishService.Application\PublishService.Application.csproj" />
+    <ProjectReference Include="..\..\..\Components\Broker\BrokerService.Application\BrokerService.Application.csproj" />
     <ProjectReference Include="..\..\..\Shared\TokenService\TokenService.csproj" />
     <ProjectReference Include="..\EventService.Domain\EventService.Domain.csproj" />
   </ItemGroup>

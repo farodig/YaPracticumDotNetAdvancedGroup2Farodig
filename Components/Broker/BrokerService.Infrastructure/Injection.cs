@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using BrokerService.Application;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PublishService.Application;
-using PublishService.Infrastructure;
 
-namespace KafkaBrokerService
+namespace BrokerService.Infrastructure
 {
     public static class Injection
     {

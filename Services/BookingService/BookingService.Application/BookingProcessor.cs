@@ -1,9 +1,9 @@
 ﻿using BookingService.Application.Abstractions;
 using BookingService.Domain.Entities;
+using BrokerService.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using PublishService.Application;
 using SharedContracts.Events;
 
 namespace BookingService.Application
