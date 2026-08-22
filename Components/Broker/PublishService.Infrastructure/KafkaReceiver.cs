@@ -19,7 +19,7 @@ namespace PublishService.Infrastructure
             var config = new ConsumerConfig
             {
                 BootstrapServers = kafkaSettings.BootstrapServers,
-                GroupId = GetType().Name,
+                GroupId = Guid.NewGuid().ToString(),
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 SessionTimeoutMs = kafkaSettings.SessionTimeoutSeconds,
                 HeartbeatIntervalMs = kafkaSettings.HeartbeatIntervalSeconds,
