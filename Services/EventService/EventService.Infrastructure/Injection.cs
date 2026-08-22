@@ -14,6 +14,7 @@ namespace EventService.Infrastructure
         public static void AddExternalServices(this WebApplicationBuilder builder)
         {
             builder.AddReceiveService();
+            builder.AddPublishService();
             builder.Services.AddSingleton<ITokenService, JwtTokenService>();
         }
 

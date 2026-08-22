@@ -11,7 +11,7 @@ namespace BrokerService.Infrastructure
         {
             var section = builder.Configuration.GetSection("Broker");
             builder.Services.ConfigureBroker<KafkaSettings>(section);
-            builder.Services.AddSingleton<IPublishService, KafkaPublisher>();
+            builder.Services.AddScoped<IPublishService, KafkaPublisher>();
         }
 
         public static void AddReceiveService(this WebApplicationBuilder builder)

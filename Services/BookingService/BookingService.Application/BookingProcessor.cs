@@ -8,13 +8,20 @@ using SharedContracts.Events;
 
 namespace BookingService.Application
 {
-    public class BookingProcessor(IReceiveService receiver, IServiceScopeFactory scopeFactory) : BackgroundService
+    public class BookingProcessor : BackgroundService
     {
-        private readonly IReceiveService _receiver = receiver;
-        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
+        private readonly IReceiveService _receiver;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
         private readonly HashSet<Guid> seatsReservedForBooking = [];
+
+        public BookingProcessor(IServiceScopeFactory scopeFactory)
+        {
+            _scopeFactory = scopeFactory;
+            var scope = _scopeFactory.CreateScope();
+            _receiver = scope.ServiceProvider.GetRequiredService<IReceiveService>();
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

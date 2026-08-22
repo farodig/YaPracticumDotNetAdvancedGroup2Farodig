@@ -10,11 +10,18 @@ using SharedContracts.Events;
 
 namespace EventService.Application.EventProcessors
 {
-    public class BookingSuccessEventProcessor(IReceiveService receiver, IServiceScopeFactory scopeFactory) : IHostedService
+    public class BookingSuccessEventProcessor : IHostedService
     {
-        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-        private readonly IReceiveService _receiver = receiver;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IReceiveService _receiver;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
+        public BookingSuccessEventProcessor(IServiceScopeFactory scopeFactory)
+        {
+            _scopeFactory = scopeFactory;
+            var scope = _scopeFactory.CreateScope();
+            _receiver = scope.ServiceProvider.GetRequiredService<IReceiveService>();
+        }
 
         /// <summary>
         /// Зарезерировать место на событии
