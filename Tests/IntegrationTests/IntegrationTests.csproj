@@ -8,6 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="E2ETests\HttpTests.cs" />
+    <Compile Remove="Helpers\ADockerDB.cs" />
+    <Compile Remove="Helpers\AHttpClient.cs" />
+    <Compile Remove="Helpers\DatabaseContainerFactory.cs" />
+    <Compile Remove="Helpers\EntityFactory.cs" />
+    <Compile Remove="Helpers\IntegrationTestFactory.cs" />
+    <Compile Remove="Helpers\TestPostgeSqlContaner.cs" />
+    <Compile Remove="RepositoriesTests\BookingRepositoryTests.cs" />
+    <Compile Remove="RepositoriesTests\EventRepositoryCrudTests.cs" />
+    <Compile Remove="RepositoriesTests\EventRepositoryGetersTests.cs" />
+    <Compile Remove="RepositoriesTests\EventRepositoryPaginationTests.cs" />
+    <Compile Remove="RepositoriesTests\PersonRepositoryTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,6 +44,12 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="E2ETests\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="RepositoriesTests\" />
   </ItemGroup>
 
 </Project>

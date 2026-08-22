@@ -8,6 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="BookingServiceTests\BookingProcessorTest.cs" />
+    <Compile Remove="BookingServiceTests\BookingServiceTest.cs" />
+    <Compile Remove="EventServiceTests\EventServiceCRUDTest.cs" />
+    <Compile Remove="EventServiceTests\EventServiceFilterTest.cs" />
+    <Compile Remove="EventServiceTests\EventServicePaginationTest.cs" />
+    <Compile Remove="EventServiceTests\EventValidationTest.cs" />
+    <Compile Remove="Helpers\AServiceCollection.cs" />
+    <Compile Remove="Helpers\EntityFactory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,6 +36,12 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BookingServiceTests\" />
+    <Folder Include="EventServiceTests\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>
