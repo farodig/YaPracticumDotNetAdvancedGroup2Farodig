@@ -71,6 +71,9 @@ namespace BookingService.Application
         public async Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default)
         {
             var booking = await _repository.GetAsync(bookingId, cts) ?? throw new BookingNotFoundException();
+
+            if (booking.Status != BookingStatus.Confirmed) throw new InvalidOperationException("Unable to cancel not confirmed booking");
+
             await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
             await _publishService.PublishAsync(booking.ToBookingCancelEvent(), cts);
             _logger.Warn($"Booking operation was cancelled by the Admin. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
@@ -81,6 +84,8 @@ namespace BookingService.Application
             var booking = await _repository.GetAsync(bookingId, cts) ?? throw new BookingNotFoundException();
 
             if (booking.PersonId != personId) throw new UnauthorizedBookingOperationException();
+
+            if (booking.Status != BookingStatus.Confirmed) throw new InvalidOperationException("Unable to cancel not confirmed booking");
 
             await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
             await _publishService.PublishAsync(booking.ToBookingCancelEvent(), cts);
