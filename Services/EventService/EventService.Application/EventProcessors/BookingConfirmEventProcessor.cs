@@ -19,7 +19,7 @@ namespace EventService.Application.EventProcessors
         /// <summary>
         /// Зарезерировать место на событии
         /// </summary>
-        private async Task ReserveSeatAsync(BookingConfirmEvent @event, CancellationToken cts = default)
+        private async Task ReserveSeatAsync(BookingCreatedEvent @event, CancellationToken cts = default)
         {
             using var scope = _scopeFactory.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
@@ -42,14 +42,14 @@ namespace EventService.Application.EventProcessors
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts);
+                await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts); // а если не удалось забронировать так может и отменять не - нужно учитывать в рассчётах
             }
         }
 
         #region IHostedService
         public async Task StartAsync(CancellationToken cts = default)
         {
-            await _receiver.StartAsync<BookingConfirmEvent>(ReserveSeatAsync, cts);
+            await _receiver.StartAsync<BookingCreatedEvent>(ReserveSeatAsync, cts);
         }
 
         public async Task StopAsync(CancellationToken cts = default)

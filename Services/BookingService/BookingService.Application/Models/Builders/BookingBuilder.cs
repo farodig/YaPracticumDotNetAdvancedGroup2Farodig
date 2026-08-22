@@ -1,5 +1,6 @@
 ﻿using BookingService.Application.Models.Responses;
 using BookingService.Domain.Entities;
+using PublishService.Application;
 using SharedContracts.Events;
 
 namespace BookingService.Application.Models.Builders
@@ -25,16 +26,17 @@ namespace BookingService.Application.Models.Builders
             ProcessedAt = data.ProcessedAt,
         };
 
-        internal static BookingConfirmEvent ToBookingConfirmEvent(this Booking data) => new()
+        internal static BookingCreatedEvent ToBookingCreatedEvent(this Booking data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,
         };
 
-        internal static BookingCancelEvent ToBookingCancelEvent(this Booking data) => new()
+        internal static BookingCancelEvent ToBookingCancelEvent(this Booking data, CancelReasonType reason) => new()
         {
             Id = data.Id,
             EventId = data.EventId,
+            ReasonType = reason,
         };
     }
 }

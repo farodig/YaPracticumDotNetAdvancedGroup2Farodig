@@ -16,5 +16,10 @@ namespace SharedContracts.Events
         /// Идентификатор события
         /// </summary>
         public Guid EventId { get; set; }
+
+        /// <summary>
+        /// Причина отмены
+        /// </summary>
+        public CancelReasonType ReasonType { get; set; }
     }
 }

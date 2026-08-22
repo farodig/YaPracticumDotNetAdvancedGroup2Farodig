@@ -24,11 +24,6 @@ namespace BookingService.Application.Abstractions
         Task<BookingResponse> GetBookingByIdAsync(Guid id, CancellationToken cts = default);
 
         /// <summary>
-        /// Отменить бронирование
-        /// </summary>
-        Task CancelBookingWhenServiceStoppedAsync(Booking data, CancellationToken cts = default);
-
-        /// <summary>
         /// Администратор отменяет бронь
         /// </summary>
         Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default);

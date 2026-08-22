@@ -5,7 +5,7 @@ namespace SharedContracts.Events
     /// <summary>
     /// Бронирование успешно
     /// </summary>
-    public sealed record BookingConfirmEvent : IEvent
+    public sealed record BookingCreatedEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования

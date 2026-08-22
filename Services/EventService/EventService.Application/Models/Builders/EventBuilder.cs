@@ -32,7 +32,7 @@ namespace EventService.Application.Models.Builders
             AvailableSeats = data.AvailableSeats ?? data.TotalSeats,
         };
 
-        public static ReserveSeatsEvent BuildReserveSeatsEvent(this BookingConfirmEvent data) => new()
+        public static ReserveSeatsEvent BuildReserveSeatsEvent(this BookingCreatedEvent data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,
@@ -44,7 +44,7 @@ namespace EventService.Application.Models.Builders
             EventId = data.EventId,
         };
 
-        public static UnableToChangeSeatsEvent BuildUnableToChangeSeatsEvent(this BookingConfirmEvent data, string details) => new()
+        public static UnableToChangeSeatsEvent BuildUnableToChangeSeatsEvent(this BookingCreatedEvent data, string details) => new()
         {
             Id = data.Id,
             EventId = data.EventId,

@@ -55,15 +55,12 @@ namespace BookingService.Application
                 }
                 catch (Exception cef)
                 {
-                    _logger.Error(cef);
-                    await bookingService.RejectBookingAsync(data, stoppingToken);
+                    _logger.Error(cef, $"Unable to process bookingId = '{data.Id}', eventId = '{data.EventId}'");
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                using var scope = _scopeFactory.CreateScope();
-                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                await bookingService.CancelBookingWhenServiceStoppedAsync(data, CancellationToken.None);
+                _logger.Fatal(ex, "BookingProcessor process was cancelled");
             }
             finally
             {
@@ -71,12 +68,9 @@ namespace BookingService.Application
                 {
                     _processingSemaphore.Release();
                 }
-                // Операция была прервана раньше чем был вызыван WaitAsync
-                catch (SemaphoreFullException)
+                catch (SemaphoreFullException ex)
                 {
-                    using var scope = _scopeFactory.CreateScope();
-                    var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                    await bookingService.CancelBookingWhenServiceStoppedAsync(data, CancellationToken.None);
+                    _logger.Fatal(ex, "BookingProcessor process was interrupted before WaitAsync");
                 }
             }
         }
