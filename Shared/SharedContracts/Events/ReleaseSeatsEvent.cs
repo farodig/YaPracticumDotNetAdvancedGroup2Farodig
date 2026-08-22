@@ -3,9 +3,9 @@
 namespace SharedContracts.Events
 {
     /// <summary>
-    /// Бронирование успешно
+    /// Место занято
     /// </summary>
-    public sealed record BookingSuccessEvent : IEvent
+    public sealed record ReleaseSeatsEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования

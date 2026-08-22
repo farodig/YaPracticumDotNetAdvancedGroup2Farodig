@@ -59,7 +59,7 @@ namespace BookingService.Application
             {
                 using var scope = _scopeFactory.CreateScope();
                 var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                await bookingService.CancelBookingAsync(data, CancellationToken.None);
+                await bookingService.CancelBookingWhenServiceStoppedAsync(data, CancellationToken.None);
             }
             finally
             {
@@ -72,7 +72,7 @@ namespace BookingService.Application
                 {
                     using var scope = _scopeFactory.CreateScope();
                     var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-                    await bookingService.CancelBookingAsync(data, CancellationToken.None);
+                    await bookingService.CancelBookingWhenServiceStoppedAsync(data, CancellationToken.None);
                 }
             }
         }

@@ -3,9 +3,9 @@
 namespace SharedContracts.Events
 {
     /// <summary>
-    /// Бронирование окончилось неудачей
+    /// Бронирование успешно
     /// </summary>
-    public sealed record BookingFailureEvent : IEvent
+    public sealed record BookingConfirmEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования
@@ -16,7 +16,5 @@ namespace SharedContracts.Events
         /// Идентификатор события
         /// </summary>
         public Guid EventId { get; set; }
-        
-        // TODO: Код ошибки - можно добавить, а зачем?
     }
 }

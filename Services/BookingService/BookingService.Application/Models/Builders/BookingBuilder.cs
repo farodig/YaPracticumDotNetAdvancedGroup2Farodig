@@ -25,13 +25,13 @@ namespace BookingService.Application.Models.Builders
             ProcessedAt = data.ProcessedAt,
         };
 
-        internal static BookingSuccessEvent ToSuccessEvent(this Booking data) => new()
+        internal static BookingConfirmEvent ToBookingConfirmEvent(this Booking data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,
         };
 
-        internal static BookingFailureEvent ToFailureEvent(this Booking data) => new()
+        internal static BookingCancelEvent ToBookingCancelEvent(this Booking data) => new()
         {
             Id = data.Id,
             EventId = data.EventId,

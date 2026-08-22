@@ -1,6 +1,7 @@
 ﻿using Application.Models.Requests;
 using EventService.Application.Models.Responses;
 using EventService.Domain.Entities;
+using SharedContracts.Events;
 
 namespace EventService.Application.Models.Builders
 {
@@ -29,6 +30,32 @@ namespace EventService.Application.Models.Builders
             EndAt = data.EndAt,
             TotalSeats = data.TotalSeats,
             AvailableSeats = data.AvailableSeats ?? data.TotalSeats,
+        };
+
+        public static ReserveSeatsEvent BuildReserveSeatsEvent(this BookingConfirmEvent data) => new()
+        {
+            Id = data.Id,
+            EventId = data.EventId,
+        };
+
+        public static ReleaseSeatsEvent BuildReleaseSeatsEvent(this BookingCancelEvent data) => new()
+        {
+            Id = data.Id,
+            EventId = data.EventId,
+        };
+
+        public static UnableToChangeSeatsEvent BuildUnableToChangeSeatsEvent(this BookingConfirmEvent data, string details) => new()
+        {
+            Id = data.Id,
+            EventId = data.EventId,
+            Details = details,
+        };
+
+        public static UnableToChangeSeatsEvent BuildUnableToChangeSeatsEvent(this BookingCancelEvent data, string details) => new()
+        {
+            Id = data.Id,
+            EventId = data.EventId,
+            Details = details,
         };
     }
 }

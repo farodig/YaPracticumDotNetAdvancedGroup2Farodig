@@ -10,7 +10,7 @@ namespace EventService.Application
         {
             services.AddScoped<IEventService, EventService>();
             services.AddHostedService<BookingSuccessEventProcessor>();
-            services.AddHostedService<BookingFailureEventProcessor>();
+            services.AddHostedService<BookingCancelEventProcessor>();
         }
     }
 }

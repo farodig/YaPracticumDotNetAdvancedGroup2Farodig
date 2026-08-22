@@ -52,26 +52,27 @@ namespace BookingService.Application
         public async Task ConfirmBookingAsync(Booking data, CancellationToken cts = default)
         {
             await _repository.TryUpdateStatusAsync(data, BookingStatus.Confirmed, cts);
-            await _publishService.PublishAsync(data.ToSuccessEvent(), cts);
+            await _publishService.PublishAsync(data.ToBookingConfirmEvent(), cts);
             _logger.Info($"Booking operation was confirmed. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
         public async Task RejectBookingAsync(Booking data, CancellationToken cts = default)
         {
-            await FailureBookingInternal(data, BookingStatus.Rejected, cts);
+            await _repository.TryUpdateStatusAsync(data, BookingStatus.Rejected, cts);
             _logger.Warn($"Booking operation was rejected'. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
-        public async Task CancelBookingAsync(Booking data, CancellationToken cts = default)
+        public async Task CancelBookingWhenServiceStoppedAsync(Booking data, CancellationToken cts = default)
         {
-            await FailureBookingInternal(data, BookingStatus.Cancelled, cts);
-            _logger.Warn($"Booking operation was cancelled. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+            await _repository.TryUpdateStatusAsync(data, BookingStatus.Rejected, cts);
+            _logger.Warn($"Booking operation was cancelled when service stopped Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
         public async Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default)
         {
             var booking = await _repository.GetAsync(bookingId, cts) ?? throw new BookingNotFoundException();
-            await FailureBookingInternal(booking, BookingStatus.Cancelled, cts);
+            await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
+            await _publishService.PublishAsync(booking.ToBookingCancelEvent(), cts);
             _logger.Warn($"Booking operation was cancelled by the Admin. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
         }
 
@@ -81,17 +82,9 @@ namespace BookingService.Application
 
             if (booking.PersonId != personId) throw new UnauthorizedBookingOperationException();
 
-            await FailureBookingInternal(booking, BookingStatus.Cancelled, cts);
-            _logger.Warn($"Booking operation was cancelled by the person '{personId}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
-        }
-
-        /// <summary>
-        /// Неудачное бронирование
-        /// </summary>
-        private async Task FailureBookingInternal(Booking data, BookingStatus status, CancellationToken cts = default)
-        {
-            await _repository.TryUpdateStatusAsync(data, status, cts);
-            await _publishService.PublishAsync(data.ToFailureEvent(), cts);
+            await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
+            await _publishService.PublishAsync(booking.ToBookingCancelEvent(), cts);
+            _logger.Info($"Booking operation was cancelled by the person '{personId}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
         }
     }
 }

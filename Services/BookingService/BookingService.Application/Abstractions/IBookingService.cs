@@ -26,7 +26,7 @@ namespace BookingService.Application.Abstractions
         /// <summary>
         /// Отменить бронирование
         /// </summary>
-        Task CancelBookingAsync(Booking data, CancellationToken cts = default);
+        Task CancelBookingWhenServiceStoppedAsync(Booking data, CancellationToken cts = default);
 
         /// <summary>
         /// Администратор отменяет бронь
