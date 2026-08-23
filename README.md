@@ -6,31 +6,32 @@
 2. Скачать [репозиторий](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig.git) себе на компьютер
 3. В git переключиться на последнюю актуальную ветку
 4. Установить [PostgreSQL](https://www.postgresql.org/download/) и добавить пользователя со всеми правами Username=postgres;Password=postgres
-   или скачать и запустить [образ docker postgresql](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig/blob/sprint-5/docker-compose_.yml)
-5. В файл конфигурации appsettings.json в корневой узел добавить строку подключения если данные подключения к [БД](#бд-postgresql) будут отличаться
-```markdown
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
-  }
-```
-📝 **Примечание:** Если БД пустая, то структура будет создана при первом запуске через Migrate
-
-так же настроить авторизацию см раздел [Настройка секрета JWT в конфигурации](#настройка-секрета-jwt-в-конфигурации)
+   или скачать и запустить [образ docker postgresql](https://github.com/farodig/YaPracticumDotNetAdvancedGroup2Farodig/blob/sprint-9/docker-compose.yml)
+5. Настроить подключение к [базе данных](#бд-postgresql)
+и авторизацию см раздел [Настройка секрета JWT в конфигурации](#настройка-секрета-jwt-в-конфигурации)
 
 6. Зайти в консоль от администратора
 7. В корневой папке проекта выполнить команду dotnet test подробнее в разделе [Тестирование](#тестирование)
 
 ⚠️ **Важно:** Для запуска итеграционных тестов на компьютере должен быть установлен Docker
 
-8. Зайти в подпапку скачанного репозитория Presentation/
+8. Зайти в подпапку скачанного репозитория каждого из проектов EventService.Presentation, BookingService.Presentation, PersonService.Presentation
+и  Выполнить команду dotnet run
 
 📝 **Примечание:** См. [структуру проектов](#структура-проектов)
 
-9. Выполнить команду dotnet run
-10. Открыть в браузере [http](http://localhost:5120/swagger/index.html) или [https](https://localhost:7112/swagger/index.html)
-11. Некоторые команды API требуют авторизации. Для авторизации пользователя необходимо выполнить [вход](#авторизация) пользователя, после чего ввести токен в поле после нажатия кнопки [Authorize]
+10. Открыть в браузере [booking service](https://localhost:7108/swagger/index.html), [event service](https://localhost:7240/swagger/index.html), [person service](http://localhost:5132/swagger)
+11. Некоторые команды API сервисов EventService и BookingService требуют авторизации. Для авторизации пользователя необходимо выполнить [вход](#авторизация) пользователя, после чего ввести токен в поле после нажатия кнопки [Authorize]
 
 ## Структура проектов
+
+Сервисы и компоненты:
+- PersonService.* - сервис позволяет зарегистрировать и авторизовать по пользователей
+- EventService.* - сервис позволяет создавать, изменять и удалять события
+- BookingService.* - сервис позволяет бронировать события
+- BrokerService.* - сервис обмена сообщениями между сервисов
+- SharedContracts - содержит контракты обмена сообщениями
+- TokenService - вспомогательный сервис(компонент/библиотека) для создания и проверки токенов
 
 1. Domain - всё, что описывает предметную область и не зависит от технологий
     - доменные сущности и перечисления;
@@ -54,15 +55,27 @@
 
 ## API
 
+### PersonService API
+
 |Метод |Адрес            |Запрос                                         |Ответ                              |Описание                           |Доступ (Роль)|
 |------|-----------------|-----------------------------------------------|-----------------------------------|-----------------------------------|-------------|
 |POST  |/auth/register   |[RegisterPersonRequest](#registerpersonrequest)|                                   |Регистрирует пользователя,         |Аноним       |
 |POST  |/auth/login      |[LoginPersonRequest](#loginpersonrequest)      |string (токен авторизации)         |Авторизует пользователя,           |Аноним       |
+
+### EventService API
+
+|Метод |Адрес            |Запрос                                         |Ответ                              |Описание                           |Доступ (Роль)|
+|------|-----------------|-----------------------------------------------|-----------------------------------|-----------------------------------|-------------|
 |GET   |/events          |                                               |[PaginatedResult](#paginatedresult)|Получить список всех событий       |Аноним       |
 |GET   |/events/{id}     |                                               |[EventResponse](#eventresponse)    |Получить событие по идентификатору |Аноним       |
 |POST  |/events          |[CreateEventRequest](#createeventrequest)      |[EventResponse](#eventresponse)    |Создать событие                    |Admin        |
 |PUT   |/events/{id}     |[UpdateEventRequest](#updateeventrequest)      |                                   |Изменить событие                   |Admin        |
 |DELETE|/events/{id}     |                                               |                                   |Удалить событие                    |Admin        |
+
+### BookingService API
+
+|Метод |Адрес            |Запрос                                         |Ответ                              |Описание                           |Доступ (Роль)|
+|------|-----------------|-----------------------------------------------|-----------------------------------|-----------------------------------|-------------|
 |POST  |/events/{id}/book|                                               |[BookingResponse](#bookingresponse)|Забронировать событие              |User         |
 |Get   |/bookings/{id}   |                                               |[BookingResponse](#bookingresponse)|Получить информацию о бронировании |Admin, User  |
 |DELETE|/bookings/{id}   |                                               |                                   |Удалить бронирование               |User         |
@@ -89,7 +102,8 @@ Authorization: Bearer <token>
 
 ### Настройка секрета JWT в конфигурации
 
-В файле конфигурации appsettings.json в разделе TokenSettings задаются следующие поля
+Для проектов PersonService.Presentation, BookingService.Presentation и EventService.Presentation
+в файле конфигурации appsettings.json в разделе TokenSettings задаются следующие поля 
 
 - Secret - приватный секретный ключ используемый для подписи токенов
 - Issuer - издатель
@@ -341,7 +355,27 @@ Status code 200
 
 ## БД PostgreSQL
 
-### Строка подключения
+В файл конфигурации appsettings.json в корневой узел каждого проекта Presentation добавить строку подключения базе данных
+
+📝 **Примечание:** Если БД пустая, то структура будет создана при первом запуске через Migrate
+
+### Строка подключения для PersonService.Presentation
+
+```markdown
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
+  }
+```
+
+### Строка подключения для EventService.Presentation
+
+```markdown
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=eventapi;Username=postgres;Password=postgres"
+  }
+```
+
+### Строка подключения для BookingService.Presentation
 
 ```markdown
   "ConnectionStrings": {
@@ -351,17 +385,17 @@ Status code 200
 
 ### Особенности
 
-Cхема управляется миграциями EF Core
+Cхема управляется миграциями EF Core для сервисов PersonService, EventService, BookingService
 
 #### Добавление изменений
 
 Изменения в структуру базы вносятся через код. После внесения изменений необходимо выполнить команду add добавления миграции
 
-> dotnet ef migrations add [ИмяМиграции] --project Infrastructure --startup-project Presentation
+> dotnet ef migrations add [ИмяМиграции] --project [ИмяСервиса].Infrastructure --startup-project [ИмяСервиса].Presentation
 
 После того как миграция будет создана и код миграции проверен, можно внести изменения командой update
 
-> dotnet ef database update --project Infrastructure --startup-project Presentation
+> dotnet ef database update --project [ИмяСервиса].Infrastructure --startup-project [ИмяСервиса].Presentation
 
 #### Откат изменений
 
@@ -369,15 +403,15 @@ Cхема управляется миграциями EF Core
 
 Откатить изменения в БД последней миграции
 
-> dotnet ef database update [Имя_Предыдущей_Миграции] --project Infrastructure --startup-project Presentation
+> dotnet ef database update [Имя_Предыдущей_Миграции] --project [ИмяСервиса].Infrastructure --startup-project [ИмяСервиса].Presentation
 
 Или откатить изменения всех миграций
 
-> dotnet ef database update 0 --project Infrastructure --startup-project Presentation
+> dotnet ef database update 0 --project [ИмяСервиса].Infrastructure --startup-project [ИмяСервиса].Presentation
 
 После отката изменений в БД можно удалить саму миграцию
 
-> dotnet ef migrations remove --project Infrastructure --startup-project Presentation
+> dotnet ef migrations remove --project [ИмяСервиса].Infrastructure --startup-project [ИмяСервиса].Presentation
 
 ## Тестирование
 
