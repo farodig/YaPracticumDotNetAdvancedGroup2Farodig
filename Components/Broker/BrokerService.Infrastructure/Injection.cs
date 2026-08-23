@@ -14,11 +14,11 @@ namespace BrokerService.Infrastructure
             builder.Services.AddScoped<IPublishService, KafkaPublisher>();
         }
 
-        public static void AddReceiveService(this WebApplicationBuilder builder)
+        public static void AddReceiveFactory(this WebApplicationBuilder builder)
         {
             var section = builder.Configuration.GetSection("Broker");
             builder.Services.ConfigureBroker<KafkaSettings>(section);
-            builder.Services.AddScoped<IReceiveService, KafkaReceiver>();
+            builder.Services.AddSingleton<IReceiverServiceFactory, KafkaReceiverServiceFactory>();
         }
 
         public static void ConfigureBroker<TOptions>(this IServiceCollection services, IConfigurationSection section)

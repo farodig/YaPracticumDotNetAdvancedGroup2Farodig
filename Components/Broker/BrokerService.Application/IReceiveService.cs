@@ -5,14 +5,14 @@ namespace BrokerService.Application
     /// <summary>
     /// Сервис получения событий
     /// </summary>
-    public interface IReceiveService : IDisposable
+    public interface IReceiveService<TEvent> : IDisposable
+        where TEvent : class, IEvent
     {
         /// <summary>
         /// Подписываемся на событие и запускаем прослушку
         /// </summary>
         /// <typeparam name="TEvent">Фильтр на событие</typeparam>
-        Task StartAsync<TEvent>(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
-            where TEvent : class, IEvent;
+        Task StartAsync(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default);
 
         /// <summary>
         /// Остановить прослушку

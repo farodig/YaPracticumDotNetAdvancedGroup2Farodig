@@ -62,7 +62,7 @@ namespace EventService.Presentation.ConfigurationBuilders
                 app.Lifetime.ApplicationStarted.Register(() =>
                 {
                     var addresses = string.Join(", ", app.Urls.Select(u => $"{u}/swagger"));
-                    logger?.LogInformation("Swagger UI: {Addresses}", addresses);
+                    logger?.LogInformation("Event Swagger UI: {Addresses}", addresses);
                 });
             }
         }

@@ -10,24 +10,19 @@ using SharedContracts.Events;
 
 namespace EventService.Application.EventProcessors
 {
-    public class BookingSuccessEventProcessor : IHostedService
+    public class BookingSuccessEventProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : IHostedService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IReceiveService _receiver;
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
+        private readonly IReceiveService<BookingCreatedEvent> _receiver = receiveFactory.CreateReceiverService<BookingCreatedEvent>();
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
-        public BookingSuccessEventProcessor(IServiceScopeFactory scopeFactory)
-        {
-            _scopeFactory = scopeFactory;
-            var scope = _scopeFactory.CreateScope();
-            _receiver = scope.ServiceProvider.GetRequiredService<IReceiveService>();
-        }
 
         /// <summary>
         /// Зарезерировать место на событии
         /// </summary>
         private async Task ReserveSeatAsync(BookingCreatedEvent @event, CancellationToken cts = default)
         {
+            _logger.Info("Request to reserve seats: {@event}", @event);
+
             using var scope = _scopeFactory.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
             var publishService = scope.ServiceProvider.GetRequiredService<IPublishService>();
@@ -49,14 +44,15 @@ namespace EventService.Application.EventProcessors
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts); // а если не удалось забронировать так может и отменять не - нужно учитывать в рассчётах
+                //await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts); // а если не удалось забронировать так может и отменять не - нужно учитывать в рассчётах
             }
         }
 
         #region IHostedService
-        public async Task StartAsync(CancellationToken cts = default)
+        public Task StartAsync(CancellationToken cts = default)
         {
-            await _receiver.StartAsync<BookingCreatedEvent>(ReserveSeatAsync, cts);
+            _ = _receiver.StartAsync(ReserveSeatAsync, cts);
+            return Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cts = default)

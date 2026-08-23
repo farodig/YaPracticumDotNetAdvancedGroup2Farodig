@@ -10,24 +10,19 @@ using SharedContracts.Events;
 
 namespace EventService.Application.EventProcessors
 {
-    public class BookingCancelEventProcessor: IHostedService
+    public class BookingCancelEventProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : IHostedService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IReceiveService _receiver;
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
+        private readonly IReceiveService<BookingCancelEvent> _receiver = receiveFactory.CreateReceiverService<BookingCancelEvent>();
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
-        public BookingCancelEventProcessor(IServiceScopeFactory scopeFactory)
-        {
-            _scopeFactory = scopeFactory;
-            var scope = _scopeFactory.CreateScope();
-            _receiver = scope.ServiceProvider.GetRequiredService<IReceiveService>();
-        }
 
         /// <summary>
         /// Освободить место на событии
         /// </summary>
         private async Task ReleaseSeatAsync(BookingCancelEvent @event, CancellationToken cts = default)
         {
+            _logger.Info("Request to release seats: {@event}", @event);
+
             using var scope = _scopeFactory.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
             var publishService = scope.ServiceProvider.GetRequiredService<IPublishService>();
@@ -46,14 +41,15 @@ namespace EventService.Application.EventProcessors
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts);
+                //await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts);
             }
         }
 
         #region IHostedService
-        public async Task StartAsync(CancellationToken cts = default)
+        public Task StartAsync(CancellationToken cts = default)
         {
-            await _receiver.StartAsync<BookingCancelEvent>(ReleaseSeatAsync, cts);
+            _ = _receiver.StartAsync(ReleaseSeatAsync, cts);
+            return Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cts = default)

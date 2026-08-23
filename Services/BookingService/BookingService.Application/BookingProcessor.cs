@@ -8,23 +8,18 @@ using SharedContracts.Events;
 
 namespace BookingService.Application
 {
-    public class BookingProcessor : BackgroundService
+    public class BookingProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : BackgroundService
     {
-        private readonly IReceiveService _receiver;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IReceiveService<ReserveSeatsEvent> _receiver = receiveFactory.CreateReceiverService<ReserveSeatsEvent>();
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
         private readonly HashSet<Guid> seatsReservedForBooking = [];
 
-        public BookingProcessor(IServiceScopeFactory scopeFactory)
-        {
-            _scopeFactory = scopeFactory;
-            var scope = _scopeFactory.CreateScope();
-            _receiver = scope.ServiceProvider.GetRequiredService<IReceiveService>();
-        }
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _ =_receiver.StartAsync(OnReserved, stoppingToken);
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Добавляем задержку в случае отсутствия задач, чтобы не зависало
@@ -90,14 +85,13 @@ namespace BookingService.Application
             return orderedPendings.Select(booking => ProcessBookingAsync(booking, cts));
         }
 
-        public override async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await _receiver.StartAsync<ReserveSeatsEvent>(OnReserved, cancellationToken);
-            await base.StartAsync(cancellationToken);
-        }
-
         private async Task OnReserved(ReserveSeatsEvent @event, CancellationToken token)
         {
+            _logger.Info("Seats reserved: {@event}", @event);
+
+            // TODO: места изменили, но обработка прошла раньше необходимо или:
+            // 1 - оставшиеся в списке id со временем отменять (не оч вариант)
+            // 2 - (более правильный) ловить 2 сообщения или со статусом и не обрабатывать pending до тех пор пока сервис событий не обработает запрос
             seatsReservedForBooking.Add(@event.Id);
         }
 
