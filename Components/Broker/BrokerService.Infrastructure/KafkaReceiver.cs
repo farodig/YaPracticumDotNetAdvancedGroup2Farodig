@@ -99,15 +99,21 @@ namespace BrokerService.Infrastructure
                     return;
                 }
 
-                _logger.Trace($"Received<{typeof(TEvent).Name}>: offset={result.Offset}, partition={result.Partition}");
-                if (JsonSerializer.Deserialize<TEvent>(result.Message.Value) is not TEvent message)
+                try
                 {
-                    return;
+                    _logger.Trace($"Received<{typeof(TEvent).Name}>: offset={result.Offset}, partition={result.Partition}");
+                    if (JsonSerializer.Deserialize<TEvent>(result.Message.Value) is not TEvent message)
+                    {
+                        _logger.Error($"Unable to deserialize {typeof(TEvent).Name}");
+                        return;
+                    }
+
+                    await handler(message, cts);
                 }
-
-                await handler(message, cts);
-
-                _consumer.Commit(result);
+                finally
+                {
+                    _consumer.Commit(result);
+                }
             }
             catch(Exception ex)
             {
