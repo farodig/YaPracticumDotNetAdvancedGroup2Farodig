@@ -186,5 +186,19 @@ namespace UnitTests
             // т. к. событие удалено, то и брони удаляются каскадно, следовательно безвозвратно, а не просто меняют статус
             await Assert.ThrowsAsync<BookingNotFoundException>(async () => await bookingService.GetBookingByIdAsync(bookingId));
         }
+
+        //public static Person CreatePerson(Guid? personId = null) => new()
+        //{
+        //    Id = personId ?? Guid.NewGuid(),
+        //};
+
+        //public static Booking BuildBooking(this BookingResponse data) => new()
+        //{
+        //    Id = data.Id,
+        //    EventId = data.EventId,
+        //    Status = data.Status,
+        //    CreatedAt = data.CreatedAt,
+        //    ProcessedAt = data.ProcessedAt,
+        //};
     }
 }

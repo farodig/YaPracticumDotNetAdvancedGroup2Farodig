@@ -1,8 +1,8 @@
 ﻿using Application.Models.Requests;
-using Application.Models.Responses;
-using Domain.Entities;
+using EventService.Application.Models.Responses;
+using EventService.Domain.Entities;
 
-namespace UnitTests.Helpers
+namespace EventService.UnitTest.Helpers
 {
     internal static class EntityFactory
     {
@@ -17,11 +17,6 @@ namespace UnitTests.Helpers
                 TotalSeats = totalSeats ?? 3,
                 AvailableSeats = availableSeats ?? totalSeats ?? 3,
             };
-
-        public static Person CreatePerson(Guid? personId = null) => new()
-        {
-            Id = personId ?? Guid.NewGuid(),
-        };
 
         public static UpdateEventRequest BuildUpdateEventRequest(this Event item) => new()
         {
@@ -42,15 +37,6 @@ namespace UnitTests.Helpers
             EndAt = data.EndAt,
             TotalSeats = data.TotalSeats,
             AvailableSeats = data.AvailableSeats,
-        };
-
-        public static Booking BuildBooking(this BookingResponse data) => new()
-        {
-            Id = data.Id,
-            EventId = data.EventId,
-            Status = data.Status,
-            CreatedAt = data.CreatedAt,
-            ProcessedAt = data.ProcessedAt,
         };
     }
 }

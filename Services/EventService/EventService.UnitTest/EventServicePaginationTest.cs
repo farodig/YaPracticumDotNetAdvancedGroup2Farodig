@@ -1,8 +1,8 @@
-﻿using Application.Services.EventService;
-using Domain.Entities;
-using UnitTests.Helpers;
+﻿using EventService.Application.Abstractions;
+using EventService.Domain.Entities;
+using EventService.UnitTest.Helpers;
 
-namespace UnitTests.EventServiceTests
+namespace EventService.UnitTest
 {
     [Trait("Category", "Unit")]
     public class EventServicePaginationTest : AServiceCollection

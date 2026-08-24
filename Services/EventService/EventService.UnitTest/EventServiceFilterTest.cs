@@ -1,9 +1,9 @@
-﻿using Application.Services.EventService;
-using Domain.Entities;
-using UnitTests.Helpers;
-using static UnitTests.Helpers.EntityFactory;
+﻿using EventService.Application.Abstractions;
+using EventService.Domain.Entities;
+using EventService.UnitTest.Helpers;
+using static EventService.UnitTest.Helpers.EntityFactory;
 
-namespace UnitTests.EventServiceTests
+namespace EventService.UnitTest
 {
     [Trait("Category", "Unit")]
     public class EventServiceFilterTest : AServiceCollection

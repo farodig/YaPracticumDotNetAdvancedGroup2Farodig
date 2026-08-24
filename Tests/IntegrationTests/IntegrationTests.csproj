@@ -20,6 +20,7 @@
     <Compile Remove="RepositoriesTests\EventRepositoryGetersTests.cs" />
     <Compile Remove="RepositoriesTests\EventRepositoryPaginationTests.cs" />
     <Compile Remove="RepositoriesTests\PersonRepositoryTests.cs" />
+    <Compile Remove="SagaOrEventTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

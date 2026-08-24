@@ -1,11 +1,11 @@
-﻿using Application;
-using Infrastructure;
-using Infrastructure.DataAccess;
+﻿using EventService.Application;
+using EventService.Infrastructure;
+using EventService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace UnitTests.Helpers
+namespace EventService.UnitTest.Helpers
 {
     public abstract class AServiceCollection : IDisposable
     {
@@ -14,20 +14,20 @@ namespace UnitTests.Helpers
             var services = new ServiceCollection();
 
             var dbName = Guid.NewGuid().ToString();
-            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase(dbName));
+            services.AddDbContext<EventDbContext>(options => options.UseInMemoryDatabase(dbName));
             services.AddRepositories();
             services.AddApplicationServices();
 
             ServiceProvider = services.BuildServiceProvider();
             Scope = ServiceProvider.CreateScope();
 
-            var context = Scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var context = Scope.ServiceProvider.GetRequiredService<EventDbContext>();
             context.Database.EnsureCreated();
         }
 
         protected void Initialize<T>(params IEnumerable<T> collection) where T : class
         {
-            var context = Scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var context = Scope.ServiceProvider.GetRequiredService<EventDbContext>();
             foreach (var item in collection)
             {
                 context.Add(item);
