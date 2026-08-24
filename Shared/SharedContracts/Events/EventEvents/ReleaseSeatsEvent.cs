@@ -1,11 +1,11 @@
 ﻿using SharedContracts.Abstractions;
 
-namespace SharedContracts.Events
+namespace SharedContracts.Events.EventEvents
 {
     /// <summary>
-    /// Бронирование успешно
+    /// Место занято
     /// </summary>
-    public sealed record BookingCreatedEvent : IEvent
+    public sealed record ReleaseSeatsEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования

@@ -1,11 +1,11 @@
 ﻿using SharedContracts.Abstractions;
 
-namespace SharedContracts.Events
+namespace SharedContracts.Events.EventEvents
 {
     /// <summary>
-    /// Место освобождено
+    /// Не удалось зарезервировать место
     /// </summary>
-    public sealed record UnableToChangeSeatsEvent : IEvent
+    public sealed record UnableToReserveSeatsEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования

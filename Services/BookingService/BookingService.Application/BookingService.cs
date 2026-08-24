@@ -5,7 +5,7 @@ using BookingService.Domain.Entities;
 using BookingService.Domain.Exceptions;
 using BrokerService.Application;
 using NLog;
-using SharedContracts.Events;
+using SharedContracts.Events.BookingEvents;
 using System.Data;
 using TokenService.Exceptions;
 
@@ -30,7 +30,7 @@ namespace BookingService.Application
                 var booking = BookingBuilder.CreateBooking(eventId, personId);
                 await _repository.CreateAsync(booking, cts);
 
-                await _publishService.PublishAsync(booking.ToBookingCreatedEvent(), cts);
+                await _publishService.PublishBookingCreatedEvent(booking, cts);
                 _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
                 return booking.ToResponse();
             }
@@ -55,12 +55,14 @@ namespace BookingService.Application
         public async Task ConfirmBookingAsync(Booking data, CancellationToken cts = default)
         {
             await _repository.TryUpdateStatusAsync(data, BookingStatus.Confirmed, cts);
+            await _publishService.PublishBookingConfirmedEvent(data, cts);
             _logger.Info($"Booking operation was confirmed. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
         public async Task RejectBookingAsync(Booking data, CancellationToken cts = default)
         {
             await _repository.TryUpdateStatusAsync(data, BookingStatus.Rejected, cts);
+            await _publishService.PublishBookingRejectedEvent(data, cts);
             _logger.Warn($"Booking operation was rejected'. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
         }
 
@@ -72,7 +74,7 @@ namespace BookingService.Application
 
             await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
 
-            await _publishService.PublishAsync(booking.ToBookingCancelEvent(CancelReasonType.CancelByAdmin), cts);
+            await _publishService.PublishBookingCancelEvent(booking, CancelReasonType.CancelByAdmin, cts);
             _logger.Warn($"Booking operation was cancelled by the Admin. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
         }
 
@@ -85,7 +87,8 @@ namespace BookingService.Application
             if (booking.Status != BookingStatus.Confirmed) throw new InvalidOperationException("Unable to cancel not confirmed booking");
 
             await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
-            await _publishService.PublishAsync(booking.ToBookingCancelEvent(CancelReasonType.CancelByPerson), cts);
+
+            await _publishService.PublishBookingCancelEvent(booking, CancelReasonType.CancelByPerson, cts);
             _logger.Info($"Booking operation was cancelled by the person '{personId}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
         }
     }

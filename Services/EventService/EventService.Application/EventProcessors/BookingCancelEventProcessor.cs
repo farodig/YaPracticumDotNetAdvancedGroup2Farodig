@@ -6,7 +6,7 @@ using EventService.Domain.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using SharedContracts.Events;
+using SharedContracts.Events.BookingEvents;
 
 namespace EventService.Application.EventProcessors
 {
@@ -36,12 +36,12 @@ namespace EventService.Application.EventProcessors
                 data.ReleaseSeats();
 
                 await repository.TryUpdateAsync(data, cts);
-                await publishService.PublishAsync(@event.BuildReleaseSeatsEvent(), cts);
+                await publishService.PublishReleaseSeatsEvent(@event, cts);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                //await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts);
+                await publishService.PublishUnableToReleaseSeatsEvent(@event, ex.Message, cts);
             }
         }
 

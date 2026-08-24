@@ -4,21 +4,23 @@ using BrokerService.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using SharedContracts.Events;
+using SharedContracts.Events.EventEvents;
 
 namespace BookingService.Application
 {
     public class BookingProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : BackgroundService
     {
-        private readonly IReceiveService<ReserveSeatsEvent> _receiver = receiveFactory.CreateReceiverService<ReserveSeatsEvent>();
+        private readonly IReceiveService<ReserveSeatsEvent> _successReceiver = receiveFactory.CreateReceiverService<ReserveSeatsEvent>();
+        private readonly IReceiveService<UnableToReserveSeatsEvent> _failureReceiver = receiveFactory.CreateReceiverService<UnableToReserveSeatsEvent>();
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
-        private readonly HashSet<Guid> seatsReservedForBooking = [];
+        private readonly Dictionary<Guid, bool> seatsReservedForBooking = [];
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _ =_receiver.StartAsync(OnReserved, stoppingToken);
+            _ =_successReceiver.StartAsync(OnSuccessReserved, stoppingToken);
+            _ = _failureReceiver.StartAsync(OnFailureReserved, stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -46,6 +48,11 @@ namespace BookingService.Application
 
                 try
                 {
+                    if (IsNotReadyToProcessBooking(data))
+                    {
+                        return;
+                    }
+
                     if (IsSeatsReserved(data))
                     {
                         await bookingService.ConfirmBookingAsync(data, stoppingToken);
@@ -85,16 +92,35 @@ namespace BookingService.Application
             return orderedPendings.Select(booking => ProcessBookingAsync(booking, cts));
         }
 
-        private async Task OnReserved(ReserveSeatsEvent @event, CancellationToken token)
+        /// <summary>
+        /// Получили ответ от сервиса событий - успешно выделены места
+        /// </summary>
+        private async Task OnSuccessReserved(ReserveSeatsEvent @event, CancellationToken token)
         {
+            seatsReservedForBooking[@event.Id] = true;
             _logger.Info("Seats reserved: {@event}", @event);
-
-            // TODO: места изменили, но обработка прошла раньше необходимо или:
-            // 1 - оставшиеся в списке id со временем отменять (не оч вариант)
-            // 2 - (более правильный) ловить 2 сообщения или со статусом и не обрабатывать pending до тех пор пока сервис событий не обработает запрос
-            seatsReservedForBooking.Add(@event.Id);
         }
 
+        /// <summary>
+        /// Получили ответ от сервиса событий - места не забронированы
+        /// </summary>
+        private async Task OnFailureReserved(UnableToReserveSeatsEvent @event, CancellationToken token)
+        {
+            seatsReservedForBooking[@event.Id] = false;
+            _logger.Warn("Seats not reserved: {@event}", @event);
+        }
+
+        /// <summary>
+        /// Не получили ответ от сервиса событий - пока рано обрабатывать бронирование
+        /// </summary>
+        private bool IsNotReadyToProcessBooking(Booking data)
+        {
+            return !seatsReservedForBooking.ContainsKey(data.Id);
+        }
+
+        /// <summary>
+        /// Проверка что места забронированы
+        /// </summary>
         private bool IsSeatsReserved(Booking data)
         {
             return seatsReservedForBooking.Remove(data.Id);

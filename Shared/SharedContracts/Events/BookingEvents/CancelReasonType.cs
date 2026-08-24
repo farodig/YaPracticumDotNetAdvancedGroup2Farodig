@@ -1,4 +1,4 @@
-﻿namespace SharedContracts.Events
+﻿namespace SharedContracts.Events.BookingEvents
 {
     public enum CancelReasonType : int
     {

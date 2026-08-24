@@ -1,11 +1,11 @@
 ﻿using SharedContracts.Abstractions;
 
-namespace SharedContracts.Events
+namespace SharedContracts.Events.EventEvents
 {
     /// <summary>
-    /// Отмена бронирования
+    /// Место освобождено
     /// </summary>
-    public sealed record BookingCancelEvent : IEvent
+    public sealed record ReserveSeatsEvent : IEvent
     {
         /// <summary>
         /// Идентификатор бронирования
@@ -16,10 +16,5 @@ namespace SharedContracts.Events
         /// Идентификатор события
         /// </summary>
         public Guid EventId { get; set; }
-
-        /// <summary>
-        /// Причина отмены
-        /// </summary>
-        public CancelReasonType ReasonType { get; set; }
     }
 }

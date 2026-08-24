@@ -6,7 +6,7 @@ using EventService.Domain.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using SharedContracts.Events;
+using SharedContracts.Events.BookingEvents;
 
 namespace EventService.Application.EventProcessors
 {
@@ -39,12 +39,12 @@ namespace EventService.Application.EventProcessors
                 if (!data.TryReserveSeats()) throw new NoAvailableSeatsException();
 
                 await repository.TryUpdateAsync(data, cts);
-                await publishService.PublishAsync(@event.BuildReserveSeatsEvent(), cts);
+                await publishService.PublishReserveSeatsEvent(@event, cts);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                //await publishService.PublishAsync(@event.BuildUnableToChangeSeatsEvent(ex.Message), cts); // а если не удалось забронировать так может и отменять не - нужно учитывать в рассчётах
+                await publishService.PublishUnableToReserveSeatsEvent(@event, ex.Message, cts);
             }
         }
 

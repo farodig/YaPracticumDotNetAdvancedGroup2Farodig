@@ -1,6 +1,5 @@
 ﻿using BookingService.Application.Models.Responses;
 using BookingService.Domain.Entities;
-using SharedContracts.Events;
 
 namespace BookingService.Application.Models.Builders
 {
@@ -23,19 +22,6 @@ namespace BookingService.Application.Models.Builders
             Status = data.Status,
             CreatedAt = data.CreatedAt,
             ProcessedAt = data.ProcessedAt,
-        };
-
-        internal static BookingCreatedEvent ToBookingCreatedEvent(this Booking data) => new()
-        {
-            Id = data.Id,
-            EventId = data.EventId,
-        };
-
-        internal static BookingCancelEvent ToBookingCancelEvent(this Booking data, CancelReasonType reason) => new()
-        {
-            Id = data.Id,
-            EventId = data.EventId,
-            ReasonType = reason,
         };
     }
 }
