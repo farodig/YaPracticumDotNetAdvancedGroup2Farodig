@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerService.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerService.Application", "Components\Broker\BrokerService.Application\BrokerService.Application.csproj", "{0395FBBF-ECC2-CD03-3164-1BFFCCE9A14B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingService.UnitTest", "Services\BookingService\BookingService.UnitTest\BookingService.UnitTest.csproj", "{2E9994C3-496D-4910-99DB-CF5A3EB16A34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,10 @@ Global
 		{0395FBBF-ECC2-CD03-3164-1BFFCCE9A14B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0395FBBF-ECC2-CD03-3164-1BFFCCE9A14B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0395FBBF-ECC2-CD03-3164-1BFFCCE9A14B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E9994C3-496D-4910-99DB-CF5A3EB16A34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9994C3-496D-4910-99DB-CF5A3EB16A34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9994C3-496D-4910-99DB-CF5A3EB16A34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9994C3-496D-4910-99DB-CF5A3EB16A34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +172,7 @@ Global
 		{CE08C47F-EB32-4983-B8C1-2DC3AF839499} = {A2772EA8-3280-4D64-9DF1-A008852C42B9}
 		{0C9026EA-376F-62F4-B103-2A0CEDD67609} = {CE08C47F-EB32-4983-B8C1-2DC3AF839499}
 		{0395FBBF-ECC2-CD03-3164-1BFFCCE9A14B} = {CE08C47F-EB32-4983-B8C1-2DC3AF839499}
+		{2E9994C3-496D-4910-99DB-CF5A3EB16A34} = {A0D84796-605E-4CD6-9A5C-9F3D0BFD44D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F1F6C6A-72C0-4B4F-B641-BA2DB4575540}
