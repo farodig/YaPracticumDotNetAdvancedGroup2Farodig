@@ -1,4 +1,4 @@
-﻿using PersonService.Domain.Entities;
+﻿using SharedContracts.Enums;
 
 namespace PersonService.Application.Abstractions
 {

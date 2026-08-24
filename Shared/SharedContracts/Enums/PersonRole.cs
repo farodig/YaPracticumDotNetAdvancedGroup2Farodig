@@ -1,4 +1,4 @@
-﻿namespace PersonService.Domain.Entities
+﻿namespace SharedContracts.Enums
 {
     /// <summary>
     /// Роль

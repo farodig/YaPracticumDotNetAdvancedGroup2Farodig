@@ -1,4 +1,6 @@
-﻿namespace PersonService.Domain.Entities
+﻿using SharedContracts.Enums;
+
+namespace PersonService.Domain.Entities
 {
     /// <summary>
     /// Пользователь (человек)

@@ -3,6 +3,7 @@ using PersonService.Application.Abstractions;
 using PersonService.Application.Components;
 using PersonService.Domain.Entities;
 using PersonService.Domain.Exceptions;
+using SharedContracts.Enums;
 using TokenService;
 
 namespace PersonService.Application

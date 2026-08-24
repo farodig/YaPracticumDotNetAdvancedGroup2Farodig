@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
-using PersonService.Domain.Entities;
+using SharedContracts.Enums;
 using System.Security.Claims;
 using TokenService.Builders;
 using TokenService.Exceptions;

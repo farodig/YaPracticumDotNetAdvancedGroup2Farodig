@@ -1,4 +1,4 @@
-﻿using PersonService.Domain.Entities;
+﻿using SharedContracts.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace PersonService.Application.Models.Requests

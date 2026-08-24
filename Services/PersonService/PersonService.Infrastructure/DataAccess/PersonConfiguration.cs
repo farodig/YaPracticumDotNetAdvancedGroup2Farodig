@@ -1,6 +1,7 @@
 ﻿using PersonService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SharedContracts.Enums;
 
 namespace PersonService.Infrastructure.DataAccess
 {
