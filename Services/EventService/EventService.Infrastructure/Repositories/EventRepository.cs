@@ -63,6 +63,7 @@ namespace EventService.Infrastructure.Repositories
                     Id = id,
                     ReceivedAt = DateTime.Now,
                 }, cts);
+                await _dbContext.SaveChangesAsync(cts);
                 return false;
             }
             catch
