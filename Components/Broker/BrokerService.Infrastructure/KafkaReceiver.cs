@@ -24,7 +24,7 @@ namespace BrokerService.Infrastructure
             {
                 BootstrapServers = kafkaSettings.BootstrapServers,
                 GroupId = typeof(TEvent).Name,
-                AutoOffsetReset = AutoOffsetReset.Latest,
+                AutoOffsetReset = AutoOffsetReset.Earliest,
                 SessionTimeoutMs = kafkaSettings.SessionTimeoutMs,
                 HeartbeatIntervalMs = kafkaSettings.HeartbeatIntervalMs,
                 EnableAutoCommit = false,
