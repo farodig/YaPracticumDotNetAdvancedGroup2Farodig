@@ -48,12 +48,15 @@ namespace BookingService.Application
 
                 try
                 {
-                    if (IsNotReadyToProcessBooking(data))
+                    // Ответ от сервиса обработан
+                    if (!seatsReservedForBooking.Remove(data.Id, out bool isSeatsReserved))
                     {
+                        // Не получили ответ от сервиса событий - пока рано обрабатывать бронирование
                         return;
                     }
 
-                    if (IsSeatsReserved(data))
+                    // Проверка что места забронированы
+                    if (isSeatsReserved)
                     {
                         await bookingService.ConfirmBookingAsync(data, stoppingToken);
                     }
@@ -97,7 +100,7 @@ namespace BookingService.Application
         /// </summary>
         private async Task OnSuccessReserved(ReserveSeatsEvent @event, CancellationToken token)
         {
-            seatsReservedForBooking[@event.Id] = true;
+            seatsReservedForBooking[@event.BookingId] = true;
             _logger.Info("Seats reserved: {@event}", @event);
         }
 
@@ -106,24 +109,8 @@ namespace BookingService.Application
         /// </summary>
         private async Task OnFailureReserved(UnableToReserveSeatsEvent @event, CancellationToken token)
         {
-            seatsReservedForBooking[@event.Id] = false;
+            seatsReservedForBooking[@event.BookingId] = false;
             _logger.Warn("Seats not reserved: {@event}", @event);
-        }
-
-        /// <summary>
-        /// Не получили ответ от сервиса событий - пока рано обрабатывать бронирование
-        /// </summary>
-        private bool IsNotReadyToProcessBooking(Booking data)
-        {
-            return !seatsReservedForBooking.ContainsKey(data.Id);
-        }
-
-        /// <summary>
-        /// Проверка что места забронированы
-        /// </summary>
-        private bool IsSeatsReserved(Booking data)
-        {
-            return seatsReservedForBooking.Remove(data.Id);
         }
     }
 }

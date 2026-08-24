@@ -15,7 +15,8 @@ namespace BookingService.Application.Models.Builders
         internal static async Task PublishBookingCreatedEvent(this IPublishService publisher, Booking data, CancellationToken ct = default)
             => await publisher.PublishAsync(new BookingCreatedEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.Id,
                 EventId = data.EventId,
             }, ct);
 
@@ -25,7 +26,8 @@ namespace BookingService.Application.Models.Builders
         internal static async Task PublishBookingCancelEvent(this IPublishService publisher, Booking data, CancelReasonType reason, CancellationToken ct = default)
             => await publisher.PublishAsync(new BookingCancelEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.Id,
                 EventId = data.EventId,
                 ReasonType = reason,
             }, ct);
@@ -36,7 +38,8 @@ namespace BookingService.Application.Models.Builders
         internal static async Task PublishBookingConfirmedEvent(this IPublishService publisher, Booking data, CancellationToken ct = default)
             => await publisher.PublishAsync(new BookingConfirmedEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.Id,
                 EventId = data.EventId,
             }, ct);
 
@@ -46,7 +49,8 @@ namespace BookingService.Application.Models.Builders
         internal static async Task PublishBookingRejectedEvent(this IPublishService publisher, Booking data, CancellationToken ct = default)
             => await publisher.PublishAsync(new BookingRejectedEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.Id,
                 EventId = data.EventId,
             }, ct);
     }

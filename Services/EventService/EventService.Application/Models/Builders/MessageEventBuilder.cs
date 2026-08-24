@@ -15,7 +15,8 @@ namespace EventService.Application.Models.Builders
         internal static async Task PublishReserveSeatsEvent(this IPublishService publisher, BookingCreatedEvent data, CancellationToken ct = default)
             => await publisher.PublishAsync(new ReserveSeatsEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.BookingId,
                 EventId = data.EventId,
             }, ct);
 
@@ -25,7 +26,8 @@ namespace EventService.Application.Models.Builders
         internal static async Task PublishReleaseSeatsEvent(this IPublishService publisher, BookingCancelEvent data, CancellationToken ct = default)
             => await publisher.PublishAsync(new ReleaseSeatsEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.BookingId,
                 EventId = data.EventId,
             }, ct);
 
@@ -35,7 +37,8 @@ namespace EventService.Application.Models.Builders
         internal static async Task PublishUnableToReserveSeatsEvent(this IPublishService publisher, BookingCreatedEvent data, string details, CancellationToken ct = default)
             => await publisher.PublishAsync(new UnableToReserveSeatsEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.BookingId,
                 EventId = data.EventId,
                 Details = details,
             }, ct);
@@ -46,7 +49,8 @@ namespace EventService.Application.Models.Builders
         internal static async Task PublishUnableToReleaseSeatsEvent(this IPublishService publisher, BookingCancelEvent data, string details, CancellationToken ct = default)
             => await publisher.PublishAsync(new UnableToReleaseSeatsEvent()
             {
-                Id = data.Id,
+                Id = Guid.NewGuid(),
+                BookingId = data.BookingId,
                 EventId = data.EventId,
                 Details = details,
             }, ct);

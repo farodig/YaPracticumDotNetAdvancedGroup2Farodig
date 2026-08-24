@@ -8,9 +8,14 @@ namespace SharedContracts.Events.EventEvents
     public sealed record ReleaseSeatsEvent : IEvent
     {
         /// <summary>
-        /// Идентификатор бронирования
+        /// Идентификатор сообщения
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Идентификатор бронирования
+        /// </summary>
+        public Guid BookingId { get; set; }
 
         /// <summary>
         /// Идентификатор события

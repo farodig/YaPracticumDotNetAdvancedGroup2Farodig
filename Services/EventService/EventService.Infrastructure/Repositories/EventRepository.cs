@@ -53,5 +53,23 @@ namespace EventService.Infrastructure.Repositories
             _dbContext.Events.RemoveRange(toDelete);
             return await _dbContext.SaveChangesAsync(cts);
         }
+
+        public async Task<bool> IsInboxDublicatedEvent(Guid id, CancellationToken cts = default)
+        {
+            try
+            {
+                await _dbContext.InboxMessages.AddAsync(new InboxMessage
+                {
+                    Id = id,
+                    ReceivedAt = DateTime.Now,
+                }, cts);
+                return false;
+            }
+            catch
+            {
+                // Любая причина будь то недоступная бд, будь то повторная запись
+                return true;
+            }
+        }
     }
 }

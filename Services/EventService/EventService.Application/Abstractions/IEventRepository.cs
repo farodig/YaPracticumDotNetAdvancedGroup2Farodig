@@ -39,5 +39,11 @@ namespace EventService.Application.Abstractions
         /// </summary>
         /// <returns>Количество удалённых из базы событий</returns>
         Task<int> TryRemoveAsync(Guid id, CancellationToken cts = default);
+
+        /// <summary>
+        /// Паттерн inbox
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsInboxDublicatedEvent(Guid id, CancellationToken cts = default);
     }
 }

@@ -21,11 +21,16 @@ namespace EventService.Application.EventProcessors
         /// </summary>
         private async Task ReleaseSeatAsync(BookingCancelEvent @event, CancellationToken cts = default)
         {
-            _logger.Info("Request to release seats: {@event}", @event);
-
             using var scope = _scopeFactory.CreateScope();
             var repository = scope.ServiceProvider.GetRequiredService<IEventRepository>();
             var publishService = scope.ServiceProvider.GetRequiredService<IPublishService>();
+
+            if (await repository.IsInboxDublicatedEvent(@event.Id, cts))
+            {
+                return;
+            }
+
+            _logger.Info("Request to release seats: {@event}", @event);
 
             try
             {
