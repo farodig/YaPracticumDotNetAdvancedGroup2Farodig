@@ -1,0 +1,9 @@
+﻿namespace BookingService.Domain.Exceptions
+{
+    /// <summary>
+    /// Превышение лимита активных броней
+    /// </summary>
+    public class ActiveBookingLimitException(int limit) : Exception($"Too many active bookings. No more than {limit} bookings")
+    {
+    }
+}

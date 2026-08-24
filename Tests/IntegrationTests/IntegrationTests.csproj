@@ -8,32 +8,49 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="E2ETests\HttpTests.cs" />
+    <Compile Remove="Helpers\ADockerDB.cs" />
+    <Compile Remove="Helpers\AHttpClient.cs" />
+    <Compile Remove="Helpers\DatabaseContainerFactory.cs" />
+    <Compile Remove="Helpers\EntityFactory.cs" />
+    <Compile Remove="Helpers\IntegrationTestFactory.cs" />
+    <Compile Remove="Helpers\TestPostgeSqlContaner.cs" />
+    <Compile Remove="RepositoriesTests\BookingRepositoryTests.cs" />
+    <Compile Remove="RepositoriesTests\EventRepositoryCrudTests.cs" />
+    <Compile Remove="RepositoriesTests\EventRepositoryGetersTests.cs" />
+    <Compile Remove="RepositoriesTests\EventRepositoryPaginationTests.cs" />
+    <Compile Remove="RepositoriesTests\PersonRepositoryTests.cs" />
+    <Compile Remove="SagaOrEventTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
-    <PackageReference Include="Testcontainers.PostgreSql" Version="4.13.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.11" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.14.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\Application\Application.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Presentation\Presentation.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="E2ETests\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="RepositoriesTests\" />
   </ItemGroup>
 
 </Project>
