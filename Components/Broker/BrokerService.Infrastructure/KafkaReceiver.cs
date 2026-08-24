@@ -90,30 +90,28 @@ namespace BrokerService.Infrastructure
 
         private async Task ProcessAsync(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
         {
-            var result = _consumer.Consume(TimeSpan.FromSeconds(1));
-
-            if (result == null)
-            {
-                return;
-            }
-
-            _logger.Trace($"Received<{typeof(TEvent).Name}>: offset={result.Offset}, partition={result.Partition}");
             try
             {
+                var result = _consumer.Consume(TimeSpan.FromSeconds(1));
+
+                if (result == null)
+                {
+                    return;
+                }
+
+                _logger.Trace($"Received<{typeof(TEvent).Name}>: offset={result.Offset}, partition={result.Partition}");
                 if (JsonSerializer.Deserialize<TEvent>(result.Message.Value) is not TEvent message)
                 {
                     return;
                 }
 
                 await handler(message, cts);
+
+                _consumer.Commit(result);
             }
             catch(Exception ex)
             {
                 _logger.Error(ex);
-            }
-            finally
-            {
-                _consumer.Commit(result);
             }
         }
 
