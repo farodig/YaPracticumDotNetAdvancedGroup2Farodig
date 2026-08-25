@@ -62,16 +62,6 @@
 |POST  |/auth/register   |[RegisterPersonRequest](#registerpersonrequest)|                                   |Регистрирует пользователя,         |Аноним       |
 |POST  |/auth/login      |[LoginPersonRequest](#loginpersonrequest)      |string (токен авторизации)         |Авторизует пользователя,           |Аноним       |
 
-### EventService API
-
-|Метод |Адрес            |Запрос                                         |Ответ                              |Описание                           |Доступ (Роль)|
-|------|-----------------|-----------------------------------------------|-----------------------------------|-----------------------------------|-------------|
-|GET   |/events          |                                               |[PaginatedResult](#paginatedresult)|Получить список всех событий       |Аноним       |
-|GET   |/events/{id}     |                                               |[EventResponse](#eventresponse)    |Получить событие по идентификатору |Аноним       |
-|POST  |/events          |[CreateEventRequest](#createeventrequest)      |[EventResponse](#eventresponse)    |Создать событие                    |Admin        |
-|PUT   |/events/{id}     |[UpdateEventRequest](#updateeventrequest)      |                                   |Изменить событие                   |Admin        |
-|DELETE|/events/{id}     |                                               |                                   |Удалить событие                    |Admin        |
-
 ### BookingService API
 
 |Метод |Адрес            |Запрос                                         |Ответ                              |Описание                           |Доступ (Роль)|
@@ -133,47 +123,6 @@ QueryString Параметры:
 
 
 ## Схемы запросов/ответов
-
-### PaginatedResult
-|Поле       |Тип данных     |Описание                               |Пример|
-|-----------|---------------|---------------------------------------|------|
-|Items      |EventResponse[]|Список обытий                          |[...] |
-|PageNumber |int            |Номер текущей страницы                 |1     |
-|PageCount  |int            |Количество событий на текущей странице |20    |
-|TotalCount |int            |Общее количество событий               |300   |
-
-
-### EventResponse
-
-|Поле           |Тип данных|Описание                                          |Пример                                |
-|---------------|----------|--------------------------------------------------|--------------------------------------|
-|id             |Guid      |Идентификатор события                             |"3fa85f64-5717-4562-b3fc-2c963f66afa6"|
-|title          |string    |Заголовок события                                 |"Заголовок события"                   |
-|description    |string    |Описание события (необязательный)                 |                                      |
-|startAt        |DateTime  |Дата и время начала события                       |"2027-04-05T00:51:58.951Z"            |
-|endAt          |DateTime  |Дата и время окончания события                    |"2027-04-05T00:51:58.951Z"            |
-|TotalSeats     |int       |Общее количество мест на событии                  |3                                     |
-|AvailableSeats |int       |Текущее количество свободных мест (необязательный)|1                                     |
-
-### CreateEventRequest
-
-|Поле       |Тип данных|Описание                         |Пример                                |
-|------     |----------|---------------------------------|--------------------------------------|
-|title      |string    |Заголовок события                |"Заголовок события"                   |
-|description|string    |Описание события (необязательный)|                                      |
-|startAt    |DateTime  |Дата и время начала события      |"2027-04-05T00:51:58.951Z"            |
-|endAt      |DateTime  |Дата и время окончания события   |"2027-04-05T00:51:58.951Z"            |
-|TotalSeats |int       |Общее количество мест на событии |3                                     |
-
-### UpdateEventRequest
-|Поле           |Тип данных|Описание                                          |Пример                                |
-|---------------|----------|--------------------------------------------------|--------------------------------------|
-|title          |string    |Заголовок события                                 |"Заголовок события"                   |
-|description    |string    |Описание события (необязательный)                 |                                      |
-|startAt        |DateTime  |Дата и время начала события                       |"2027-04-05T00:51:58.951Z"            |
-|endAt          |DateTime  |Дата и время окончания события                    |"2027-04-05T00:51:58.951Z"            |
-|TotalSeats     |int       |Общее количество мест на событии                  |3                                     |
-|AvailableSeats |int       |Текущее количество свободных мест (необязательный)|1                                     |
 
 ### BookingResponse
 |Поле       |Тип данных   |Описание                                      |Пример                                  |
@@ -253,62 +202,6 @@ POST /auth/login
 Status code 200
 <token> - строка токен для авторизации
 
-### Пример запроса с валидацией полей
-#### Запрос
-POST /Events
-{
-  "startAt": "2026-04-28T22:09:03.184Z",
-  "endAt": "2026-04-28T22:09:03.184Z"
-}
-
-#### Ответ
-Status code 400
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "One or more validation errors occurred.",
-  "status": 400,
-  "errors": {
-    "Title": [
-      "The Title field is required."
-    ]
-  },
-  "traceId": "00-bca2d7df98195599e7597495e7a01c51-d57de851fd420f39-00"
-}
-
-### Пример заспрос с ошибкой пагинации
-#### Запрос
-GET /Events?title=test&from=2026-04-28T22%3A13%3A16.974Z&to=2026-04-28T22%3A13%3A22.188Z&page=-1&pageSize=10
-
-#### Ответ
-Status code 400
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "Invalid Argument",
-  "status": 400,
-  "detail": "The parameter must be positive and above zero (Parameter 'page')",
-  "traceId": "00-7db3e64138c6ddbed0ff478a0dc1d7af-06ce5a83d86e765e-00"
-}
-
-
-### Пример успешный заспрос элементов пагинации
-#### Запрос
-GET /Events?title=test&from=2026-04-27T22%3A13%3A16.974Z&to=2026-04-28T22%3A13%3A22.188Z&page=1&pageSize=10
-
-#### Ответ
-Status code 200
-{
-  "items": [
-    {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "title": "test",
-      "description": "test",
-      "startAt": "2026-04-28T22:32:36.093Z",
-      "endAt": "2026-04-28T22:32:37.093Z"
-    }, ...],
-  "pageNumber": 1,
-  "pageCount": 2,
-  "totalCount": 15
-}
 
 ## Логика фоновой обработки
 1. бронирование создаётся и помещается в очередь запросом POST /events/{id}/book в состоянии Pending
