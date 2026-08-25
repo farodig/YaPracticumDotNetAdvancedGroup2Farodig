@@ -10,6 +10,7 @@ namespace CacheService.Infrastructure
     public class RedisCacheServiceFactory(IConnectionMultiplexer connectionMultiplexer, IOptions<RedisCacheSettings> options) : ICacheServiceFactory
     {
         public ICacheService<TItem> CreateCacheService<TItem>()
+            where TItem : class
         {
             return new RedisCacheService<TItem>(connectionMultiplexer, options);
         }
