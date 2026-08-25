@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Components\Broker\BrokerService.Application\BrokerService.Application.csproj" />
+    <ProjectReference Include="..\..\..\Components\Cache\CacheService.Application\CacheService.Application.csproj" />
     <ProjectReference Include="..\..\..\Shared\SharedContracts\SharedContracts.csproj" />
     <ProjectReference Include="..\..\..\Shared\TokenService\TokenService.csproj" />
     <ProjectReference Include="..\EventService.Domain\EventService.Domain.csproj" />

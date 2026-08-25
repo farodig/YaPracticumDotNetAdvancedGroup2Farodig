@@ -26,13 +26,16 @@ namespace CacheService.Infrastructure
                 .ValidateOnStart();
         }
 
-        private static void AddRedis(this IServiceCollection services)
+        public static void AddRedis(this IServiceCollection services)
         {
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
                 var optionsSnapshot = sp.GetRequiredService<IOptions<RedisCacheSettings>>().Value;
                 var options = ConfigurationOptions.Parse(optionsSnapshot.ConnectionString);
                 options.AbortOnConnectFail = false;
+                options.AsyncTimeout = optionsSnapshot.TimeoutMs;
+                options.SyncTimeout = optionsSnapshot.TimeoutMs;
+                options.ConnectTimeout = optionsSnapshot.TimeoutMs;
                 return ConnectionMultiplexer.Connect(options);
             });
         }

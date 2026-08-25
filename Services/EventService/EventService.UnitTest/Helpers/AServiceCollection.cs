@@ -1,9 +1,12 @@
-﻿using EventService.Application;
+﻿using CacheService.Application;
+using CacheService.Infrastructure;
+using EventService.Application;
 using EventService.Infrastructure;
 using EventService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace EventService.UnitTest.Helpers
 {
@@ -16,6 +19,11 @@ namespace EventService.UnitTest.Helpers
             var dbName = Guid.NewGuid().ToString();
             services.AddDbContext<EventDbContext>(options => options.UseInMemoryDatabase(dbName));
             services.AddRepositories();
+
+            services.AddSingleton(Options.Create(new RedisCacheSettings()));
+            services.AddRedis();
+            services.AddSingleton<ICacheServiceFactory, RedisCacheServiceFactory>();
+
             services.AddApplicationServices();
 
             ServiceProvider = services.BuildServiceProvider();

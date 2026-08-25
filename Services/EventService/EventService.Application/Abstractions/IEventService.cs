@@ -1,5 +1,6 @@
 ﻿using Application.Models.Requests;
 using EventService.Application.Models.Responses;
+using EventService.Domain.Entities;
 
 namespace EventService.Application.Abstractions
 {
@@ -18,6 +19,11 @@ namespace EventService.Application.Abstractions
             DateTime? from = null, 
             DateTime? to = null, 
             CancellationToken cts = default);
+
+        /// <summary>
+        /// Получить Топ-10 самых популярных событий
+        /// </summary>
+        Task<IEnumerable<EventResponse>> GetTop10EventsAsync(CancellationToken cts = default);
 
         /// <summary>
         /// Получить событие по идентификатору

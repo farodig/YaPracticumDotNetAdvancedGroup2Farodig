@@ -9,16 +9,26 @@
         /// <summary>
         /// Получить значение по ключу
         /// </summary>
-        TItem? Get(string key);
+        Task<TItem?> GetAsync(Guid id);
+
+        /// <summary>
+        /// Получить коллекцию по ключу
+        /// </summary>
+        Task<IEnumerable<TItem>?> GetCollectionAsync(string key);
 
         /// <summary>
         /// Записать с временем жизни
         /// </summary>
-        void Set(string key, TItem item, TimeSpan? expired);
+        Task SetAsync(Guid id, TItem item, TimeSpan? timeToLive = null);
+
+        /// <summary>
+        /// Записать коллекцию
+        /// </summary>
+        Task SetCollectionAsync(string key, IEnumerable<TItem> collection, TimeSpan? timeToLive = null);
 
         /// <summary>
         /// Удалить по ключу
         /// </summary>
-        void Delete(string key);
+        Task DeleteAsync(Guid id);
     }
 }

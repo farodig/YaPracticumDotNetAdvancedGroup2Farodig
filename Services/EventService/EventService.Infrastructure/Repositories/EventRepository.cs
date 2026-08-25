@@ -28,6 +28,15 @@ namespace EventService.Infrastructure.Repositories
 
         public async Task<Event?> GetAsync(Guid id, CancellationToken cts = default) => await _dbContext.Events.FirstOrDefaultAsync(e => e.Id == id, cts);
 
+        public async Task<IEnumerable<Event>> GetTopPopularEventsAsync(int count, CancellationToken cts = default)
+        {
+            return await _dbContext.Events
+                .OrderByDescending(a => a.TotalSeats - a.AvailableSeats)
+                .ThenByDescending(a => a.TotalSeats)
+                .Take(count)
+                .ToListAsync(cts);
+        }
+
         public async Task CreateAsync(Event item, CancellationToken cts = default)
         {
             await _dbContext.Events.AddAsync(item, cts);
