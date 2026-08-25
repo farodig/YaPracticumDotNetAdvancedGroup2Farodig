@@ -1,13 +1,12 @@
 ﻿using CacheService.Application;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace CacheService.Infrastructure
 {
-    public class RedisCacheService<TItem> : ICacheService<TItem>
+    public class RedisCacheService<TItem>(IConnectionMultiplexer connectionMultiplexer, IOptions<RedisCacheSettings> options) : ICacheService<TItem>
     {
-        public RedisCacheService(IOptions<RedisCacheSettings> options)
-        {
-        }
+        private readonly RedisCacheSettings settings = options.Value;
 
         public bool Delete(string key, out TItem item)
         {

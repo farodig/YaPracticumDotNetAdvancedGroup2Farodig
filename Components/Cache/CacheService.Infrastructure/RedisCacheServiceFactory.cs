@@ -1,17 +1,17 @@
 ﻿using CacheService.Application;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace CacheService.Infrastructure
 {
     /// <summary>
     /// Фабрика создания сервиса кеширования
     /// </summary>
-    public class RedisCacheServiceFactory(IOptions<RedisCacheSettings> options) : ICacheServiceFactory
+    public class RedisCacheServiceFactory(IConnectionMultiplexer connectionMultiplexer, IOptions<RedisCacheSettings> options) : ICacheServiceFactory
     {
-        private readonly IOptions<RedisCacheSettings> _options = options;
         public ICacheService<TItem> CreateCacheService<TItem>()
         {
-            return new RedisCacheService<TItem>(_options);
+            return new RedisCacheService<TItem>(connectionMultiplexer, options);
         }
     }
 }

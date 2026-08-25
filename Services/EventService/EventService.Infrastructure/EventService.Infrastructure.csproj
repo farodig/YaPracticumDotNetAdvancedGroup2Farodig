@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Components\Broker\BrokerService.Infrastructure\BrokerService.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Components\Cache\CacheService.Infrastructure\CacheService.Infrastructure.csproj" />
     <ProjectReference Include="..\EventService.Application\EventService.Application.csproj" />
   </ItemGroup>
 

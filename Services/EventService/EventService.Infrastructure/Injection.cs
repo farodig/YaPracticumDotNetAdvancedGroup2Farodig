@@ -1,4 +1,5 @@
 ﻿using BrokerService.Infrastructure;
+using CacheService.Infrastructure;
 using EventService.Application.Abstractions;
 using EventService.Infrastructure.DataAccess;
 using EventService.Infrastructure.Repositories;
@@ -15,6 +16,7 @@ namespace EventService.Infrastructure
         {
             builder.AddPublishService();
             builder.AddReceiveFactory();
+            builder.AddCacheServiceFactory();
             builder.Services.AddSingleton<ITokenService, JwtTokenService>();
         }
 
