@@ -16,6 +16,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{10A06442-3225-4328-BEC1-767C02623D80}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PersonService", "PersonService", "{7E81F0D8-0729-4705-B66A-75C7D0C047E3}"
+	ProjectSection(SolutionItems) = preProject
+		Services\PersonService\README.md = Services\PersonService\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonService.Presentation", "Services\PersonService\PersonService.Presentation\PersonService.Presentation.csproj", "{9DF4D43D-81DE-3FF1-913C-BF01C3F5417E}"
 EndProject
@@ -31,6 +34,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventService", "EventServic
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BookingService", "BookingService", "{A0D84796-605E-4CD6-9A5C-9F3D0BFD44D7}"
+	ProjectSection(SolutionItems) = preProject
+		Services\BookingService\README.md = Services\BookingService\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventService.Application", "Services\EventService\EventService.Application\EventService.Application.csproj", "{62BE2606-50BF-468E-9B53-F8FED41EC743}"
 EndProject
