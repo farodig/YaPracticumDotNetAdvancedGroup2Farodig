@@ -81,14 +81,13 @@ namespace EventService.Application
 
         private async Task<IEnumerable<Event>> GetTop10EventsInternalAsync(CancellationToken cts = default)
         {
-            const string Top10EventsKey = "top10";
             const int TopCount = 10;
             const int UpdateIntervalHours = 1;
 
-            if (await _cache.GetCollectionAsync(Top10EventsKey) is not IEnumerable<Event> collection || !collection.Any())
+            if (await _cache.GetCollectionAsync(CacheKeys.TopPopularCollection) is not IEnumerable<Event> collection || !collection.Any())
             {
                 collection = await _repository.GetTopPopularEventsAsync(TopCount, cts);
-                await _cache.SetCollectionAsync(Top10EventsKey, collection, TimeSpan.FromHours(UpdateIntervalHours));
+                await _cache.SetCollectionAsync(CacheKeys.TopPopularCollection, collection, TimeSpan.FromHours(UpdateIntervalHours));
             }
 
             return collection;
