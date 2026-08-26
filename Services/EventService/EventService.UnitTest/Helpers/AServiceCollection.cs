@@ -1,6 +1,7 @@
 ﻿using CacheService.Application;
 using CacheService.Infrastructure;
 using EventService.Application;
+using EventService.Application.Abstractions;
 using EventService.Infrastructure;
 using EventService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +15,23 @@ namespace EventService.UnitTest.Helpers
 {
     public abstract class AServiceCollection : IDisposable
     {
-        public AServiceCollection()
+        public AServiceCollection(bool isMockRepository = false)
         {
             _cacheDb = new Mock<IDatabase>();
+            _mockRepository = new Mock<IEventRepository>();
+
             var services = new ServiceCollection();
 
             var dbName = Guid.NewGuid().ToString();
             services.AddDbContext<EventDbContext>(options => options.UseInMemoryDatabase(dbName));
-            services.AddRepositories();
+            if (isMockRepository)
+            {
+                services.AddScoped((sp) => _mockRepository.Object);
+            }
+            else
+            {
+                services.AddRepositories();
+            }
 
             services.AddSingleton(Options.Create(new RedisCacheSettings()));
             services.AddSingleton(_cacheDb.GetConnectionMultiplexerMock());
@@ -85,6 +95,7 @@ namespace EventService.UnitTest.Helpers
 
         protected readonly IServiceScope Scope;
         protected readonly Mock<IDatabase> _cacheDb;
+        protected readonly Mock<IEventRepository> _mockRepository;
 
         #region IDisposable
         private bool _disposed;

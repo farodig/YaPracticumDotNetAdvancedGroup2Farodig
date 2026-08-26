@@ -6,13 +6,11 @@ using static EventService.UnitTest.Helpers.EntityFactory;
 
 namespace EventService.UnitTest
 {
-    //Напишите unit-тесты для сервиса, подменяя кеш и репозиторий заглушками.Проверьте следующие сценарии:
-
     [Trait("Category", "Unit")]
-    public class EventSericeCacheTest : AServiceCollection
+    public class EventSericeCacheTest() : AServiceCollection(isMockRepository: true)
     {
         [Fact(DisplayName = "01. При попадании в кеш репозиторий не вызывается")]
-        public async Task GetFromCacheIgnoreDbTest()
+        public async Task GetHitCacheRepoNotCallTest()
         {
             // Arrange
             var eventId = Guid.NewGuid();
@@ -25,6 +23,8 @@ namespace EventService.UnitTest
             // Assert
             Assert.NotNull(eventResponse);
             Assert.Equal(eventId, eventResponse.Id);
+            // Репозиторий не был задействован
+            _mockRepository.AssertRepositoryGetAsyncCallAtNever();
         }
 
         [Fact(DisplayName = "02. При промахе данные берутся из репозитория и сохраняются в кеш")]
@@ -33,12 +33,17 @@ namespace EventService.UnitTest
             // Arrange
             var eventId = Guid.NewGuid();
             var @event = CreateEvent(eventId: eventId);
-            var service = GetInitializedService<IEventService, Event>(@event);
+            _mockRepository.InitEventRepositoryData(eventId, @event);
+            var service = GetService<IEventService>();
 
             // Act
             await service.GetEventAsync(eventId);
 
-            // Assert - проверка того что был вызван метод сохранения в кеш только один раз (не важно какие данные)
+            // Assert
+            // Был вызван метод получения данных из репозитория
+            _mockRepository.AssertRepositoryGetAsyncCallAtOnce();
+
+            // проверка того что был вызван метод сохранения в кеш только один раз (не важно какие данные)
             _cacheDb.AssertCacheSetAnyDataAtOnce(eventId.ToString(), @event, TimeSpan.FromSeconds(new RedisCacheSettings().GeneralTtlSec));
         }
 
@@ -47,13 +52,15 @@ namespace EventService.UnitTest
         {
             // Arrange
             var eventId = Guid.NewGuid();
-            var service = GetInitializedService<IEventService, Event>(CreateEvent(eventId: eventId));
+            _mockRepository.InitEventRepositoryData(eventId, CreateEvent(eventId: eventId));
+            _mockRepository.InitTryUpdateAsync();
+            var service = GetService<IEventService>();
             var modify = CreateEvent(eventId: eventId);
 
             // Act
             await service.TryUpdateEventAsync(eventId, modify.BuildUpdateEventRequest());
 
-            // Assert - проверка того что был вызван метод сохранения в кеш только один раз (не важно какие данные)
+            // Assert Проверка что был вызван метод записи в кеш
             _cacheDb.AssertCacheSetAnyDataAtOnce(eventId.ToString(), modify, TimeSpan.FromSeconds(new RedisCacheSettings().GeneralTtlSec));
         }
 
@@ -62,7 +69,9 @@ namespace EventService.UnitTest
         {
             // Arrange
             var eventId = Guid.NewGuid();
-            var service = GetInitializedService<IEventService, Event>(CreateEvent(eventId: eventId));
+            _mockRepository.InitEventRepositoryData(eventId, CreateEvent(eventId: eventId));
+            _mockRepository.InitTryRemoveAsync();
+            var service = GetService<IEventService>();
 
             // Act
             await service.TryDeleteEventAsync(eventId);
