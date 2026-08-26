@@ -116,7 +116,7 @@ Status code 200
 }
 
 ## Кеширование событий
-Для кеширования используется Kafka. Настройки можно задать в appsettings.json, где:
+Для кеширования используется Redis. Настройки можно задать в appsettings.json, где:
 
 - BootstrapServers - адрес кеша
 - GeneralTtlSec - время жизни записи кеша
