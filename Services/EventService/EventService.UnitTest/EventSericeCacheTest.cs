@@ -63,7 +63,6 @@ namespace EventService.UnitTest
             // Arrange
             var eventId = Guid.NewGuid();
             var service = GetInitializedService<IEventService, Event>(CreateEvent(eventId: eventId));
-            var modify = CreateEvent(eventId: eventId);
 
             // Act
             await service.TryDeleteEventAsync(eventId);
