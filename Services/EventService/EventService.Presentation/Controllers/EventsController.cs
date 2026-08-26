@@ -39,6 +39,18 @@ namespace EventService.Presentation.Controllers
         }
 
         /// <summary>
+        /// Получить список топ-10 событий
+        /// </summary>
+        /// <response code="200">Список топ-10 событий успешно возвращён</response>
+        [HttpGet("/top")]
+        [ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK, "application/json")]
+        public async Task<IActionResult> GetTopEvents()
+        {
+            var top = await _eventService.GetTop10EventsAsync(HttpContext.RequestAborted);
+            return Ok(top);
+        }
+
+        /// <summary>
         /// Получить событие по идентификатору
         /// </summary>
         /// <param name="id">Идентификатор события</param>

@@ -19,6 +19,11 @@ namespace EventService.Application.Abstractions
             CancellationToken cts = default);
 
         /// <summary>
+        /// Топ-count самых популярных событий
+        /// </summary>
+        Task<IEnumerable<Event>> GetTopPopularEventsAsync(int count, CancellationToken cts = default);
+
+        /// <summary>
         /// Получить событие по идентификатору
         /// </summary>
         Task<Event?> GetAsync(Guid id, CancellationToken cts = default);

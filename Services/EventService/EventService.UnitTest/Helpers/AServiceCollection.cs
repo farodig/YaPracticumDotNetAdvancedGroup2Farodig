@@ -1,21 +1,42 @@
-﻿using EventService.Application;
+﻿using CacheService.Application;
+using CacheService.Infrastructure;
+using EventService.Application;
+using EventService.Application.Abstractions;
 using EventService.Infrastructure;
 using EventService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Moq;
+using StackExchange.Redis;
 
 namespace EventService.UnitTest.Helpers
 {
     public abstract class AServiceCollection : IDisposable
     {
-        public AServiceCollection()
+        public AServiceCollection(bool isMockRepository = false)
         {
+            _cacheDb = new Mock<IDatabase>();
+            _mockRepository = new Mock<IEventRepository>();
+
             var services = new ServiceCollection();
 
             var dbName = Guid.NewGuid().ToString();
             services.AddDbContext<EventDbContext>(options => options.UseInMemoryDatabase(dbName));
-            services.AddRepositories();
+            if (isMockRepository)
+            {
+                services.AddScoped((sp) => _mockRepository.Object);
+            }
+            else
+            {
+                services.AddRepositories();
+            }
+
+            services.AddSingleton(Options.Create(new RedisCacheSettings()));
+            services.AddSingleton(_cacheDb.GetConnectionMultiplexerMock());
+            services.AddSingleton<ICacheServiceFactory, RedisCacheServiceFactory>();
+
             services.AddApplicationServices();
 
             ServiceProvider = services.BuildServiceProvider();
@@ -73,6 +94,8 @@ namespace EventService.UnitTest.Helpers
         protected readonly ServiceProvider ServiceProvider;
 
         protected readonly IServiceScope Scope;
+        protected readonly Mock<IDatabase> _cacheDb;
+        protected readonly Mock<IEventRepository> _mockRepository;
 
         #region IDisposable
         private bool _disposed;
