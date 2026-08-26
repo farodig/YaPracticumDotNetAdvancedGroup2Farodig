@@ -71,6 +71,7 @@ namespace EventService.Application
             if (await _repository.TryRemoveAsync(id, cts) > 0)
             {
                 await _cache.DeleteAsync(id);
+                await _cache.DeleteAsync(id);
                 return true;
             }
             else
@@ -96,12 +97,19 @@ namespace EventService.Application
 
         private async Task<Event?> GetEventInternalAsync(Guid id, CancellationToken cts = default)
         {
-            if (await _cache.GetAsync(id) is Event cached)
+            Event? item = await _cache.GetAsync(id);
+            if (item is not null)
             {
-                return cached;
+                return item;
             }
 
-            return await _repository.GetAsync(id, cts);
+            item = await _repository.GetAsync(id, cts);
+            if (item is not null)
+            {
+                await _cache.SetAsync(id, item);
+            }
+
+            return item;
         }
 
         private async Task CreateEventInternalAsync(Event created, CancellationToken cts = default)
