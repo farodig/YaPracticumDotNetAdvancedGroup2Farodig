@@ -71,7 +71,6 @@ namespace EventService.Application
             if (await _repository.TryRemoveAsync(id, cts) > 0)
             {
                 await _cache.DeleteAsync(id);
-                await _cache.DeleteAsync(id);
                 return true;
             }
             else

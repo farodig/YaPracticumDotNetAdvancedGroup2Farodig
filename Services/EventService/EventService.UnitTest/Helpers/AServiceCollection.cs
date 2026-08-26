@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Moq;
+using StackExchange.Redis;
 
 namespace EventService.UnitTest.Helpers
 {
@@ -14,6 +16,7 @@ namespace EventService.UnitTest.Helpers
     {
         public AServiceCollection()
         {
+            _cacheDb = new Mock<IDatabase>();
             var services = new ServiceCollection();
 
             var dbName = Guid.NewGuid().ToString();
@@ -21,7 +24,7 @@ namespace EventService.UnitTest.Helpers
             services.AddRepositories();
 
             services.AddSingleton(Options.Create(new RedisCacheSettings()));
-            services.AddRedis();
+            services.AddSingleton(_cacheDb.GetConnectionMultiplexerMock());
             services.AddSingleton<ICacheServiceFactory, RedisCacheServiceFactory>();
 
             services.AddApplicationServices();
@@ -81,6 +84,7 @@ namespace EventService.UnitTest.Helpers
         protected readonly ServiceProvider ServiceProvider;
 
         protected readonly IServiceScope Scope;
+        protected readonly Mock<IDatabase> _cacheDb;
 
         #region IDisposable
         private bool _disposed;
