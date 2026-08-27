@@ -5,16 +5,16 @@ using EventService.Domain.Entities;
 using EventService.Domain.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
+using Microsoft.Extensions.Logging;
 using SharedContracts.Events.BookingEvents;
 
 namespace EventService.Application.EventProcessors
 {
-    public class BookingCancelEventProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : IHostedService
+    public class BookingCancelEventProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory, ILogger<BookingCancelEventProcessor> logger) : IHostedService
     {
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly IReceiveService<BookingCancelEvent> _receiver = receiveFactory.CreateReceiverService<BookingCancelEvent>();
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<BookingCancelEventProcessor> _logger = logger;
 
         /// <summary>
         /// Освободить место на событии
@@ -30,7 +30,10 @@ namespace EventService.Application.EventProcessors
                 return;
             }
 
-            _logger.Info("Request to release seats: {@event}", @event);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Request to release seats: {@event}", @event);
+            }
 
             try
             {
@@ -45,7 +48,7 @@ namespace EventService.Application.EventProcessors
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "Unable to release seats event");
                 await publishService.PublishUnableToReleaseSeatsEvent(@event, ex.Message, cts);
             }
         }

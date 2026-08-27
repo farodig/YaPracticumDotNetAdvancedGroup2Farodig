@@ -5,16 +5,16 @@ using EventService.Domain.Entities;
 using EventService.Domain.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
+using Microsoft.Extensions.Logging;
 using SharedContracts.Events.BookingEvents;
 
 namespace EventService.Application.EventProcessors
 {
-    public class BookingSuccessEventProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : IHostedService
+    public class BookingSuccessEventProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory, ILogger<BookingSuccessEventProcessor> logger) : IHostedService
     {
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly IReceiveService<BookingCreatedEvent> _receiver = receiveFactory.CreateReceiverService<BookingCreatedEvent>();
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<BookingSuccessEventProcessor> _logger = logger;
 
         /// <summary>
         /// Зарезерировать место на событии
@@ -30,7 +30,10 @@ namespace EventService.Application.EventProcessors
                 return;
             }
 
-            _logger.Info("Request to reserve seats: {@event}", @event);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Request to reserve seats: {@event}", @event);
+            }
 
             try
             {
@@ -48,7 +51,7 @@ namespace EventService.Application.EventProcessors
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "Unable to reserve seats");
                 await publishService.PublishUnableToReserveSeatsEvent(@event, ex.Message, cts);
             }
         }
