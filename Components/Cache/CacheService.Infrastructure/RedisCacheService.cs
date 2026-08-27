@@ -1,16 +1,16 @@
 ﻿using CacheService.Application;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NLog;
 using StackExchange.Redis;
 using System.Text.Json;
 
 namespace CacheService.Infrastructure
 {
-    public class RedisCacheService<TItem>(IConnectionMultiplexer connectionMultiplexer, IOptions<RedisCacheSettings> options) : ICacheService<TItem>
+    public class RedisCacheService<TItem>(IConnectionMultiplexer connectionMultiplexer, IOptions<RedisCacheSettings> options, ILogger<RedisCacheService<object>> logger) : ICacheService<TItem>
         where TItem : class
     {
         private readonly TimeSpan _generalTimeToLive = TimeSpan.FromSeconds(options.Value.GeneralTtlSec);
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<RedisCacheService<object>> _logger = logger;
         private readonly string _keyType = typeof(TItem).Name.ToLowerInvariant();
 
         public async Task<TItem?> GetAsync(Guid id)
@@ -48,7 +48,7 @@ namespace CacheService.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Unable to delete item from cache by key '{key}'", key);
+                _logger.LogWarning(ex, "Unable to delete item from cache by {key}", key);
             }
         }
 
@@ -63,7 +63,7 @@ namespace CacheService.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Unable to set value to cache by key '{key}'", key);
+                _logger.LogWarning(ex, "Unable to set value to cache by {key}", key);
             }
         }
 
@@ -81,7 +81,7 @@ namespace CacheService.Infrastructure
 
                 if (JsonSerializer.Deserialize<T>(result.ToString()) is not T value)
                 {
-                    _logger.Error("Unable to deserialize '{key}'", key);
+                    _logger.LogError("Unable to deserialize {key}", key);
                     return default;
                 }
 
@@ -89,7 +89,7 @@ namespace CacheService.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.Warn(ex, "Unable to get item from cache by key '{key}'", key);
+                _logger.LogWarning(ex, "Unable to get item from cache by {key}", key);
                 return default;
             }
         }

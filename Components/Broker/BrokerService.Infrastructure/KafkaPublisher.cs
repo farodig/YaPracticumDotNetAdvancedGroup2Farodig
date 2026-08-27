@@ -1,7 +1,7 @@
 ﻿using BrokerService.Application;
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NLog;
 using SharedContracts.Abstractions;
 using System.Text.Json;
 
@@ -10,10 +10,12 @@ namespace BrokerService.Infrastructure
     public class KafkaPublisher : IPublishService, IDisposable
     {
         private readonly IProducer<string, string> _producer;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<KafkaPublisher> _logger;
 
-        public KafkaPublisher(IOptions<KafkaSettings> settings)
+        public KafkaPublisher(IOptions<KafkaSettings> settings, ILogger<KafkaPublisher> logger)
         {
+            _logger = logger;
+
             var kafkaSettings = settings.Value;
 
             var config = new ProducerConfig
@@ -37,7 +39,10 @@ namespace BrokerService.Infrastructure
             };
 
             var result = await _producer.ProduceAsync(typeof(TEvent).Name, message, ct);
-            _logger.Trace($"Sent<{typeof(TEvent).Name}>: offset={result.Offset}, partition={result.Partition}");
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("Sent {type} {Offset} {Partition}", typeof(TEvent).Name, result.Offset, result.Partition);
+            }
         }
 
         #region IDisposable
