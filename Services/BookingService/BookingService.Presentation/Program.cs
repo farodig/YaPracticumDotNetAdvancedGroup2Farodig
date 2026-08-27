@@ -8,8 +8,8 @@ builder.ConfigureInfrastructure();
 builder.ConfigureApplication();
 builder.ConfigureSwaggerService();
 builder.ConfigureAuthentication();
-builder.AddNlog();
-builder.AddTelemetry();
+builder.ConfigureLog();
+builder.ConfigureTelemetry();
 
 var app = builder.Build();
 
