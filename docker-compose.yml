@@ -135,19 +135,28 @@ services:
       - grafana-data:/var/lib/grafana
 
   persons-service:
-    environment:
-      Otlp__Endpoint: http://jaeger:4317 
+   build:
+     context: .
+     dockerfile: Services/PersonService/Dockerfile
+   environment:
+     Otlp__Endpoint: http://jaeger:4317 
 
   events-service:
-    environment:
-      Otlp__Endpoint: http://jaeger:4317 
+   build:
+     context: .
+     dockerfile: Services/EventService/Dockerfile
+   environment:
+     Otlp__Endpoint: http://jaeger:4317 
 
   bookings-service:
-    environment:
-      Otlp__Endpoint: http://jaeger:4317 
+   build:
+     context: .
+     dockerfile: Services/BookingService/Dockerfile
+   environment:
+     Otlp__Endpoint: http://jaeger:4317 
 
-volumes:
+volumes: 
   persons-db-data:
   events-db-data:
   bookings-db-data:
-  grafana-data: 
+  grafana-data:

@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{10
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PersonService", "PersonService", "{7E81F0D8-0729-4705-B66A-75C7D0C047E3}"
 	ProjectSection(SolutionItems) = preProject
+		Services\PersonService\Dockerfile = Services\PersonService\Dockerfile
 		Services\PersonService\README.md = Services\PersonService\README.md
 	EndProjectSection
 EndProject
@@ -27,11 +28,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonService.Infrastructur
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventService", "EventService", "{42709BC2-7DA8-43F3-8E16-A0E50F1DF844}"
 	ProjectSection(SolutionItems) = preProject
+		Services\EventService\Dockerfile = Services\EventService\Dockerfile
 		Services\EventService\README.md = Services\EventService\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BookingService", "BookingService", "{A0D84796-605E-4CD6-9A5C-9F3D0BFD44D7}"
 	ProjectSection(SolutionItems) = preProject
+		Services\BookingService\Dockerfile = Services\BookingService\Dockerfile
 		Services\BookingService\README.md = Services\BookingService\README.md
 	EndProjectSection
 EndProject
