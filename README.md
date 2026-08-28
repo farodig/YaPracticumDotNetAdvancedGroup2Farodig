@@ -23,6 +23,24 @@
 10. Открыть в браузере [booking service](https://localhost:7108/swagger/index.html), [event service](https://localhost:7240/swagger/index.html), [person service](http://localhost:5132/swagger)
 11. Некоторые команды API сервисов EventService и BookingService требуют авторизации. Для авторизации пользователя необходимо выполнить [вход](#авторизация) пользователя, после чего ввести токен в поле после нажатия кнопки [Authorize]
 
+## Телеметрия
+В проекте производится сбор данных с сервисов PersonService, EventService, BookingService
+
+### Инструменты
+* Prometheus — сбор метрик
+* Grafana — визуализация метрик
+* Jaeger — трассировка запросов
+* OpenTelemetry:
+    HTTP - входящие и исходящие запросы,
+    EF Core - запросы к бд,
+    Kafka - брокер сообщений,
+    Prometheus и Jaeger - экспорт данных.
+
+### UI-интерфейс доступа
+Prometheus	http://localhost:9090
+Grafana	http://localhost:3000
+Jaeger	http://localhost:16686
+
 ## Структура проектов
 
 Сервисы и компоненты:
