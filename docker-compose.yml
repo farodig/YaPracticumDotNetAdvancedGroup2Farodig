@@ -135,26 +135,50 @@ services:
       - grafana-data:/var/lib/grafana
 
   persons-service:
-   build:
-     context: .
-     dockerfile: Services/PersonService/Dockerfile
-   environment:
-     Otlp__Endpoint: http://jaeger:4317 
+    build:
+      context: .
+      dockerfile: Services/PersonService/Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Otlp__Endpoint=http://jaeger:4317
+      #- ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=personDb;Username=postgres;Password=postgres
+      - ConnectionStrings__DefaultConnection=Host=persons-db;Port=5433;Database=personDb;Username=postgres;Password=postgres
 
   events-service:
-   build:
-     context: .
-     dockerfile: Services/EventService/Dockerfile
-   environment:
-     Otlp__Endpoint: http://jaeger:4317 
+    build:
+      context: .
+      dockerfile: Services/EventService/Dockerfile
+    ports:
+      - "5002:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Broker__BootstrapServers=kafka:29092
+      - Otlp__Endpoint=http://jaeger:4317
+      #- ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=eventDb;Username=postgres;Password=postgres
+      - ConnectionStrings__DefaultConnection=Host=events-db;Port=5434;Database=eventDb;Username=postgres;Password=postgres
+
 
   bookings-service:
-   build:
-     context: .
-     dockerfile: Services/BookingService/Dockerfile
-   environment:
-     Otlp__Endpoint: http://jaeger:4317 
-
+    build:
+      context: .
+      dockerfile: Services/BookingService/Dockerfile
+    ports:
+      - "5003:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Broker__BootstrapServers=kafka:29092
+      - Otlp__Endpoint=http://jaeger:4317
+      #- ConnectionStrings__DefaultConnection=Host=host.docker.internal;Port=5432;Database=bookingDb;Username=postgres;Password=postgres
+      - ConnectionStrings__DefaultConnection=Host=bookings-db;Port=5435;Database=bookingDb;Username=postgres;Password=postgres
+      
 volumes: 
   persons-db-data:
   events-db-data:
