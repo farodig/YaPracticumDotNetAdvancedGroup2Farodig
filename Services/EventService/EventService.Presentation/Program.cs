@@ -8,7 +8,8 @@ builder.ConfigureInfrastructure();
 builder.ConfigureApplication();
 builder.ConfigureSwaggerService();
 builder.ConfigureAuthentication();
-builder.AddNlog();
+builder.ConfigureLog();
+builder.ConfigureTelemetry();
 
 var app = builder.Build();
 
@@ -19,5 +20,6 @@ app.UseAuthorization();
 app.InitializeSwagger();
 app.MapControllers();
 app.InitializeInfrastructure();
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();

@@ -4,6 +4,8 @@ using BookingService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace BookingService.UnitTest.Helpers
 {
@@ -19,6 +21,11 @@ namespace BookingService.UnitTest.Helpers
             services.AddDbContext<BookingDbContext>(options => options.UseInMemoryDatabase(dbName));
             services.AddRepositories();
             services.AddApplicationServices();
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog(dispose: true);
+            });
 
             ServiceProvider = services.BuildServiceProvider();
             Scope = ServiceProvider.CreateScope();

@@ -7,8 +7,10 @@ using EventService.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Serilog;
 using StackExchange.Redis;
 
 namespace EventService.UnitTest.Helpers
@@ -38,6 +40,11 @@ namespace EventService.UnitTest.Helpers
             services.AddSingleton<ICacheServiceFactory, RedisCacheServiceFactory>();
 
             services.AddApplicationServices();
+            services.AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddSerilog(dispose: true);
+            });
 
             ServiceProvider = services.BuildServiceProvider();
             Scope = ServiceProvider.CreateScope();

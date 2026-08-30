@@ -1,4 +1,4 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using PersonService.Application.Abstractions;
 using PersonService.Application.Components;
 using PersonService.Domain.Entities;
@@ -8,9 +8,9 @@ using TokenService;
 
 namespace PersonService.Application
 {
-    public class PersonService(IPersonRepository repository, IPasswordHasher passwordHasher, ITokenService tokenService) : IPersonService
+    public class PersonService(IPersonRepository repository, IPasswordHasher passwordHasher, ITokenService tokenService, ILogger<PersonService> logger) : IPersonService
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<PersonService> _logger = logger;
         private readonly IPersonRepository _repository = repository;
         private readonly IPasswordHasher _passwordHasher = passwordHasher;
         private readonly ITokenService _tokenService = tokenService;
@@ -23,7 +23,10 @@ namespace PersonService.Application
 
             var token = _tokenService.CreateToken(person.Id, person.Role.ToString());
 
-            _logger.Info($"Person #{person.Id} logged with role '{person.Role}', token '{token}'");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Person #{Id} logged with role '{Role}'", person.Id, person.Role);
+            }
 
             return token;
         }
@@ -40,9 +43,10 @@ namespace PersonService.Application
 
             await _repository.CreateAsync(person, cts);
 
-            var token = _tokenService.CreateToken(person.Id, person.Role.ToString());
-
-            _logger.Info($"Person #{person.Id} created with role '{person.Role}', token '{token}'");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Person #{Id} created with role '{Role}'", person.Id, person.Role);
+            }
         }
     }
 }

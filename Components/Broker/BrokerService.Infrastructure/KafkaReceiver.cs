@@ -1,8 +1,8 @@
 ﻿using BrokerService.Application;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NLog;
 using SharedContracts.Abstractions;
 using System.Text.Json;
 
@@ -13,11 +13,12 @@ namespace BrokerService.Infrastructure
     {
         private readonly ConsumerConfig _config;
         private readonly IConsumer<string, string> _consumer;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<KafkaReceiver<IEvent>> _logger;
         private bool _isStarted = true;
 
-        public KafkaReceiver(IOptions<KafkaSettings> settings)
+        public KafkaReceiver(IOptions<KafkaSettings> settings, ILogger<KafkaReceiver<IEvent>> logger)
         {
+            _logger = logger;
             var kafkaSettings = settings.Value;
 
             _config = new ConsumerConfig
@@ -36,7 +37,7 @@ namespace BrokerService.Infrastructure
             .Build();
         }
 
-        private async Task CreateTopicIfNotExist(CancellationToken cts = default)
+        private async Task CreateTopicIfNotExist()
         {
             using var admin = new AdminClientBuilder(new AdminClientConfig
             {
@@ -51,17 +52,20 @@ namespace BrokerService.Infrastructure
                 return;
             }
 
-            await admin.CreateTopicsAsync(new[]
-            {
+            await admin.CreateTopicsAsync(
+            [
                 new TopicSpecification
                 {
                     Name = typeof(TEvent).Name,
                     NumPartitions = 1,
                     ReplicationFactor = 1,
                 }
-            });
+            ]);
 
-            _logger.Info($"New topic created <{typeof(TEvent).Name}>");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("New topic {Type} created", typeof(TEvent).Name);
+            }
         }
 
         public Task StartAsync(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
@@ -72,7 +76,7 @@ namespace BrokerService.Infrastructure
 
         private async Task DoWorkAsync(Func<TEvent, CancellationToken, Task> handler, CancellationToken cts = default)
         {
-            await CreateTopicIfNotExist(cts);
+            await CreateTopicIfNotExist();
             _consumer.Subscribe(typeof(TEvent).Name);
 
             try
@@ -101,10 +105,14 @@ namespace BrokerService.Infrastructure
 
                 try
                 {
-                    _logger.Trace($"Received<{typeof(TEvent).Name}>: offset={result.Offset}, partition={result.Partition}");
+                    if (_logger.IsEnabled(LogLevel.Trace))
+                    {
+                        _logger.LogTrace("Received {Type}: {Offset}, {Partition}", typeof(TEvent).Name, result.Offset, result.Partition);
+                    }
+
                     if (JsonSerializer.Deserialize<TEvent>(result.Message.Value) is not TEvent message)
                     {
-                        _logger.Error($"Unable to deserialize {typeof(TEvent).Name}");
+                        _logger.LogError("Unable to deserialize {Type}", typeof(TEvent).Name);
                         return;
                     }
 
@@ -117,7 +125,7 @@ namespace BrokerService.Infrastructure
             }
             catch(Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "Unable to process mesage {Type}", typeof(TEvent).Name);
             }
         }
 

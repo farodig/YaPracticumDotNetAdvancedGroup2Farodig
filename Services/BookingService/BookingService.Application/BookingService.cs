@@ -4,18 +4,18 @@ using BookingService.Application.Models.Responses;
 using BookingService.Domain.Entities;
 using BookingService.Domain.Exceptions;
 using BrokerService.Application;
-using NLog;
+using Microsoft.Extensions.Logging;
 using SharedContracts.Events.BookingEvents;
 using System.Data;
 using TokenService.Exceptions;
 
 namespace BookingService.Application
 {
-    public class BookingService(IBookingRepository repository, IPublishService publishService) : IBookingService
+    public class BookingService(IBookingRepository repository, IPublishService publishService, ILogger<BookingService> logger) : IBookingService
     {
         private readonly IBookingRepository _repository = repository;
         private readonly IPublishService _publishService = publishService;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<BookingService> _logger = logger;
         private readonly SemaphoreSlim _bookingSemaphore = new(initialCount: 1, maxCount: 1);
 
         public async Task<BookingResponse> CreateBookingAsync(Guid eventId, Guid personId, CancellationToken cts = default)
@@ -31,7 +31,10 @@ namespace BookingService.Application
                 await _repository.CreateAsync(booking, cts);
 
                 await _publishService.PublishBookingCreatedEvent(booking, cts);
-                _logger.Info($"Booking #{booking.Id} created with status '{booking.Status}'");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Booking {Id} created with {Status}", booking.Id, booking.Status);
+                }
                 return booking.ToResponse();
             }
             finally
@@ -56,14 +59,17 @@ namespace BookingService.Application
         {
             await _repository.TryUpdateStatusAsync(data, BookingStatus.Confirmed, cts);
             await _publishService.PublishBookingConfirmedEvent(data, cts);
-            _logger.Info($"Booking operation was confirmed. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Booking operation was confirmed {EventId}, {BookingId}", data.EventId, data.Id);
+            }
         }
 
         public async Task RejectBookingAsync(Booking data, CancellationToken cts = default)
         {
             await _repository.TryUpdateStatusAsync(data, BookingStatus.Rejected, cts);
             await _publishService.PublishBookingRejectedEvent(data, cts);
-            _logger.Warn($"Booking operation was rejected'. Event Id = '{data.EventId}', Booking Id = '{data.Id}'");
+            _logger.LogWarning("Booking operation was rejected {EventId}, {BookingId}", data.EventId, data.Id);
         }
 
         public async Task CancelBookingByAdminAsync(Guid bookingId, CancellationToken cts = default)
@@ -75,7 +81,7 @@ namespace BookingService.Application
             await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
 
             await _publishService.PublishBookingCancelEvent(booking, CancelReasonType.CancelByAdmin, cts);
-            _logger.Warn($"Booking operation was cancelled by the Admin. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+            _logger.LogWarning("Booking operation was cancelled by the Admin {EventId}, {BookingId}", booking.EventId, booking.Id);
         }
 
         public async Task CancelBookingByPersonAsync(Guid bookingId, Guid personId, CancellationToken cts = default)
@@ -89,7 +95,10 @@ namespace BookingService.Application
             await _repository.TryUpdateStatusAsync(booking, BookingStatus.Cancelled, cts);
 
             await _publishService.PublishBookingCancelEvent(booking, CancelReasonType.CancelByPerson, cts);
-            _logger.Info($"Booking operation was cancelled by the person '{personId}'. Event Id = '{booking.EventId}', Booking Id = '{booking.Id}'");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Booking operation was cancelled by the {personId}, {EventId}, {BookingId}", personId, booking.EventId, booking.Id);
+            }
         }
     }
 }

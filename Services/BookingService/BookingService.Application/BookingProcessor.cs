@@ -3,17 +3,17 @@ using BookingService.Domain.Entities;
 using BrokerService.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
+using Microsoft.Extensions.Logging;
 using SharedContracts.Events.EventEvents;
 
 namespace BookingService.Application
 {
-    public class BookingProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory) : BackgroundService
+    public class BookingProcessor(IReceiverServiceFactory receiveFactory, IServiceScopeFactory scopeFactory, ILogger<BookingProcessor> logger) : BackgroundService
     {
         private readonly IReceiveService<ReserveSeatsEvent> _successReceiver = receiveFactory.CreateReceiverService<ReserveSeatsEvent>();
         private readonly IReceiveService<UnableToReserveSeatsEvent> _failureReceiver = receiveFactory.CreateReceiverService<UnableToReserveSeatsEvent>();
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<BookingProcessor> _logger = logger;
         private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
         private readonly Dictionary<Guid, bool> seatsReservedForBooking = [];
 
@@ -67,12 +67,12 @@ namespace BookingService.Application
                 }
                 catch (Exception cef)
                 {
-                    _logger.Error(cef, $"Unable to process bookingId = '{data.Id}', eventId = '{data.EventId}'");
+                    _logger.LogError(cef, "Unable to process booking {BookingId}, {EventId}", data.Id, data.EventId);
                 }
             }
             catch (OperationCanceledException ex)
             {
-                _logger.Fatal(ex, "BookingProcessor process was cancelled");
+                _logger.LogCritical(ex, "BookingProcessor process was cancelled");
             }
             finally
             {
@@ -82,7 +82,7 @@ namespace BookingService.Application
                 }
                 catch (SemaphoreFullException ex)
                 {
-                    _logger.Fatal(ex, "BookingProcessor process was interrupted before WaitAsync");
+                    _logger.LogCritical(ex, "BookingProcessor process was interrupted before WaitAsync");
                 }
             }
         }
@@ -101,7 +101,10 @@ namespace BookingService.Application
         private async Task OnSuccessReserved(ReserveSeatsEvent @event, CancellationToken token)
         {
             seatsReservedForBooking[@event.BookingId] = true;
-            _logger.Info("Seats reserved: {@event}", @event);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Seats reserved: {event}", @event);
+            }
         }
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace BookingService.Application
         private async Task OnFailureReserved(UnableToReserveSeatsEvent @event, CancellationToken token)
         {
             seatsReservedForBooking[@event.BookingId] = false;
-            _logger.Warn("Seats not reserved: {@event}", @event);
+            _logger.LogWarning("Seats not reserved: {event}", @event);
         }
     }
 }

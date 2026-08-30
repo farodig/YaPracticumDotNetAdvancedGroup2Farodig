@@ -1,5 +1,4 @@
 ﻿using Microsoft.OpenApi;
-using NLog;
 using System.Reflection;
 
 namespace PersonService.Presentation.ConfigurationBuilders
@@ -58,12 +57,14 @@ namespace PersonService.Presentation.ConfigurationBuilders
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
-                var logger = app.Services.GetRequiredService<ILogger<Program>>();
-
                 app.Lifetime.ApplicationStarted.Register(() =>
                 {
                     var addresses = string.Join(", ", app.Urls.Select(u => $"{u}/swagger"));
-                    logger?.LogInformation("Person Swagger UI: {Addresses}", addresses);
+                    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+                    if (logger.IsEnabled(LogLevel.Information))
+                    {
+                        logger.LogInformation("Person Swagger UI: {Addresses}", addresses);
+                    }
                 });
             }
         }

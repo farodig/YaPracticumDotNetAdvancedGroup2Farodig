@@ -1,18 +1,18 @@
 ﻿using BrokerService.Application;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SharedContracts.Abstractions;
 
 namespace BrokerService.Infrastructure
 {
     /// <summary>
     /// Фабрика создания сервиса получения событий
     /// </summary>
-    public class KafkaReceiverServiceFactory(IOptions<KafkaSettings> options) : IReceiverServiceFactory
+    public class KafkaReceiverServiceFactory(IOptions<KafkaSettings> options, ILogger<KafkaReceiver<IEvent>> logger) : IReceiverServiceFactory
     {
-        private readonly IOptions<KafkaSettings> _options = options;
-
         IReceiveService<TEvent> IReceiverServiceFactory.CreateReceiverService<TEvent>()
         {
-            return new KafkaReceiver<TEvent>(_options);
+            return new KafkaReceiver<TEvent>(options, logger);
         }
     }
 }
